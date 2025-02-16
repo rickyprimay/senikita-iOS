@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Raleway-Regular.ttf</string>
+		<string>Raleway-Black.ttf</string>
+		<string>Raleway-ExtraBold.ttf</string>
+		<string>Raleway-Bold.ttf</string>
+		<string>Raleway-SemiBold.ttf</string>
+		<string>Raleway-Medium.ttf</string>
+		<string>Raleway-Light.ttf</string>
+		<string>Raleway-ExtraLight.ttf</string>
+		<string>Raleway-Thin.ttf</string>
+		<string>CrimsonPro-Regular.ttf</string>
+		<string>CrimsonPro-Black.ttf</string>
+		<string>CrimsonPro-ExtraBold.ttf</string>
+		<string>CrimsonPro-Bold.ttf</string>
+		<string>CrimsonPro-SemiBold.ttf</string>
+		<string>CrimsonPro-Medium.ttf</string>
+		<string>CrimsonPro-Light.ttf</string>
+		<string>CrimsonPro-ExtraLight.ttf</string>
+		<string>Nunito-Regular.ttf</string>
+		<string>Nunito-Black.ttf</string>
+		<string>Nunito-ExtraBold.ttf</string>
+		<string>Nunito-Bold.ttf</string>
+		<string>Nunito-SemiBold.ttf</string>
+		<string>Nunito-Medium.ttf</string>
+		<string>Nunito-Light.ttf</string>
+		<string>Nunito-ExtraLight.ttf</string>
+	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIImageName</key>
+		<string></string>
+	</dict>
+</dict>
+</plist>
