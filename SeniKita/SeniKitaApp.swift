@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct SeniKitaApp: App {
+    
+    @StateObject var authViewModel = AuthViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            RootView()
+            Splash()
         }
     }
 }

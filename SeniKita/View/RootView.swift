@@ -21,7 +21,7 @@ struct RootView: View {
                 ArtMap()
                     .tag(1)
                 
-                Text("Profile")
+                Profile()
                     .tag(2)
             }
             .disabled(homeViewModel.isLoading)

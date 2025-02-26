@@ -102,11 +102,9 @@ struct ArtMap: View {
                                         }
                                         
                                         VStack {
-                                            Image(systemName: "mappin.circle.fill")
+                                            Image("custom-marker-blue")
                                                 .resizable()
                                                 .frame(width: selectedArt?.id == art.id ? 40 : 30, height: selectedArt?.id == art.id ? 40 : 30)
-                                                .foregroundColor(.white)
-                                                .background(Circle().fill(Color.blue).frame(width: 50, height: 50))
                                                 .animation(.spring(), value: selectedArt?.id)
                                                 .onTapGesture {
                                                     withAnimation {
@@ -151,8 +149,9 @@ struct ArtMap: View {
             }
             
             if artMapViewModel.isLoading {
-                Loading()
+                Loading(opacity: 1)
             }
         }
+        .navigationBarHidden(true)
     }
 }

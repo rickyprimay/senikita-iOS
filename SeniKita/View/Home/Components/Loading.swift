@@ -10,10 +10,11 @@ import SwiftUI
 struct Loading: View {
     @State private var rotation: Double = 0
     @State private var shimmerOffset: CGFloat = -200
+    var opacity: Double
     
     var body: some View {
         ZStack {
-            Color.white.edgesIgnoringSafeArea(.all)
+            Color.white.opacity(opacity).edgesIgnoringSafeArea(.all)
             
             VStack {
                 ZStack {
