@@ -49,7 +49,9 @@ struct Profile: View {
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack {
-                        ProfileRow(icon: "person.badge.key", title: "Ubah Password", color: Color("brick"))
+                        NavigationLink(destination: ChangePassword()){
+                            ProfileRow(icon: "person.badge.key", title: "Ubah Password", color: Color("brick"))
+                        }
                         ProfileRow(icon: "gearshape", title: "Pengaturan", color: Color("brick"))
                         ProfileRow(icon: "cart", title: "Pembelian Anda", color: Color("brick"))
                         ProfileRow(icon: "mappin.and.ellipse", title: "Alamat", color: Color("brick"))

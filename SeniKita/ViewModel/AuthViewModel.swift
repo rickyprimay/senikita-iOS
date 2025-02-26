@@ -16,6 +16,7 @@ class AuthViewModel: ObservableObject {
     @Published var loginAlert = false
     @Published var isAuthenticated: Bool = false
     @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
     
     init() {
         checkAuthentication()
@@ -58,6 +59,78 @@ class AuthViewModel: ObservableObject {
             }
     }
     
+    func register(name: String, email: String, password: String, completion: @escaping (Bool) -> Void) {
+        isLoading = true
+        errorMessage = nil
+        
+        let url = "\(baseUrl)/register"
+        let parameters: [String: String] = [
+            "name": name,
+            "email": email,
+            "password": password
+        ]
+        
+        print("📤 Sending request to: \(url)")
+        
+        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
+            .responseDecodable(of: RegisterResponse.self) { response in
+                DispatchQueue.main.async { self.isLoading = false }
+                let statusCode = response.response?.statusCode ?? 0
+                
+                switch response.result {
+                case .success(let result):
+                    if (200..<300).contains(statusCode) {
+                        print("✅ Registration successful: \(result.message)")
+                        completion(true)
+                    } else {
+                        print("❌ Registration failed: \(result.message) | Status: \(statusCode)")
+                        DispatchQueue.main.async {
+                            self.errorMessage = result.message
+                        }
+                        completion(false)
+                    }
+                case .failure(let error):
+                    print("🚨 Network error: \(error.localizedDescription)")
+                    DispatchQueue.main.async {
+                        self.errorMessage = "An error occurred, please check your internet connection."
+                    }
+                    completion(false)
+                }
+            }
+    }
+    
+    func resendOTP(email: String, completion: @escaping (String?) -> Void) {
+        let url = "\(baseUrl)/resend-otp"
+        let parameters: [String: String] = [
+            "email": email
+        ]
+        
+        print("📤 Sending OTP resend request to: \(url)")
+        print("📦 Request parameters: \(parameters)")
+        
+        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
+            .responseDecodable(of: RegisterResponse.self) { response in
+                defer { DispatchQueue.main.async { self.isLoading = false } }
+                
+                let statusCode = response.response?.statusCode ?? 0
+                print("📥 Received OTP resend response with status code: \(statusCode)")
+                
+                switch response.result {
+                case .success(let result):
+                    if (200..<300).contains(statusCode) {
+                        print("✅ OTP resent successfully: \(result.message)")
+                        completion(result.message)
+                    } else {
+                        print("❌ OTP resend failed: \(result.message) | Status: \(statusCode)")
+                        completion("Failed to resend OTP, please try again later.")
+                    }
+                case .failure(let error):
+                    print("🚨 OTP resend request failed: \(error.localizedDescription)")
+                    completion("An error occurred, please check your internet connection.")
+                }
+            }
+    }
+    
     private func saveToken(_ token: String) {
         UserDefaults.standard.set(token, forKey: "authToken")
     }
@@ -79,14 +152,6 @@ class AuthViewModel: ObservableObject {
                 self.isAuthenticated = true
             }
         }
-    }
-    
-    func loginGoogle() {
-        
-    }
-    
-    func register() {
-        
     }
     
     func logout() {

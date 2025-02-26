@@ -8,162 +8,113 @@
 import SwiftUI
 
 struct Register: View {
-    @State private var name: String = ""
-    @State private var email: String = ""
-    @State private var password: String = ""
-    @State private var confirmationPassword: String = ""
-    @State private var isPasswordVisible: Bool = false
-    @State private var isConfirmationPasswordVisible: Bool = false
+    
+    @StateObject var authViewModel = AuthViewModel()
+    
+    @State private var name = ""
+    @State private var email = ""
+    @State private var password = ""
+    @State private var confirmationPassword = ""
+    @State private var isPasswordVisible = false
+    @State private var isConfirmationPasswordVisible = false
+    @State private var isAgreed = false
+    @State private var isNavigatingToOTP = false
+    @State private var showErrorPopup = false
+    @State private var isEmailValid: Bool = true
     
     var isFormValid: Bool {
-        return !name.isEmpty && !email.isEmpty && !password.isEmpty && password == confirmationPassword
+        !name.isEmpty && !email.isEmpty && !password.isEmpty && password == confirmationPassword
+    }
+    
+    var isValidEmail: Bool {
+        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
     
     var body: some View {
-        VStack {
-            TopAuth()
-            Spacer()
-            
-            Text("Daftar di Senikita")
-                .font(AppFont.Nunito.titleMedium)
-                .bold()
-            
-            HStack {
-                Text("Sudah punya akun?")
-                    .font(AppFont.Nunito.footnoteLarge)
-                
-                NavigationLink(destination: Login()) {
-                    Text("Masuk disini")
-                        .foregroundColor(Color("brick"))
-                        .font(AppFont.Nunito.footnoteLarge)
-                }
-            }
-            
-            Button {
-                
-            } label: {
-                HStack {
-                    Image("google-logo")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                    Text("Masuk dengan Google")
-                        .font(AppFont.Nunito.footnoteLarge)
-                        .bold()
-                }
-                .foregroundStyle(.black)
-                .frame(maxWidth: .infinity, minHeight: 50)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.gray.opacity(0.8), lineWidth: 1)
-                )
-                .padding(.vertical)
-            }
-            
-            DividerLabel(label: "atau")
-                .padding(.vertical, 4)
-            
+        ZStack {
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Nama Lengkap")
-                        .font(AppFont.Nunito.footnoteLarge)
-                        .fontWeight(.semibold)
+                VStack {
+                    TopAuth()
+                    Spacer()
                     
-                    TextField("Masukkan Nama Lengkap", text: $name)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 14)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(name.isEmpty ? Color.gray.opacity(0.3) : Color("brick"), lineWidth: 1)
-                        )
-                        .autocapitalization(.words)
+                    Text("Daftar di Senikita")
+                        .font(AppFont.Nunito.titleMedium)
+                        .bold()
                     
-                    Text("Email")
-                        .font(AppFont.Nunito.footnoteLarge)
-                        .fontWeight(.semibold)
-                    
-                    TextField("Masukkan Email", text: $email)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 14)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(email.isEmpty ? Color.gray.opacity(0.3) : Color("brick"), lineWidth: 1)
-                        )
-                        .autocapitalization(.none)
-                        .keyboardType(.emailAddress)
-                    
-                    Text("Password")
-                        .font(AppFont.Nunito.footnoteLarge)
-                        .fontWeight(.semibold)
-                    
-                    ZStack(alignment: .trailing) {
-                        if isPasswordVisible {
-                            TextField("Masukkan Password", text: $password)
-                        } else {
-                            SecureField("Masukkan Password", text: $password)
-                        }
+                    HStack {
+                        Text("Sudah punya akun?")
+                            .font(AppFont.Nunito.footnoteLarge)
                         
-                        Button(action: {
-                            isPasswordVisible.toggle()
-                        }) {
-                            Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
-                                .foregroundColor(.gray)
+                        NavigationLink(destination: Login()) {
+                            Text("Masuk disini")
+                                .foregroundColor(Color("brick"))
+                                .font(AppFont.Nunito.footnoteLarge)
                         }
-                        .padding(.trailing, 12)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 14)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(password.isEmpty ? Color.gray.opacity(0.3) : Color("brick"), lineWidth: 1)
+                    
+                    GoogleButton()
+                    
+                    DividerLabel(label: "atau").padding(.vertical, 4)
+                    
+                    RegisterForm(
+                        name: $name,
+                        email: $email,
+                        password: $password,
+                        confirmationPassword: $confirmationPassword,
+                        isPasswordVisible: $isPasswordVisible,
+                        isConfirmationPasswordVisible: $isConfirmationPasswordVisible
                     )
                     
-                    Text("Konfirmasi Password")
-                        .font(AppFont.Nunito.footnoteLarge)
-                        .fontWeight(.semibold)
-                    
-                    ZStack(alignment: .trailing) {
-                        if isConfirmationPasswordVisible {
-                            TextField("Masukkan Ulang Password", text: $confirmationPassword)
-                        } else {
-                            SecureField("Masukkan Ulang Password", text: $confirmationPassword)
-                        }
-                        
-                        Button(action: {
-                            isConfirmationPasswordVisible.toggle()
-                        }) {
-                            Image(systemName: isConfirmationPasswordVisible ? "eye" : "eye.slash")
-                                .foregroundColor(.gray)
-                        }
-                        .padding(.trailing, 12)
+                    Toggle(isOn: $isAgreed) {
+                        Text("Saya menyetujui dengan mendaftarkan akun di Senikita")
+                            .font(AppFont.Nunito.footnoteSmall)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 14)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(confirmationPassword.isEmpty ? Color.gray.opacity(0.3) : (password == confirmationPassword ? Color("brick") : .red), lineWidth: 1)
-                    )
+                    .padding(.vertical)
+                    
+                    RegisterButton()
+                    
+                    Spacer()
                 }
-                .padding(.vertical)
-            }
-            .frame(height: 300)
-            
-            Button {
+                .padding(30)
                 
-            } label: {
-                Text("Daftar")
-                    .font(AppFont.Nunito.footnoteLarge)
-                    .bold()
-                    .frame(maxWidth: .infinity, minHeight: 50)
-                    .background(isFormValid ? Color("brick") : Color.gray.opacity(0.5))
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                NavigationLink("", destination: OTPInput(email: email), isActive: $isNavigatingToOTP)
+                    .hidden()
             }
-            .padding(.top)
-            .disabled(!isFormValid)
             
-            Spacer()
+            if authViewModel.isLoading {
+                Loading(opacity: 0.5)
+            }
+            
+            if showErrorPopup, let message = authViewModel.errorMessage {
+                AuthPopup(isShowing: $showErrorPopup, message: message) {
+                    showErrorPopup = false
+                }
+            }
         }
-        .padding(30)
         .navigationBarHidden(true)
     }
+    
+    private func RegisterButton() -> some View {
+        Button {
+            authViewModel.register(name: name, email: email, password: password) { success in
+                if success {
+                    isNavigatingToOTP = true
+                } else {
+                    showErrorPopup = true
+                }
+            }
+        } label: {
+            Text("Daftar")
+                .font(AppFont.Nunito.footnoteLarge)
+                .bold()
+                .frame(maxWidth: .infinity, minHeight: 50)
+                .background(isFormValid ? Color("brick") : Color.gray.opacity(0.5))
+                .foregroundColor(.white)
+                .cornerRadius(10)
+        }
+        .padding(.top)
+        .disabled(!isFormValid || !isAgreed)
+    }
 }
+

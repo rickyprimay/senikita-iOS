@@ -70,7 +70,3 @@ struct Home: View {
         .navigationBarHidden(true)
     }
 }
-
-#Preview {
-    Home()
-}
