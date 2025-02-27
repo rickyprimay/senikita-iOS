@@ -11,7 +11,10 @@ struct PasswordField: View {
     var label: String
     @Binding var text: String
     @Binding var isVisible: Bool
-    
+    @FocusState private var isFocused: Bool
+    var nextFocus: FocusState<Bool>.Binding?
+    var isLast: Bool
+
     var body: some View {
         VStack(alignment: .leading) {
             Text(label)
@@ -21,8 +24,18 @@ struct PasswordField: View {
             ZStack(alignment: .trailing) {
                 if isVisible {
                     TextField("Masukkan \(label)", text: $text)
+                        .focused($isFocused)
+                        .submitLabel(isLast ? .done : .next)
+                        .onSubmit {
+                            nextFocus?.wrappedValue = true
+                        }
                 } else {
                     SecureField("Masukkan \(label)", text: $text)
+                        .focused($isFocused)
+                        .submitLabel(isLast ? .done : .next)
+                        .onSubmit {
+                            nextFocus?.wrappedValue = true
+                        }
                 }
                 
                 Button(action: { isVisible.toggle() }) {

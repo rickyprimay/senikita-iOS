@@ -13,65 +13,87 @@ struct OTPInput: View {
     @State private var otp: [String] = Array(repeating: "", count: 6)
     @FocusState private var focusedIndex: Int?
     
-    @State private var countdown: Int = 0
-    @State private var isCountingDown = false
+    @State private var countdown: Int = 60
+    @State private var isCountingDown = true
     private let maxCountdown = 60
+    @State private var timer: Timer?
+    @State private var showErrorPopup = false
     
     @StateObject var authViewModel = AuthViewModel()
     var email: String
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Masukkan Kode OTP")
-                .font(AppFont.Nunito.titleMedium)
-                .bold()
-                .foregroundColor(.black)
-                .padding(.top, 60)
-            
-            Text("Silakan masukkan kode OTP yang telah dikirim ke nomor Anda.")
-                .font(AppFont.Nunito.bodyMedium)
-                .foregroundColor(.gray)
-                .padding(.bottom, 10)
-            
-            HStack(spacing: 12) {
-                ForEach(0..<6, id: \.self) { index in
-                    TextField("", text: $otp[index])
-                        .frame(width: 50, height: 50)
-                        .background(Color.white)
+        ZStack{
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Masukkan Kode OTP")
+                    .font(AppFont.Nunito.titleMedium)
+                    .bold()
+                    .foregroundColor(.black)
+                    .padding(.top, 60)
+                
+                Text("Silakan masukkan kode OTP yang telah dikirim ke nomor Anda.")
+                    .font(AppFont.Nunito.bodyMedium)
+                    .foregroundColor(.gray)
+                    .padding(.bottom, 10)
+                
+                HStack(spacing: 12) {
+                    ForEach(0..<6, id: \.self) { index in
+                        TextField("", text: $otp[index])
+                            .frame(width: 50, height: 50)
+                            .background(Color.white)
+                            .cornerRadius(10)
+                            .shadow(color: Color.gray.opacity(0.3), radius: 5, x: 0, y: 2)
+                            .multilineTextAlignment(.center)
+                            .keyboardType(.numberPad)
+                            .focused($focusedIndex, equals: index)
+                            .onChange(of: otp[index]) { newValue in
+                                handleInputChange(newValue, at: index)
+                            }
+                    }
+                }
+                .padding(.top, 10)
+                
+                HStack{
+                    Text("Otp tidak terkirim? ")
+                        .font(AppFont.Nunito.bodyMedium)
+                    Button(action: resendOTP) {
+                        Text(isCountingDown ? "Tunggu dalam \(formattedTime()) lagi" : "Kirim Ulang")
+                            .font(AppFont.Nunito.bodyMedium)
+                            .foregroundColor(Color("brick"))
+                    }
+                    .disabled(isCountingDown)
+                }
+                .padding(.top, 10)
+                
+                Button(action: {
+                    verifyOTP()
+                }) {
+                    Text("Verifikasi")
+                        .font(AppFont.Nunito.footnoteLarge)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color("brick"))
+                        .foregroundColor(.white)
                         .cornerRadius(10)
-                        .shadow(color: Color.gray.opacity(0.3), radius: 5, x: 0, y: 2)
-                        .multilineTextAlignment(.center)
-                        .keyboardType(.numberPad)
-                        .focused($focusedIndex, equals: index)
+                        .shadow(color: Color.gray.opacity(0.5), radius: 5, x: 0, y: 2)
+                }
+                .padding(.top, 10)
+                
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            
+            if authViewModel.isLoading {
+                Loading(opacity: 0.5)
+            }
+            
+            if showErrorPopup, let message = authViewModel.errorMessage {
+                AuthPopup(isShowing: $showErrorPopup, message: message) {
+                    showErrorPopup = false
                 }
             }
-            .padding(.top, 10)
             
-            Button(action: resendOTP) {
-                Text(isCountingDown ? "Tunggu dalam \(formattedTime()) lagi" : "Kirim Ulang")
-                    .font(AppFont.Nunito.bodyMedium)
-                    .foregroundColor(Color("brick"))
-                    .padding(.top, 10)
-            }
-            .disabled(isCountingDown)
-            
-            Button(action: {
-                print("OTP: \(otp.joined())")
-            }) {
-                Text("Verifikasi")
-                    .font(AppFont.Nunito.footnoteLarge)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(Color("brick"))
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .shadow(color: Color.gray.opacity(0.5), radius: 5, x: 0, y: 2)
-            }
-            .padding(.top, 10)
-            
-            Spacer()
         }
-        .padding(.horizontal, 20)
         .navigationBarTitle("Verifikasi OTP", displayMode: .inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -84,6 +106,9 @@ struct OTPInput: View {
                 }
                 .tint(Color("brick"))
             }
+        }
+        .onAppear {
+            startCountdown()
         }
     }
     
@@ -104,21 +129,55 @@ struct OTPInput: View {
     }
     
     private func resendOTP() {
+        startCountdown()
+        
+        authViewModel.resendOTP(email: email) { message in
+            DispatchQueue.main.async {
+                if let message = message {
+                    print("OTP Resent: \(message)")
+                } else {
+                    print("Failed to resend OTP")
+                }
+            }
+        }
+    }
+    
+    private func startCountdown() {
+        timer?.invalidate()
         countdown = maxCountdown
         isCountingDown = true
         
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if countdown > 0 {
-                countdown -= 1
-            } else {
-                timer.invalidate()
-                isCountingDown = false
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            DispatchQueue.main.async {
+                if countdown > 0 {
+                    countdown -= 1
+                } else {
+                    timer.invalidate()
+                    isCountingDown = false
+                }
             }
         }
-        authViewModel.resendOTP(email: email){ _ in
-            print("success")
+    }
+    
+    private func verifyOTP() {
+        let otpCode = otp.joined()
+        guard otpCode.count == 6 else {
+            print("OTP harus 6 digit")
+            return
+        }
+        
+        authViewModel.verifyOTP(email: email, otp: otpCode) { success, message in
+            DispatchQueue.main.async {
+                if success {
+                    print("✅ OTP berhasil diverifikasi!")
+                } else {
+                    showErrorPopup = true
+                    print("❌ OTP gagal diverifikasi: \(message ?? "Unknown error")")
+                }
+            }
         }
     }
+    
     
     private func formattedTime() -> String {
         let minutes = countdown / 60

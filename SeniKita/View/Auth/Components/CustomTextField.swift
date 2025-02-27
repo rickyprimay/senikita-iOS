@@ -13,6 +13,9 @@ struct CustomTextField: View {
     var placeholder: String
     var isSecure: Bool
     var keyboardType: UIKeyboardType = .default
+    @FocusState private var isFocused: Bool
+    var nextFocus: FocusState<Bool>.Binding?
+    var isLast: Bool
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -23,11 +26,21 @@ struct CustomTextField: View {
             if isSecure {
                 SecureField(placeholder, text: $text)
                     .textFieldStyle(CustomTextFieldStyle(isEmpty: text.isEmpty))
+                    .focused($isFocused)
+                    .submitLabel(isLast ? .done : .next)
+                    .onSubmit {
+                        nextFocus?.wrappedValue = true
+                    }
             } else {
                 TextField(placeholder, text: $text)
                     .textFieldStyle(CustomTextFieldStyle(isEmpty: text.isEmpty))
                     .keyboardType(keyboardType)
                     .autocapitalization(.none)
+                    .focused($isFocused)
+                    .submitLabel(isLast ? .done : .next)
+                    .onSubmit {
+                        nextFocus?.wrappedValue = true
+                    }
             }
         }
     }

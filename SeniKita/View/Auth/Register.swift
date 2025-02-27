@@ -21,7 +21,12 @@ struct Register: View {
     @State private var isNavigatingToOTP = false
     @State private var showErrorPopup = false
     @State private var isEmailValid: Bool = true
-    
+
+    @FocusState private var nameFocus: Bool
+    @FocusState private var emailFocus: Bool
+    @FocusState private var passwordFocus: Bool
+    @FocusState private var confirmationPasswordFocus: Bool
+
     var isFormValid: Bool {
         !name.isEmpty && !email.isEmpty && !password.isEmpty && password == confirmationPassword
     }
@@ -63,7 +68,11 @@ struct Register: View {
                         password: $password,
                         confirmationPassword: $confirmationPassword,
                         isPasswordVisible: $isPasswordVisible,
-                        isConfirmationPasswordVisible: $isConfirmationPasswordVisible
+                        isConfirmationPasswordVisible: $isConfirmationPasswordVisible,
+                        nameFocus: $nameFocus,
+                        emailFocus: $emailFocus,
+                        passwordFocus: $passwordFocus,
+                        confirmationPasswordFocus: $confirmationPasswordFocus
                     )
                     
                     Toggle(isOn: $isAgreed) {
@@ -117,4 +126,3 @@ struct Register: View {
         .disabled(!isFormValid || !isAgreed)
     }
 }
-
