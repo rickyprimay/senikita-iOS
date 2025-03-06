@@ -8,10 +8,12 @@
 import Foundation
 import Alamofire
 import SwiftUI
+import GoogleSignIn
+import GoogleSignInSwift
 
 class AuthViewModel: ObservableObject {
     
-    let baseUrl = "https://api.senikita.my.id/api/auth"
+    let baseUrl = "https://f71e-103-246-107-8.ngrok-free.app/api/auth"
     
     @Published var loginAlert = false
     @Published var isAuthenticated: Bool = false
@@ -21,6 +23,72 @@ class AuthViewModel: ObservableObject {
     init() {
         checkAuthentication()
     }
+    
+    func authenticateWithGoogle() {
+        guard let rootViewController = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .flatMap({ $0.windows })
+            .first(where: { $0.isKeyWindow })?.rootViewController else {
+            print("❌ Root view controller tidak ditemukan")
+            return
+        }
+        
+        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { result, error in
+            if let error = error {
+                print("❌ Google Sign-In gagal: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let user = result?.user, let idToken = user.idToken?.tokenString else {
+                print("❌ ID Token tidak ditemukan")
+                return
+            }
+            
+            print("✅ Google Sign-In berhasil, ID Token: \(idToken)")
+            
+            self.verifyGoogleToken(idToken)
+        }
+    }
+    
+    func verifyGoogleToken(_ idToken: String) {
+        let url = "\(baseUrl)/verify-google"
+        let parameters: [String: String] = ["id_token": idToken]
+
+        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    if let jsonString = String(data: data, encoding: .utf8) {
+                        print("🔍 Raw JSON Response: \(jsonString)")
+                    } else {
+                        print("⚠️ Data tidak dapat dikonversi ke String")
+                    }
+
+                    do {
+                        let decodedResponse = try JSONDecoder().decode(Auth.self, from: data)
+                        
+                        if let token = decodedResponse.data.token {
+                            self.saveToken(token)
+                            
+                            DispatchQueue.main.async {
+                                self.isAuthenticated = true
+                                self.navigateAfterAuth(toRedirect: RootView())
+                            }
+                            
+                            print("✅ Google login sukses, token disimpan")
+                        } else {
+                            print("❌ Token tidak ditemukan di response")
+                        }
+                    } catch {
+                        print("❌ JSON Decoding Error: \(error.localizedDescription)")
+                    }
+
+                case .failure(let error):
+                    print("❌ Request failed: \(error.localizedDescription)")
+                }
+            }
+    }
+    
     
     func login(email: String, password: String, completion: @escaping (Bool, String?) -> Void) {
         isLoading = true
@@ -41,7 +109,7 @@ class AuthViewModel: ObservableObject {
                     do {
                         let authResponse = try JSONDecoder().decode(Auth.self, from: data)
                         
-                        if authResponse.code == 200, let token = authResponse.user.token {
+                        if authResponse.code == 200, let token = authResponse.data.token {
                             self.saveToken(token)
                             
                             DispatchQueue.main.async {
@@ -149,7 +217,7 @@ class AuthViewModel: ObservableObject {
                     if (200..<300).contains(statusCode) {
                         print("✅ OTP verification successful: \(result.message)")
                         
-                        if let token = result.user.token {
+                        if let token = result.data.token {
                             self.saveToken(token)
                             DispatchQueue.main.async {
                                 self.isAuthenticated = true

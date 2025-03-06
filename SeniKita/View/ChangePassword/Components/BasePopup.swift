@@ -1,16 +1,19 @@
 //
-//  AuthPopup.swift
+//  BasePopup.swift
 //  SeniKita
 //
-//  Created by Ricky Primayuda Putra on 26/02/25.
+//  Created by Ricky Primayuda Putra on 04/03/25.
 //
 
 import SwiftUI
 
-struct AuthPopup: View {
+struct BasePopup: View {
     @Binding var isShowing: Bool
     var message: String
     var onConfirm: () -> Void
+    var isSuccess: Bool = false
+    
+    @State private var progress: CGFloat = 1.0
     
     var body: some View {
         ZStack {
@@ -22,11 +25,11 @@ struct AuthPopup: View {
                 }
             
             VStack(spacing: 20) {
-                Image(systemName: "exclamationmark.triangle.fill")
+                Image(systemName: isSuccess ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 50, height: 50)
-                    .foregroundColor(.yellow)
+                    .foregroundColor(isSuccess ? .green : .yellow)
                 
                 Text(message)
                     .font(AppFont.Crimson.bodyMedium)
@@ -42,6 +45,10 @@ struct AuthPopup: View {
                         .cornerRadius(10)
                 }
                 .padding(.horizontal, 20)
+                
+                ProgressBar(progress: progress, color: Color("brick"))
+                    .frame(height: 5)
+                    .cornerRadius(2.5)
             }
             .padding()
             .background(Color.white)
@@ -49,6 +56,22 @@ struct AuthPopup: View {
             .shadow(radius: 10)
             .frame(maxWidth: 300)
             .transition(.scale)
+            .onAppear {
+                startAutoDismiss()
+            }
+        }
+    }
+    
+    private func startAutoDismiss() {
+        progress = 1.0
+        withAnimation(.linear(duration: 5)) {
+            progress = 0.0
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            if isShowing {
+                isShowing = false
+                onConfirm()
+            }
         }
     }
 }

@@ -2,6 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>GIDClientID</key>
+<string>903822973379-i4lp42skdeb460uo3od4tvgsc44dudhh.apps.googleusercontent.com</string>
+
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.googleusercontent.apps.903822973379-i4lp42skdeb460uo3od4tvgsc44dudhh</string>
+        </array>
+    </dict>
+</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Raleway-Regular.ttf</string>

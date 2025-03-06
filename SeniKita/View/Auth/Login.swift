@@ -57,6 +57,7 @@ struct Login: View {
                                 placeholder: "Masukkan Email",
                                 isSecure: false,
                                 keyboardType: .emailAddress,
+                                fontType: .nunito,
                                 nextFocus: $passwordFocus,
                                 isLast: false
                             )
@@ -76,7 +77,8 @@ struct Login: View {
                                 text: $password,
                                 isVisible: $isPasswordVisible,
                                 nextFocus: nil,
-                                isLast: true
+                                isLast: true,
+                                fontType: .nunito
                             )
                             .focused($passwordFocus)
                         }

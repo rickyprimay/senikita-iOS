@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		EA545CBE2D6065FA004AED30 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = EA545CBD2D6065FA004AED30 /* SDWebImageSwiftUI */; };
 		EAC586B62D61C6F400F856FE /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = EAC586B52D61C6F400F856FE /* Alamofire */; };
+		EACA78AB2D79857B00CBC082 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = EACA78AA2D79857B00CBC082 /* GoogleSignIn */; };
+		EACA78AD2D79857B00CBC082 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = EACA78AC2D79857B00CBC082 /* GoogleSignInSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -56,6 +58,8 @@
 			files = (
 				EA545CBE2D6065FA004AED30 /* SDWebImageSwiftUI in Frameworks */,
 				EAC586B62D61C6F400F856FE /* Alamofire in Frameworks */,
+				EACA78AB2D79857B00CBC082 /* GoogleSignIn in Frameworks */,
+				EACA78AD2D79857B00CBC082 /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +113,8 @@
 			packageProductDependencies = (
 				EA545CBD2D6065FA004AED30 /* SDWebImageSwiftUI */,
 				EAC586B52D61C6F400F856FE /* Alamofire */,
+				EACA78AA2D79857B00CBC082 /* GoogleSignIn */,
+				EACA78AC2D79857B00CBC082 /* GoogleSignInSwift */,
 			);
 			productName = SeniKita;
 			productReference = EAD89E762D6056BA006A7401 /* SeniKita.app */;
@@ -141,6 +147,7 @@
 			packageReferences = (
 				EA545CBC2D6065FA004AED30 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 				EAC586B42D61C6F400F856FE /* XCRemoteSwiftPackageReference "Alamofire" */,
+				EACA78A92D79857B00CBC082 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EAD89E772D6056BA006A7401 /* Products */;
@@ -306,6 +313,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SeniKita/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Tindakan ini memerlukan akses ke kamera Anda untuk mengambil foto secara langsung. Mohon izinkan akses kamera pada perangkat Anda untuk melanjutkan.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -337,6 +345,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SeniKita/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Tindakan ini memerlukan akses ke kamera Anda untuk mengambil foto secara langsung. Mohon izinkan akses kamera pada perangkat Anda untuk melanjutkan.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -393,6 +402,14 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		EACA78A92D79857B00CBC082 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -405,6 +422,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EAC586B42D61C6F400F856FE /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		EACA78AA2D79857B00CBC082 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EACA78A92D79857B00CBC082 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		EACA78AC2D79857B00CBC082 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EACA78A92D79857B00CBC082 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

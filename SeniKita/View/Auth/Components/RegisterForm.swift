@@ -34,6 +34,7 @@ struct RegisterForm: View {
                 text: $name,
                 placeholder: "Masukkan Nama Lengkap",
                 isSecure: false,
+                fontType: .nunito,
                 nextFocus: $emailFocus,
                 isLast: false
             )
@@ -45,6 +46,7 @@ struct RegisterForm: View {
                 placeholder: "Masukkan Email",
                 isSecure: false,
                 keyboardType: .emailAddress,
+                fontType: .nunito,
                 nextFocus: $passwordFocus,
                 isLast: false
             )
@@ -64,7 +66,8 @@ struct RegisterForm: View {
                 text: $password,
                 isVisible: $isPasswordVisible,
                 nextFocus: $confirmationPasswordFocus,
-                isLast: false
+                isLast: false,
+                fontType: .nunito
             )
             .focused($passwordFocus)
             
@@ -73,7 +76,8 @@ struct RegisterForm: View {
                 text: $confirmationPassword,
                 isVisible: $isConfirmationPasswordVisible,
                 nextFocus: nil,
-                isLast: true
+                isLast: true,
+                fontType: .nunito
             )
             .focused($confirmationPasswordFocus)
 

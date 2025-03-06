@@ -5,138 +5,135 @@
 //  Created by Ricky Primayuda Putra on 26/02/25.
 //
 
-
 import SwiftUI
 
 struct ChangePassword: View {
+    
     @State private var currentPassword: String = ""
     @State private var newPassword: String = ""
     @State private var confirmPassword: String = ""
     @State private var isCurrentPasswordVisible: Bool = false
     @State private var isNewPasswordVisible: Bool = false
     @State private var isConfirmPasswordVisible: Bool = false
-    @State private var errorMessage: String?
+    @State private var showErrorPopup: Bool = false
+    @State private var errorMessage: String = ""
+    @State private var showSuccessPopup: Bool = false
     
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Ubah Password")
-                .font(.title)
-                .fontWeight(.bold)
-                .padding(.top, 20)
-            
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Password Saat Ini")
-                    .font(AppFont.Crimson.footnoteLarge)
-                    .fontWeight(.semibold)
-                
-                ZStack(alignment: .trailing) {
-                    if isCurrentPasswordVisible {
-                        TextField("Masukkan Password Saat Ini", text: $currentPassword)
-                    } else {
-                        SecureField("Masukkan Password Saat Ini", text: $currentPassword)
-                    }
-                    
-                    Button(action: {
-                        isCurrentPasswordVisible.toggle()
-                    }) {
-                        Image(systemName: isCurrentPasswordVisible ? "eye" : "eye.slash")
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.trailing, 12)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 14)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(currentPassword.isEmpty ? Color.gray.opacity(0.3) : Color("brick"), lineWidth: 1)
-                )
-                
-                Text("Password Baru")
-                    .font(AppFont.Crimson.footnoteLarge)
-                    .fontWeight(.semibold)
-                
-                ZStack(alignment: .trailing) {
-                    if isNewPasswordVisible {
-                        TextField("Masukkan Password Baru", text: $newPassword)
-                    } else {
-                        SecureField("Masukkan Password Baru", text: $newPassword)
-                    }
-                    
-                    Button(action: {
-                        isNewPasswordVisible.toggle()
-                    }) {
-                        Image(systemName: isNewPasswordVisible ? "eye" : "eye.slash")
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.trailing, 12)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 14)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(newPassword.isEmpty ? Color.gray.opacity(0.3) : Color("brick"), lineWidth: 1)
-                )
-                
-                Text("Konfirmasi Password Baru")
-                    .font(AppFont.Crimson.footnoteLarge)
-                    .fontWeight(.semibold)
-                
-                ZStack(alignment: .trailing) {
-                    if isConfirmPasswordVisible {
-                        TextField("Masukkan Konfirmasi Password", text: $confirmPassword)
-                    } else {
-                        SecureField("Masukkan Konfirmasi Password", text: $confirmPassword)
-                    }
-                    
-                    Button(action: {
-                        isConfirmPasswordVisible.toggle()
-                    }) {
-                        Image(systemName: isConfirmPasswordVisible ? "eye" : "eye.slash")
-                            .foregroundColor(.gray)
-                    }
-                    .padding(.trailing, 12)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 14)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(confirmPassword.isEmpty ? Color.gray.opacity(0.3) : Color("brick"), lineWidth: 1)
-                )
-            }
-            .padding(.horizontal)
-            
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .foregroundColor(.red)
-                    .font(.caption)
-            }
-            
-            Button(action: changePassword) {
-                Text("Simpan")
-                    .font(AppFont.Crimson.footnoteLarge)
-                    .bold()
-                    .frame(maxWidth: .infinity, minHeight: 50)
-                    .background(currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty ? Color.gray.opacity(0.5) : Color("brick"))
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
-            .padding(.horizontal)
-            .disabled(currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty)
-        }
-        .padding()
+    @ObservedObject private var profileViewModel: ProfileViewModel
+    
+    @Environment(\.presentationMode) var presentationMode
+    
+    init(profileViewModel: ProfileViewModel) {
+        self.profileViewModel = profileViewModel
     }
     
+    private var isFormValid: Bool {
+        return !currentPassword.isEmpty &&
+               newPassword.count >= 8 &&
+               newPassword == confirmPassword
+    }
+    
+    var body: some View {
+        NavigationView {
+            ZStack {
+                VStack(spacing: 20) {
+                     
+                    VStack(alignment: .leading, spacing: 16) {
+                        PasswordField(
+                            label: "Password Saat Ini",
+                            text: $currentPassword,
+                            isVisible: $isCurrentPasswordVisible,
+                            isLast: false,
+                            fontType: .crimson
+                        )
+                        PasswordField(
+                            label: "Password Baru",
+                            text: $newPassword,
+                            isVisible: $isNewPasswordVisible,
+                            isLast: false,
+                            fontType: .crimson
+                        )
+                        PasswordField(
+                            label: "Konfirmasi Password Baru",
+                            text: $confirmPassword,
+                            isVisible: $isConfirmPasswordVisible,
+                            isLast: true,
+                            fontType: .crimson
+                        )
+                    }
+                    .padding(.horizontal)
+                    
+                    Button(action: changePassword) {
+                        Text(profileViewModel.isLoading ? "Loading..." : "Simpan")
+                            .font(AppFont.Crimson.footnoteLarge)
+                            .bold()
+                            .frame(maxWidth: .infinity, minHeight: 50)
+                            .background(isFormValid ? Color("brick") : Color.gray.opacity(0.5))
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
+                    .padding(.horizontal)
+                    .disabled(!isFormValid || profileViewModel.isLoading)
+                    
+                    Spacer()
+                }
+                .padding()
+                .background(Color.white.ignoresSafeArea())
+
+                if showErrorPopup {
+                    BasePopup(isShowing: $showErrorPopup, message: errorMessage, onConfirm: { showErrorPopup = false })
+                        .transition(.opacity)
+                        .zIndex(2)
+                }
+
+                if showSuccessPopup {
+                    BasePopup(isShowing: $showSuccessPopup, message: "Password berhasil diperbarui!", onConfirm: {
+                        showSuccessPopup = false
+                        presentationMode.wrappedValue.dismiss()
+                    }, isSuccess: true)
+                    .transition(.opacity)
+                    .zIndex(3)
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 18, weight: .bold))
+                }
+                .tint(Color("brick"))
+            }
+            ToolbarItem(placement: .principal) {
+                Text("Ubah Password")
+                    .font(AppFont.Crimson.bodyLarge)
+                    .bold()
+                    .foregroundColor(Color("brick"))
+            }
+        }
+    }
+
     private func changePassword() {
-        guard !currentPassword.isEmpty, !newPassword.isEmpty, !confirmPassword.isEmpty else {
-            errorMessage = "Semua kolom harus diisi."
+        guard isFormValid else {
+            showError("Password harus memiliki minimal 8 karakter dan kedua password baru harus sama.")
             return
         }
         
-        guard newPassword == confirmPassword else {
-            errorMessage = "Password baru dan konfirmasi password tidak cocok."
-            return
+        profileViewModel.updatePassword(oldPassword: currentPassword, password: newPassword) { success, message in
+            if success {
+                errorMessage = message ?? "Password berhasil diperbarui."
+                showSuccessPopup = true
+            } else {
+                showError(message ?? "Terjadi kesalahan, silakan coba lagi.")
+            }
         }
-        
-        print("Password berhasil diubah")
+    }
+
+    private func showError(_ message: String) {
+        errorMessage = message
+        showErrorPopup = true
     }
 }

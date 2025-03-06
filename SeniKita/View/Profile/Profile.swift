@@ -17,23 +17,33 @@ struct Profile: View {
         ZStack {
             VStack(spacing: 20) {
                 VStack {
-                    Image(systemName: "person.fill")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 50, height: 50)
-                        .padding()
-                        .clipShape(Circle())
-                        .overlay(
-                            Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2)
-                        )
+                    if let profilePicture = profileViewModel.profile?.profilePicture,
+                       let url = URL(string: profilePicture) {
+                        WebImage(url: url)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 50, height: 50)
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2)
+                            )
+                    } else {
+                        Image(systemName: "person.fill")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 50, height: 50)
+                            .padding()
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle().stroke(Color.gray.opacity(0.3), lineWidth: 2)
+                            )
+                    }
                     
                     Text(profileViewModel.profile?.name ?? "Guest")
                         .font(AppFont.Crimson.bodyMedium)
                         .fontWeight(.bold)
                     
-                    Button(action: {
-                        
-                    }) {
+                    NavigationLink(destination: EditProfile(profileViewModel: profileViewModel)) {
                         Text("Edit Profile")
                             .font(AppFont.Crimson.bodyMedium)
                             .foregroundColor(.white)
@@ -49,7 +59,7 @@ struct Profile: View {
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack {
-                        NavigationLink(destination: ChangePassword()){
+                        NavigationLink(destination: ChangePassword(profileViewModel: profileViewModel)){
                             ProfileRow(icon: "person.badge.key", title: "Ubah Password", color: Color("brick"))
                         }
                         ProfileRow(icon: "gearshape", title: "Pengaturan", color: Color("brick"))
@@ -84,6 +94,6 @@ struct Profile: View {
             }
             
         }
-//        .animation(.easeInOut, value: showLogoutAlert)
+        //        .animation(.easeInOut, value: showLogoutAlert)
     }
 }

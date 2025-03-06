@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct GoogleButton: View {
+    @ObservedObject var authViewModel = AuthViewModel()
+    
     var body: some View {
         Button {
-            
+            authViewModel.authenticateWithGoogle()
         } label: {
             HStack {
                 Image("google-logo")
@@ -20,7 +22,7 @@ struct GoogleButton: View {
                     .font(AppFont.Nunito.footnoteLarge)
                     .bold()
             }
-            .foregroundStyle(.black)
+            .foregroundColor(.black)
             .frame(maxWidth: .infinity, minHeight: 50)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
