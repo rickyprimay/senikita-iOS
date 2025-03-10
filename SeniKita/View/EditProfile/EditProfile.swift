@@ -43,7 +43,7 @@ struct EditProfile: View {
     
     init(profileViewModel: ProfileViewModel) {
         self.profileViewModel = profileViewModel
-        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color("brick"))
+        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color("tertiary"))
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
         UISegmentedControl.appearance().backgroundColor = UIColor(Color("tertiary"))
@@ -88,7 +88,7 @@ struct EditProfile: View {
                         }
                         .padding()
                         .font(AppFont.Crimson.bodyLarge)
-                        .background(Color("brick"))
+                        .background(LinearGradient(gradient: Gradient(colors: [Color("primary"), Color("tertiary")]), startPoint: .leading, endPoint: .trailing))
                         .cornerRadius(8)
                         .foregroundColor(.white)
                         .confirmationDialog("Pilih Sumber Gambar", isPresented: $showActionSheet) {
@@ -161,7 +161,7 @@ struct EditProfile: View {
                                     .datePickerStyle(WheelDatePickerStyle())
                                     .labelsHidden()
                                     .overlay(RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color("brick"), lineWidth: 2))
+                                        .stroke(Color("tertiary"), lineWidth: 2))
                                 
                                 Button("Submit") {
                                     withAnimation {
@@ -170,7 +170,7 @@ struct EditProfile: View {
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color("brick"))
+                                .background(LinearGradient(gradient: Gradient(colors: [Color("primary"), Color("tertiary")]), startPoint: .leading, endPoint: .trailing))
                                 .cornerRadius(8)
                                 .foregroundColor(.white)
                             }
@@ -224,7 +224,7 @@ struct EditProfile: View {
                             .font(AppFont.Crimson.footnoteLarge)
                             .bold()
                             .frame(maxWidth: .infinity, minHeight: 50)
-                            .background(Color("brick"))
+                            .background(LinearGradient(gradient: Gradient(colors: [Color("primary"), Color("tertiary")]), startPoint: .leading, endPoint: .trailing))
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
@@ -282,14 +282,17 @@ struct EditProfile: View {
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 18, weight: .bold))
+                            .frame(width: 40, height: 40)
+                            .background(Color.brown.opacity(0.3))
+                            .clipShape(Circle())
                     }
-                    .tint(Color("brick"))
+                    .tint(Color("tertiary"))
                 }
                 ToolbarItem(placement: .principal) {
                     Text("Edit Profile")
                         .font(AppFont.Crimson.bodyLarge)
                         .bold()
-                        .foregroundColor(Color("brick"))
+                        .foregroundColor(Color("tertiary"))
                 }
             }
             

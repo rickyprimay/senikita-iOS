@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SDWebImageSwiftUI
 
 struct Home: View {
     
@@ -20,46 +19,60 @@ struct Home: View {
                 Header()
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading) {
-
-                        HStack {
-                            Text("Produk Kesenian")
-                                .font(AppFont.Raleway.titleMedium)
-                                .foregroundStyle(.black)
-                                .padding(.horizontal, 15)
+                    VStack(alignment: .leading, spacing: 20) {
+                        
+                        Banner()
+                        
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text("Produk Kesenian")
+                                    .font(AppFont.Raleway.titleMedium)
+                                    .foregroundStyle(.black)
+                                    .padding(.horizontal, 15)
+                                
+                                Spacer()
+                            }
                             
-                            Spacer()
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 15) {
+                                    ForEach(homeViewModel.products) { product in
+                                        NavigationLink(
+                                            destination: ProductDetail(idProduct: product.id, homeViewModel: homeViewModel),
+                                            label: {
+                                                CardProduct(product: product)
+                                            }
+                                        )
+                                    }
+                                }
+                                .padding(.horizontal, 15)
+                            }
                         }
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 15) {
-                                ForEach(homeViewModel.products) { product in
-                                    CardProduct(product: product)
-                                }
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text("Jasa Kesenian")
+                                    .font(AppFont.Raleway.titleMedium)
+                                    .foregroundStyle(.black)
+                                    .padding(.horizontal, 15)
+                                
+                                Spacer()
                             }
-                            .padding(.horizontal, 15)
-                        }
-                    }
-
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text("Jasa Kesenian")
-                                .font(AppFont.Raleway.titleMedium)
-                                .foregroundStyle(.black)
-                                .padding(.horizontal, 15)
                             
-                            Spacer()
-                        }
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 15) {
-                                ForEach(homeViewModel.services) { service in
-                                    CardService(service: service)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 15) {
+                                    ForEach(homeViewModel.services) { service in
+                                        CardService(service: service)
+                                    }
                                 }
+                                .padding(.horizontal, 15)
                             }
-                            .padding(.horizontal, 15)
                         }
+                        .padding(.bottom, 30)
                     }
+                }
+                .refreshable {
+                    homeViewModel.fetchProducts(isLoad: false)
+                    homeViewModel.fetchServices(isLoad: false)
                 }
             }
             

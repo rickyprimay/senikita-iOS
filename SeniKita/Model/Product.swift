@@ -33,4 +33,5 @@ struct ProductData: Codable, Identifiable {
     let shop: Shop?
     let created_at: String?
     let updated_at: String?
+    let ratings: [Rating]?
 }

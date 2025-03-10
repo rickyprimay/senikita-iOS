@@ -22,11 +22,13 @@ class HomeViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     
     init() {
-        fetchProducts()
+        fetchProducts(isLoad: true)
     }
     
-    func fetchProducts() {
-        isLoading = true
+    func fetchProducts(isLoad: Bool) {
+        if isLoad{
+            isLoading = true
+        }
         guard let url = URL(string: baseUrl + "products") else {
             errorMessage = "Invalid URL"
             isLoading = false
@@ -45,7 +47,7 @@ class HomeViewModel: ObservableObject {
                         self?.shops = productResponse.data.data.compactMap { $0.shop }
                         self?.cities = self?.shops.compactMap { $0.city } ?? []
                         self?.provinces = self?.cities.compactMap { $0.province } ?? []
-                        self?.fetchServices()
+                        self?.fetchServices(isLoad: false)
                     case .failure(let error):
                         self?.errorMessage = "Error fetching products: \(error.localizedDescription)"
                         print("Error fetching products: \(error.localizedDescription)")
@@ -54,8 +56,10 @@ class HomeViewModel: ObservableObject {
             }
     }
     
-    func fetchServices() {
-        isLoading = true
+    func fetchServices(isLoad: Bool) {
+        if isLoad{
+            isLoading = true
+        }
         guard let url = URL(string: baseUrl + "service") else {
             errorMessage = "Invalid URL"
             isLoading = false

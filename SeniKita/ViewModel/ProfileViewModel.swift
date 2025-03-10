@@ -25,7 +25,6 @@ class ProfileViewModel: ObservableObject {
     func getProfile() {
         isLoading = true
         guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
-            print("No auth token found")
             isLoading = false
             return
         }
@@ -44,17 +43,10 @@ class ProfileViewModel: ObservableObject {
                 case .success(let data):
                     do {
                         let profileResponse = try JSONDecoder().decode(Auth.self, from: data)
-                        
-                        Task { @MainActor in
-                            self?.profile = profileResponse.data
-                        }
-                        
-                    } catch {
-                        print("JSON decoding failed: \(error)")
-                    }
-                    
-                case .failure(let error):
-                    print("Request failed: \(error.localizedDescription)")
+                        Task { @MainActor in self?.profile = profileResponse.data }
+                    } catch {}
+                case .failure(_):
+                    break
                 }
             }
     }
@@ -64,7 +56,6 @@ class ProfileViewModel: ObservableObject {
         errorMessage = nil
         
         guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
-            print("No auth token found")
             Task { @MainActor in self.isLoading = false }
             completion(false, "No authentication token found")
             return
@@ -81,9 +72,6 @@ class ProfileViewModel: ObservableObject {
             "Accept": "application/json"
         ]
         
-        print("📤 Sending password update request to: \(url)")
-        print("📦 Request parameters: \(parameters)")
-        
         AF.request(url, method: .put, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
             .responseDecodable(of: PasswordUpdateResponse.self) { response in
                 Task { @MainActor in self.isLoading = false }
@@ -93,26 +81,13 @@ class ProfileViewModel: ObservableObject {
                 switch response.result {
                 case .success(let result):
                     if (200..<300).contains(statusCode) {
-                        print("✅ Password update successful: \(result.message)")
                         completion(true, result.message)
                     } else {
-                        print("❌ Password update failed: \(result.message) | Status: \(statusCode)")
                         Task { @MainActor in self.errorMessage = result.message }
                         completion(false, result.message)
                     }
-                case .failure(let error):
-                    if let data = response.data,
-                       let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                       let message = jsonObject["message"] as? String {
-                        print("🚨 Password update request failed: \(error.localizedDescription)")
-                        print("📜 Server response: \(jsonObject)")
-                        Task { @MainActor in self.errorMessage = message }
-                        completion(false, message)
-                    } else {
-                        print("🚨 Password update request failed: \(error.localizedDescription)")
-                        Task { @MainActor in self.errorMessage = "An error occurred, please try again." }
-                        completion(false, "An error occurred, please try again.")
-                    }
+                case .failure(_):
+                    completion(false, "An error occurred, please try again.")
                 }
             }
     }
@@ -131,7 +106,6 @@ class ProfileViewModel: ObservableObject {
         errorMessage = nil
         
         guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
-            print("🚨 No auth token found")
             Task { @MainActor in self.isLoading = false }
             completion(false, "No authentication token found")
             return
@@ -147,13 +121,11 @@ class ProfileViewModel: ObservableObject {
         if let birthDate = birthDate {
             let formattedDate = formatDateToYYYYMMDD(birthDate)
             parameters["birth_date"] = formattedDate
-            print("📆 Birth date formatted: \(formattedDate)")
         }
         
         if let birthLocation = birthLocation { parameters["birth_location"] = birthLocation }
         if let gender = gender {
-            let genderValue = (gender == "Laki-laki") ? "male" : "female"
-            parameters["gender"] = genderValue
+            parameters["gender"] = (gender == "Laki-laki") ? "male" : "female"
         }
         parameters["_method"] = "PUT"
         
@@ -161,8 +133,6 @@ class ProfileViewModel: ObservableObject {
             "Authorization": "Bearer \(token)",
             "Accept": "application/json"
         ]
-        
-        print("📤 Sending profile update request to: \(url)")
         
         AF.upload(multipartFormData: { multipartFormData in
             for (key, value) in parameters {
@@ -173,9 +143,6 @@ class ProfileViewModel: ObservableObject {
             
             if let profilePicture = profilePicture, let compressedImage = self.compressImage(profilePicture) {
                 multipartFormData.append(compressedImage, withName: "profile_picture", fileName: "profile.jpg", mimeType: "image/jpeg")
-                print("🖼️ Profile picture compressed to \(compressedImage.count / 1024) KB")
-            } else {
-                print("⚠️ No valid profile picture provided or compression failed")
             }
         }, to: url, method: .post, headers: headers)
         .responseData { response in
@@ -183,50 +150,28 @@ class ProfileViewModel: ObservableObject {
             
             let statusCode = response.response?.statusCode ?? 0
             
-            print("📡 Response received - Status Code: \(statusCode)")
-            
             switch response.result {
             case .success(let data):
-                if let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    print("📜 Full Server Response: \(jsonObject)")
-                }
-                
                 do {
                     let result = try JSONDecoder().decode(Auth.self, from: data)
                     if (200..<300).contains(statusCode) {
-                        print("✅ Profile update successful: \(result.message)")
                         Task { @MainActor in
                             self.profile = result.data
                             self.getProfile()
                         }
                         completion(true, result.message)
                     } else {
-                        print("❌ Profile update failed: \(result.message) | Status: \(statusCode)")
                         Task { @MainActor in self.errorMessage = result.message }
                         completion(false, result.message)
                     }
                 } catch {
-                    print("🚨 JSON Decoding Error: \(error)")
                     completion(false, "Failed to parse response")
                 }
-                
-            case .failure(let error):
-                if let data = response.data,
-                   let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    print("🚨 Request failed: \(error.localizedDescription)")
-                    print("📜 Server response: \(jsonObject)")
-                    let message = jsonObject["message"] as? String ?? "Unknown error"
-                    Task { @MainActor in self.errorMessage = message }
-                    completion(false, message)
-                } else {
-                    print("🚨 Request failed: \(error.localizedDescription)")
-                    Task { @MainActor in self.errorMessage = "An error occurred, please try again." }
-                    completion(false, "An error occurred, please try again.")
-                }
+            case .failure(_):
+                completion(false, "An error occurred, please try again.")
             }
         }
     }
-    
     
     private func formatDateToYYYYMMDD(_ dateString: String) -> String {
         let inputFormatter = DateFormatter()
@@ -240,7 +185,6 @@ class ProfileViewModel: ObservableObject {
         if let date = inputFormatter.date(from: dateString) {
             return outputFormatter.string(from: date)
         } else {
-            print("⚠️ Invalid date format: \(dateString)")
             return dateString
         }
     }
@@ -258,5 +202,4 @@ class ProfileViewModel: ObservableObject {
         
         return compressedData
     }
-    
 }

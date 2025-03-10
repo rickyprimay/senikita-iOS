@@ -29,15 +29,15 @@ struct ChangePassword: View {
     
     private var isFormValid: Bool {
         return !currentPassword.isEmpty &&
-               newPassword.count >= 8 &&
-               newPassword == confirmPassword
+        newPassword.count >= 8 &&
+        newPassword == confirmPassword
     }
     
     var body: some View {
         NavigationView {
             ZStack {
                 VStack(spacing: 20) {
-                     
+                    
                     VStack(alignment: .leading, spacing: 16) {
                         PasswordField(
                             label: "Password Saat Ini",
@@ -68,7 +68,14 @@ struct ChangePassword: View {
                             .font(AppFont.Crimson.footnoteLarge)
                             .bold()
                             .frame(maxWidth: .infinity, minHeight: 50)
-                            .background(isFormValid ? Color("brick") : Color.gray.opacity(0.5))
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color("primary"), Color("tertiary")]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                        
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
@@ -79,13 +86,13 @@ struct ChangePassword: View {
                 }
                 .padding()
                 .background(Color.white.ignoresSafeArea())
-
+                
                 if showErrorPopup {
                     BasePopup(isShowing: $showErrorPopup, message: errorMessage, onConfirm: { showErrorPopup = false })
                         .transition(.opacity)
                         .zIndex(2)
                 }
-
+                
                 if showSuccessPopup {
                     BasePopup(isShowing: $showSuccessPopup, message: "Password berhasil diperbarui!", onConfirm: {
                         showSuccessPopup = false
@@ -104,18 +111,21 @@ struct ChangePassword: View {
                 }) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 18, weight: .bold))
+                        .frame(width: 40, height: 40)
+                        .background(Color.brown.opacity(0.3))
+                        .clipShape(Circle())
                 }
-                .tint(Color("brick"))
+                .tint(Color("tertiary"))
             }
             ToolbarItem(placement: .principal) {
                 Text("Ubah Password")
                     .font(AppFont.Crimson.bodyLarge)
                     .bold()
-                    .foregroundColor(Color("brick"))
+                    .foregroundColor(Color("tertiary"))
             }
         }
     }
-
+    
     private func changePassword() {
         guard isFormValid else {
             showError("Password harus memiliki minimal 8 karakter dan kedua password baru harus sama.")
@@ -131,7 +141,7 @@ struct ChangePassword: View {
             }
         }
     }
-
+    
     private func showError(_ message: String) {
         errorMessage = message
         showErrorPopup = true

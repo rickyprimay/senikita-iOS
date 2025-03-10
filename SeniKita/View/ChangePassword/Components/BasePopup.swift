@@ -40,13 +40,13 @@ struct BasePopup: View {
                         .font(AppFont.Nunito.footnoteLarge)
                         .bold()
                         .frame(maxWidth: .infinity, minHeight: 40)
-                        .background(Color("brick"))
+                        .background(Color("tertiary"))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
                 .padding(.horizontal, 20)
                 
-                ProgressBar(progress: progress, color: Color("brick"))
+                ProgressBar(progress: progress, color: Color("tertiary"))
                     .frame(height: 5)
                     .cornerRadius(2.5)
             }

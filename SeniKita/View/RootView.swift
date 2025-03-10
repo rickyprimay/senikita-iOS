@@ -14,6 +14,9 @@ struct RootView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
+            
+            
+            
             TabView(selection: $selectedTab) {
                 Home()
                     .tag(0)
@@ -42,7 +45,7 @@ struct RootView: View {
                 .padding(6)
             }
             .frame(height: 70)
-            .background(Color("lightBrick").opacity(0.2))
+            .background(Color("tertiary"))
             .cornerRadius(35)
             .padding(.horizontal, 26)
         }
@@ -84,17 +87,17 @@ extension RootView {
             Image(systemName: imageName)
                 .resizable()
                 .renderingMode(.template)
-                .foregroundColor(isActive ? .white : .gray)
+                .foregroundColor(isActive ? .white : .black)
                 .frame(width: 20, height: 20)
             if isActive {
                 Text(title)
                     .font(.system(size: 14))
-                    .foregroundColor(isActive ? .white : .gray)
+                    .foregroundColor(isActive ? .white : .black)
             }
             Spacer()
         }
         .frame(width: isActive ? 160 : 60, height: 60)
-        .background(isActive ? Color("brick").opacity(0.4) : .clear)
+        .background(isActive ? Color.brown.opacity(0.6) : .clear)
         .cornerRadius(30)
     }
 }

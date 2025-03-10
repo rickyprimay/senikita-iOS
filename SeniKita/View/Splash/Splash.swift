@@ -15,6 +15,9 @@ struct Splash: View {
     @State private var rotation: Double = 0
     @State private var shimmerOffset: CGFloat = -200
     
+    @State private var scale: CGFloat = 0.5
+    @State private var opacity: Double = 0.0
+    
     var body: some View {
         if isActive {
             NavigationStack {
@@ -35,11 +38,8 @@ struct Splash: View {
                             .scaledToFit()
                             .frame(width: 100, height: 100)
                             .rotationEffect(.degrees(rotation))
-                            .onAppear {
-                                withAnimation(Animation.linear(duration: 3).repeatForever(autoreverses: false)) {
-                                    rotation = 360
-                                }
-                            }
+                            .scaleEffect(scale)
+                            .opacity(opacity)
                             .overlay(
                                 Rectangle()
                                     .fill(
@@ -59,12 +59,19 @@ struct Splash: View {
                         .font(AppFont.Crimson.headerLarge)
                         .foregroundStyle(Color("primary"))
                         .tracking(2)
+                        .scaleEffect(scale)
+                        .opacity(opacity)
                 }
             }
             .onAppear {
                 authViewModel.checkAuthentication()
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                withAnimation(.easeOut(duration: 2.0)) {
+                    scale = 1.0
+                    opacity = 1.0
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
                     isActive = true
                 }
             }

@@ -13,7 +13,7 @@ import GoogleSignInSwift
 
 class AuthViewModel: ObservableObject {
     
-    let baseUrl = "https://f71e-103-246-107-8.ngrok-free.app/api/auth"
+    let baseUrl = "https://api.senikita.my.id/api/auth"
     
     @Published var loginAlert = false
     @Published var isAuthenticated: Bool = false
@@ -25,45 +25,44 @@ class AuthViewModel: ObservableObject {
     }
     
     func authenticateWithGoogle() {
+        isLoading = true
         guard let rootViewController = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .flatMap({ $0.windows })
             .first(where: { $0.isKeyWindow })?.rootViewController else {
-            print("❌ Root view controller tidak ditemukan")
-            return
-        }
+                isLoading = false
+                return
+            }
         
         GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { result, error in
             if let error = error {
-                print("❌ Google Sign-In gagal: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                }
                 return
             }
             
             guard let user = result?.user, let idToken = user.idToken?.tokenString else {
-                print("❌ ID Token tidak ditemukan")
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                }
                 return
             }
-            
-            print("✅ Google Sign-In berhasil, ID Token: \(idToken)")
             
             self.verifyGoogleToken(idToken)
         }
     }
     
     func verifyGoogleToken(_ idToken: String) {
+        DispatchQueue.main.async { self.isLoading = true }
         let url = "\(baseUrl)/verify-google"
         let parameters: [String: String] = ["id_token": idToken]
 
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
             .responseData { response in
+                defer { DispatchQueue.main.async { self.isLoading = false } }
                 switch response.result {
                 case .success(let data):
-                    if let jsonString = String(data: data, encoding: .utf8) {
-                        print("🔍 Raw JSON Response: \(jsonString)")
-                    } else {
-                        print("⚠️ Data tidak dapat dikonversi ke String")
-                    }
-
                     do {
                         let decodedResponse = try JSONDecoder().decode(Auth.self, from: data)
                         
@@ -74,10 +73,6 @@ class AuthViewModel: ObservableObject {
                                 self.isAuthenticated = true
                                 self.navigateAfterAuth(toRedirect: RootView())
                             }
-                            
-                            print("✅ Google login sukses, token disimpan")
-                        } else {
-                            print("❌ Token tidak ditemukan di response")
                         }
                     } catch {
                         print("❌ JSON Decoding Error: \(error.localizedDescription)")
@@ -175,10 +170,8 @@ class AuthViewModel: ObservableObject {
                 switch response.result {
                 case .success(let result):
                     if (200..<300).contains(statusCode) {
-                        print("✅ Registration successful: \(result.message)")
                         completion(true)
                     } else {
-                        print("❌ Registration failed: \(result.message) | Status: \(statusCode)")
                         DispatchQueue.main.async {
                             self.errorMessage = result.message
                         }
@@ -204,9 +197,6 @@ class AuthViewModel: ObservableObject {
             "otp": otp
         ]
         
-        print("📤 Sending OTP verification request to: \(url)")
-        print("📦 Request parameters: \(parameters)")
-        
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
             .responseDecodable(of: Auth.self) { response in
                 defer { DispatchQueue.main.async { self.isLoading = false } }
@@ -215,7 +205,6 @@ class AuthViewModel: ObservableObject {
                 switch response.result {
                 case .success(let result):
                     if (200..<300).contains(statusCode) {
-                        print("✅ OTP verification successful: \(result.message)")
                         
                         if let token = result.data.token {
                             self.saveToken(token)
@@ -228,7 +217,6 @@ class AuthViewModel: ObservableObject {
                             completion(false, "No token received")
                         }
                     } else {
-                        print("❌ OTP verification failed: \(result.message) | Status: \(statusCode)")
                         DispatchQueue.main.async {
                             self.errorMessage = result.message
                         }
@@ -238,8 +226,6 @@ class AuthViewModel: ObservableObject {
                     if let data = response.data,
                        let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                        var message = jsonObject["message"] as? String {
-                        print("🚨 OTP verification request failed: \(error.localizedDescription)")
-                        print("📜 Server response: \(jsonObject)")
                         
                         if message == "Invalid OTP" {
                             message = "OTP salah, silahkan cek kembali"
@@ -250,8 +236,6 @@ class AuthViewModel: ObservableObject {
                         }
                         completion(false, message)
                     } else {
-                        print("🚨 OTP verification request failed: \(error.localizedDescription)")
-                        print("⚠️ No response body received.")
                         
                         DispatchQueue.main.async {
                             self.errorMessage = "An error occurred, please check your internet connection."
@@ -271,27 +255,20 @@ class AuthViewModel: ObservableObject {
             "email": email
         ]
         
-        print("📤 Sending OTP resend request to: \(url)")
-        print("📦 Request parameters: \(parameters)")
-        
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
             .responseDecodable(of: RegisterResponse.self) { response in
                 defer { DispatchQueue.main.async { self.isLoading = false } }
                 
                 let statusCode = response.response?.statusCode ?? 0
-                print("📥 Received OTP resend response with status code: \(statusCode)")
                 
                 switch response.result {
                 case .success(let result):
                     if (200..<300).contains(statusCode) {
-                        print("✅ OTP resent successfully: \(result.message)")
                         completion(result.message)
                     } else {
-                        print("❌ OTP resend failed: \(result.message) | Status: \(statusCode)")
                         completion("Failed to resend OTP, please try again later.")
                     }
                 case .failure(let error):
-                    print("🚨 OTP resend request failed: \(error.localizedDescription)")
                     completion("An error occurred, please check your internet connection.")
                 }
             }

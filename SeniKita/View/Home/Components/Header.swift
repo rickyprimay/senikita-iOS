@@ -6,66 +6,104 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct Header: View {
+    
+    @StateObject var profileViewModel = ProfileViewModel()
+    @State var search: String = ""
+    
     var body: some View {
         ZStack {
             Color("tertiary")
                 .clipShape(RoundedShape(corners: [.bottomLeft, .bottomRight], radius: 20))
                 .edgesIgnoringSafeArea(.top)
-
+            
             VStack(spacing: 10) {
-                HStack {
-                    Text("senikita")
-                        .font(AppFont.Crimson.headerLarge)
-                        .foregroundStyle(Color("primary"))
-                        .tracking(2)
-                        .padding(.horizontal)
-
-                    Spacer()
-
-                    ZStack {
-                        Button {
-                            
-                        } label: {
-                            Image(systemName: "heart")
-                                .font(.title)
-                                .foregroundColor(.black)
-                        }
-                        
-                        badgeView(count: 3)
+                HStack(alignment: .center) {
+                    
+                    if let profilePicture = profileViewModel.profile?.profilePicture,
+                       let url = URL(string: profilePicture) {
+                        WebImage(url: url)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
+                    } else {
+                        Image(systemName: "person.fill")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 40, height: 40)
+                            .background(Color.brown.opacity(0.3))
+                            .clipShape(Circle())
                     }
-                    .padding(.horizontal, 2)
-
-                    ZStack {
-                        Button {
-                            
-                        } label: {
-                            Image(systemName: "cart")
-                                .font(.title)
-                                .foregroundColor(.black)
-                        }
-                        
-                        badgeView(count: 5)
-                    }
-                    .padding(.trailing, 12)
-                    .padding(.leading, 4)
-                }
-                .padding(.vertical, 10)
-
-                HStack {
-                    Text("Welcome Ricky")
-                        .font(AppFont.Crimson.headerMedium)
-                        .foregroundStyle(Color("secondary"))
-
+                    
+                    Text("Halo, \(profileViewModel.profile?.name ?? "Guest")👋")
+                        .font(AppFont.Raleway.bodyMedium)
+                        .fontWeight(.bold)
+                        .foregroundColor(.black)
+                        .padding(.leading, 8)
+                    
                     Spacer()
-
+                    
                     Button {
                         
                     } label: {
+                        Image(systemName: "heart")
+                            .font(AppFont.Crimson.bodyMedium)
+                            .foregroundColor(.black)
+                            .frame(width: 40, height: 40)
+                            .background(Color.brown.opacity(0.3))
+                            .clipShape(Circle())
+                    }
+                    
+                    Button {
+                        
+                    } label: {
+                        Image(systemName: "cart")
+                            .font(AppFont.Crimson.bodyMedium)
+                            .foregroundColor(.black)
+                            .frame(width: 40, height: 40)
+                            .background(Color.brown.opacity(0.3))
+                            .clipShape(Circle())
+                    }
+                }
+                .padding(.horizontal, 15)
+                .frame(height: 50, alignment: .center)
+                
+                HStack {
+                    HStack {
                         Image(systemName: "magnifyingglass")
-                            .font(.title)
-                            .foregroundStyle(.black)
+                            .font(AppFont.Raleway.footnoteLarge)
+                            .foregroundColor(.black)
+                        
+                        ZStack(alignment: .leading) {
+                            if search.isEmpty {
+                                Text("Cari Produk atau Service")
+                                    .foregroundColor(.black.opacity(0.7))
+                                    .font(AppFont.Raleway.footnoteLarge)
+                                    .fontWeight(.bold)
+                            }
+                            
+                            TextField("", text: $search)
+                                .foregroundColor(.black)
+                                .font(AppFont.Raleway.footnoteLarge)
+                                .fontWeight(.bold)
+                        }
+                    }
+                    .padding(10)
+                    .background(Color.brown.opacity(0.3))
+                    .cornerRadius(20)
+                    
+                    Button {
+                        
+                    } label: {
+                        Image(systemName: "slider.horizontal.3")
+                            .font(AppFont.Crimson.bodyMedium)
+                            .foregroundColor(.black)
+                            .frame(width: 40, height: 40)
+                            .background(Color.brown.opacity(0.3))
+                            .clipShape(Circle())
                     }
                 }
                 .padding(.horizontal, 15)
@@ -73,18 +111,5 @@ struct Header: View {
             .padding(.bottom, 15)
         }
         .frame(height: 120)
-    }
-    
-    @ViewBuilder
-    private func badgeView(count: Int) -> some View {
-        if count > 0 {
-            Text("\(count)")
-                .font(.caption2)
-                .foregroundColor(.white)
-                .padding(6)
-                .background(Color.red)
-                .clipShape(Circle())
-                .offset(x: 10, y: -10)
-        }
     }
 }

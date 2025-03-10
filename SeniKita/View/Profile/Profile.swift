@@ -49,7 +49,7 @@ struct Profile: View {
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color("brick"))
+                            .background(Color("tertiary"))
                             .cornerRadius(8)
                     }
                     .padding(.horizontal, 30)
@@ -60,19 +60,19 @@ struct Profile: View {
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack {
                         NavigationLink(destination: ChangePassword(profileViewModel: profileViewModel)){
-                            ProfileRow(icon: "person.badge.key", title: "Ubah Password", color: Color("brick"))
+                            ProfileRow(icon: "person.badge.key", title: "Ubah Password", color: .black)
                         }
-                        ProfileRow(icon: "gearshape", title: "Pengaturan", color: Color("brick"))
-                        ProfileRow(icon: "cart", title: "Pembelian Anda", color: Color("brick"))
-                        ProfileRow(icon: "mappin.and.ellipse", title: "Alamat", color: Color("brick"))
-                        ProfileRow(icon: "newspaper", title: "Riwayat Pembelian", color: Color("brick"))
+                        ProfileRow(icon: "gearshape", title: "Pengaturan", color: .black)
+                        ProfileRow(icon: "cart", title: "Pembelian Anda", color: .black)
+                        ProfileRow(icon: "mappin.and.ellipse", title: "Alamat", color: .black)
+                        ProfileRow(icon: "newspaper", title: "Riwayat Pembelian", color: .black)
                     }
                     
                     Divider()
                     
                     VStack {
                         Button(action: {}) {
-                            ProfileRow(icon: "questionmark.circle", title: "Support & Bantuan", color: Color("brick"))
+                            ProfileRow(icon: "questionmark.circle", title: "Support & Bantuan", color: .black)
                         }
                         Button(action: {
                             showLogoutAlert = true
@@ -82,6 +82,9 @@ struct Profile: View {
                     }
                     
                     Spacer()
+                }
+                .refreshable {
+                    profileViewModel.getProfile()
                 }
             }
             .padding(.top, 30)
@@ -94,6 +97,5 @@ struct Profile: View {
             }
             
         }
-        //        .animation(.easeInOut, value: showLogoutAlert)
     }
 }
