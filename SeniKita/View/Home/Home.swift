@@ -61,7 +61,12 @@ struct Home: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 LazyHStack(spacing: 15) {
                                     ForEach(homeViewModel.services) { service in
-                                        CardService(service: service)
+                                        NavigationLink(
+                                            destination: ServiceDetail(idService: service.id, homeViewModel: homeViewModel),
+                                            label: {
+                                                CardService(service: service)
+                                            }
+                                        )
                                     }
                                 }
                                 .padding(.horizontal, 15)

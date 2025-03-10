@@ -13,7 +13,7 @@ class HomeViewModel: ObservableObject {
     let baseUrl = "https://api.senikita.my.id/api/"
     
     @Published var products: [ProductData] = []
-    @Published var services: [ServiceResult] = []
+    @Published var services: [ServiceData] = []
     @Published var categories: [Category] = []
     @Published var cities: [City] = []
     @Published var shops: [Shop] = []

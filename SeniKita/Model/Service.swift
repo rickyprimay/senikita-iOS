@@ -11,15 +11,15 @@ struct ServiceResponse: Codable {
     let status: String
     let code: Int
     let message: String
-    let data: ServiceData
+    let data: ServiceResult
 }
 
-struct ServiceData: Codable {
+struct ServiceResult: Codable {
     let current_page: Int
-    let data: [ServiceResult]
+    let data: [ServiceData]
 }
 
-struct ServiceResult: Codable, Identifiable {
+struct ServiceData: Codable, Identifiable {
     let id: Int
     let name: String?
     let price: Int?
