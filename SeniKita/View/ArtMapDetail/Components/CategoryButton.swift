@@ -14,16 +14,16 @@ struct CategoryButton: View {
     var body: some View {
         HStack {
             Text("\(icon) \(text)")
-                .font(AppFont.Crimson.bodyMedium)
+                .font(AppFont.Crimson.subtitle)
                 .foregroundColor(.black)
                 .padding(.vertical, 12)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 25)
-                        .fill(Color.white.opacity(0.2))
+                        .fill(Color.gray.opacity(0.2))
                         .overlay(
                             RoundedRectangle(cornerRadius: 25)
-                                .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                                .stroke(Color.gray.opacity(0.5), lineWidth: 1)
                         )
                 )
                 .padding(.horizontal, 20)

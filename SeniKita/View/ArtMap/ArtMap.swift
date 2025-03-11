@@ -145,12 +145,15 @@ struct ArtMap: View {
                         .padding(.trailing, 20)
                         .padding(.top, 20)
                     }
-                }
+                } 
             }
             
             if artMapViewModel.isLoading {
                 Loading(opacity: 1)
             }
+        }
+        .refreshable {
+            artMapViewModel.fetchArtMap()
         }
         .navigationBarHidden(true)
     }
