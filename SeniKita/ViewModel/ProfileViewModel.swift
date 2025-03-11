@@ -23,9 +23,10 @@ class ProfileViewModel: ObservableObject {
     }
     
     func getProfile() {
-        isLoading = true
+        DispatchQueue.main.async { self.isLoading = true }
+        
         guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
-            isLoading = false
+            DispatchQueue.main.async { self.isLoading = false }
             return
         }
         
@@ -35,28 +36,40 @@ class ProfileViewModel: ObservableObject {
             "Accept": "application/json"
         ]
         
-        AF.request(url, method: .get, headers: headers)
-            .validate(statusCode: 200..<300)
-            .responseData { [weak self] response in
-                Task { @MainActor in self?.isLoading = false }
-                switch response.result {
-                case .success(let data):
-                    do {
-                        let profileResponse = try JSONDecoder().decode(Auth.self, from: data)
-                        Task { @MainActor in self?.profile = profileResponse.data }
-                    } catch {}
-                case .failure(_):
-                    break
+        DispatchQueue.global(qos: .userInitiated).async {
+            AF.request(url, method: .get, headers: headers)
+                .validate(statusCode: 200..<300)
+                .responseData { [weak self] response in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async { self.isLoading = false }
+                    
+                    switch response.result {
+                    case .success(let data):
+                        do {
+                            let profileResponse = try JSONDecoder().decode(Auth.self, from: data)
+                            DispatchQueue.main.async {
+                                self.profile = profileResponse.data
+                            }
+                        } catch {
+                            DispatchQueue.main.async {
+                                self.errorMessage = "Failed to parse profile data"
+                            }
+                        }
+                    case .failure:
+                        DispatchQueue.main.async {
+                            self.errorMessage = "Failed to fetch profile"
+                        }
+                    }
                 }
-            }
+        }
     }
     
     func updatePassword(oldPassword: String, password: String, completion: @escaping (Bool, String?) -> Void) {
-        Task { @MainActor in self.isLoading = true }
+        DispatchQueue.main.async { self.isLoading = true }
         errorMessage = nil
         
         guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
-            Task { @MainActor in self.isLoading = false }
+            DispatchQueue.main.async { self.isLoading = false }
             completion(false, "No authentication token found")
             return
         }
@@ -72,24 +85,26 @@ class ProfileViewModel: ObservableObject {
             "Accept": "application/json"
         ]
         
-        AF.request(url, method: .put, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
-            .responseDecodable(of: PasswordUpdateResponse.self) { response in
-                Task { @MainActor in self.isLoading = false }
-                
-                let statusCode = response.response?.statusCode ?? 0
-                
-                switch response.result {
-                case .success(let result):
-                    if (200..<300).contains(statusCode) {
-                        completion(true, result.message)
-                    } else {
-                        Task { @MainActor in self.errorMessage = result.message }
-                        completion(false, result.message)
+        DispatchQueue.global(qos: .userInitiated).async {
+            AF.request(url, method: .put, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
+                .responseDecodable(of: PasswordUpdateResponse.self) { response in
+                    DispatchQueue.main.async { self.isLoading = false }
+                    
+                    let statusCode = response.response?.statusCode ?? 0
+                    
+                    switch response.result {
+                    case .success(let result):
+                        if (200..<300).contains(statusCode) {
+                            completion(true, result.message)
+                        } else {
+                            DispatchQueue.main.async { self.errorMessage = result.message }
+                            completion(false, result.message)
+                        }
+                    case .failure:
+                        completion(false, "An error occurred, please try again.")
                     }
-                case .failure(_):
-                    completion(false, "An error occurred, please try again.")
                 }
-            }
+        }
     }
     
     func updateProfile(
@@ -102,11 +117,11 @@ class ProfileViewModel: ObservableObject {
         profilePicture: Data?,
         completion: @escaping (Bool, String?) -> Void
     ) {
-        Task { @MainActor in self.isLoading = true }
+        DispatchQueue.main.async { self.isLoading = true }
         errorMessage = nil
         
         guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
-            Task { @MainActor in self.isLoading = false }
+            DispatchQueue.main.async { self.isLoading = false }
             completion(false, "No authentication token found")
             return
         }
@@ -134,41 +149,43 @@ class ProfileViewModel: ObservableObject {
             "Accept": "application/json"
         ]
         
-        AF.upload(multipartFormData: { multipartFormData in
-            for (key, value) in parameters {
-                if let stringValue = value as? String, let data = stringValue.data(using: .utf8) {
-                    multipartFormData.append(data, withName: key)
-                }
-            }
-            
-            if let profilePicture = profilePicture, let compressedImage = self.compressImage(profilePicture) {
-                multipartFormData.append(compressedImage, withName: "profile_picture", fileName: "profile.jpg", mimeType: "image/jpeg")
-            }
-        }, to: url, method: .post, headers: headers)
-        .responseData { response in
-            Task { @MainActor in self.isLoading = false }
-            
-            let statusCode = response.response?.statusCode ?? 0
-            
-            switch response.result {
-            case .success(let data):
-                do {
-                    let result = try JSONDecoder().decode(Auth.self, from: data)
-                    if (200..<300).contains(statusCode) {
-                        Task { @MainActor in
-                            self.profile = result.data
-                            self.getProfile()
-                        }
-                        completion(true, result.message)
-                    } else {
-                        Task { @MainActor in self.errorMessage = result.message }
-                        completion(false, result.message)
+        DispatchQueue.global(qos: .userInitiated).async {
+            AF.upload(multipartFormData: { multipartFormData in
+                for (key, value) in parameters {
+                    if let stringValue = value as? String, let data = stringValue.data(using: .utf8) {
+                        multipartFormData.append(data, withName: key)
                     }
-                } catch {
-                    completion(false, "Failed to parse response")
                 }
-            case .failure(_):
-                completion(false, "An error occurred, please try again.")
+                
+                if let profilePicture = profilePicture, let compressedImage = self.compressImage(profilePicture) {
+                    multipartFormData.append(compressedImage, withName: "profile_picture", fileName: "profile.jpg", mimeType: "image/jpeg")
+                }
+            }, to: url, method: .post, headers: headers)
+            .responseData { response in
+                DispatchQueue.main.async { self.isLoading = false }
+                
+                let statusCode = response.response?.statusCode ?? 0
+                
+                switch response.result {
+                case .success(let data):
+                    do {
+                        let result = try JSONDecoder().decode(Auth.self, from: data)
+                        if (200..<300).contains(statusCode) {
+                            DispatchQueue.main.async {
+                                self.profile = result.data
+                                self.getProfile()
+                            }
+                            completion(true, result.message)
+                        } else {
+                            DispatchQueue.main.async { self.errorMessage = result.message }
+                            completion(false, result.message)
+                        }
+                    } catch {
+                        completion(false, "Failed to parse response")
+                    }
+                case .failure:
+                    completion(false, "An error occurred, please try again.")
+                }
             }
         }
     }

@@ -26,59 +26,69 @@ class HomeViewModel: ObservableObject {
     }
     
     func fetchProducts(isLoad: Bool) {
-        if isLoad{
-            isLoading = true
+        if isLoad {
+            DispatchQueue.main.async { self.isLoading = true }
         }
+        
         guard let url = URL(string: baseUrl + "products") else {
-            errorMessage = "Invalid URL"
-            isLoading = false
+            DispatchQueue.main.async {
+                self.errorMessage = "Invalid URL"
+                self.isLoading = false
+            }
             return
         }
         
-        AF.request(url)
-            .validate()
-            .responseDecodable(of: Product.self) { [weak self] response in
-                DispatchQueue.main.async {
-                    self?.isLoading = false
-                    switch response.result {
-                    case .success(let productResponse):
-                        self?.products = productResponse.data.data
-                        self?.categories = productResponse.data.data.compactMap { $0.category }
-                        self?.shops = productResponse.data.data.compactMap { $0.shop }
-                        self?.cities = self?.shops.compactMap { $0.city } ?? []
-                        self?.provinces = self?.cities.compactMap { $0.province } ?? []
-                        self?.fetchServices(isLoad: false)
-                    case .failure(let error):
-                        self?.errorMessage = "Error fetching products: \(error.localizedDescription)"
-                        print("Error fetching products: \(error.localizedDescription)")
+        DispatchQueue.global(qos: .userInitiated).async {
+            AF.request(url)
+                .validate()
+                .responseDecodable(of: Product.self) { [weak self] response in
+                    DispatchQueue.main.async {
+                        self?.isLoading = false
+                        switch response.result {
+                        case .success(let productResponse):
+                            self?.products = productResponse.data.data
+                            self?.categories = productResponse.data.data.compactMap { $0.category }
+                            self?.shops = productResponse.data.data.compactMap { $0.shop }
+                            self?.cities = self?.shops.compactMap { $0.city } ?? []
+                            self?.provinces = self?.cities.compactMap { $0.province } ?? []
+                            self?.fetchServices(isLoad: false)
+                        case .failure(let error):
+                            self?.errorMessage = "Error fetching products: \(error.localizedDescription)"
+                            print("Error fetching products: \(error.localizedDescription)")
+                        }
                     }
                 }
-            }
+        }
     }
     
     func fetchServices(isLoad: Bool) {
-        if isLoad{
-            isLoading = true
+        if isLoad {
+            DispatchQueue.main.async { self.isLoading = true }
         }
+        
         guard let url = URL(string: baseUrl + "service") else {
-            errorMessage = "Invalid URL"
-            isLoading = false
+            DispatchQueue.main.async {
+                self.errorMessage = "Invalid URL"
+                self.isLoading = false
+            }
             return
         }
         
-        AF.request(url)
-            .validate()
-            .responseDecodable(of: ServiceResponse.self) { [weak self] response in
-                DispatchQueue.main.async {
-                    self?.isLoading = false
-                    switch response.result {
-                    case .success(let serviceResponse):
-                        self?.services = serviceResponse.data.data
-                    case .failure(let error):
-                        self?.errorMessage = "Error fetching services: \(error.localizedDescription)"
-                        print("Error fetching services: \(error.localizedDescription)")
+        DispatchQueue.global(qos: .userInitiated).async {
+            AF.request(url)
+                .validate()
+                .responseDecodable(of: ServiceResponse.self) { [weak self] response in
+                    DispatchQueue.main.async {
+                        self?.isLoading = false
+                        switch response.result {
+                        case .success(let serviceResponse):
+                            self?.services = serviceResponse.data.data
+                        case .failure(let error):
+                            self?.errorMessage = "Error fetching services: \(error.localizedDescription)"
+                            print("Error fetching services: \(error.localizedDescription)")
+                        }
                     }
                 }
-            }
+        }
     }
 }

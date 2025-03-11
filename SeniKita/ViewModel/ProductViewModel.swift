@@ -20,40 +20,40 @@ class ProductViewModel: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var isLoading: Bool = false
     
-    init() {
-        
-    }
+    init() {}
     
     func fetchProductById(idProduct: Int, isLoad: Bool) {
         if isLoad {
-            isLoading = true
+            DispatchQueue.main.async { self.isLoading = true }
         }
         
         guard let url = URL(string: baseUrl + "products/\(idProduct)") else {
-            errorMessage = "Invalid URL"
-            isLoading = false
+            DispatchQueue.main.async {
+                self.errorMessage = "Invalid URL"
+                self.isLoading = false
+            }
             return
         }
         
-        AF.request(url)
-            .validate()
-            .responseDecodable(of: ProductDetailResponse.self) { [weak self] response in
-                DispatchQueue.main.async {
-                    self?.isLoading = false
-                    switch response.result {
-                    case .success(let productResponse):
-                        let product = productResponse.product
-                        self?.product = product
-                        self?.categories = [product.category].compactMap { $0 }
-                        self?.shops = [product.shop].compactMap { $0 }
-                        self?.cities = product.shop?.city != nil ? [product.shop!.city!] : []
-                        self?.provinces = product.shop?.city?.province != nil ? [product.shop!.city!.province!] : []
-                    case .failure(let error):
-                        self?.errorMessage = "Error fetching product \(error.localizedDescription)"
+        DispatchQueue.global(qos: .userInitiated).async {
+            AF.request(url)
+                .validate()
+                .responseDecodable(of: ProductDetailResponse.self) { [weak self] response in
+                    DispatchQueue.main.async {
+                        self?.isLoading = false
+                        switch response.result {
+                        case .success(let productResponse):
+                            let product = productResponse.product
+                            self?.product = product
+                            self?.categories = [product.category].compactMap { $0 }
+                            self?.shops = [product.shop].compactMap { $0 }
+                            self?.cities = product.shop?.city != nil ? [product.shop!.city!] : []
+                            self?.provinces = product.shop?.city?.province != nil ? [product.shop!.city!.province!] : []
+                        case .failure(let error):
+                            self?.errorMessage = "Error fetching product \(error.localizedDescription)"
+                        }
                     }
                 }
-            }
+        }
     }
-
-    
 }

@@ -16,10 +16,7 @@ struct ArtMapDetail: View {
     var name: String
     var slug: String
     
-    @State private var animatedText = ""
     @State private var isAnimating = false
-    @State private var speechSynthesizer = AVSpeechSynthesizer()
-    @State private var timer: Timer?
     
     let fullText = "Jawa Timur, wah asyik! Daerahnya kaya banget sama wisata alam, Gunung Bromo dan Kawah Ijen contohnya, sejuk banget deh. Ada juga Reog Ponorogo, tariannya unik banget dengan singa besarnya yang gagah berani. Jangan lupa Karinding, alat musik bambu yang suaranya khas, walau asalnya Sunda, di Jawa Timur juga banyak kok! Terakhir, ada Taman Nasional Bromo Tengger Semeru, tempat menikmati matahari terbit yang spektakuler sambil belajar budaya suku Tengger. Seru banget kan?"
     
@@ -43,7 +40,7 @@ struct ArtMapDetail: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(animatedText)
+                        Text(artMapViewModel.animatedText)
                             .font(AppFont.Raleway.footnoteSmall)
                             .foregroundColor(.white)
                             .padding()
@@ -51,6 +48,13 @@ struct ArtMapDetail: View {
                             .clipShape(RoundedCorner(radius: 12, corners: [.topRight, .topLeft, .bottomLeft]))
                         
                         HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                CategoryButton(icon: "💃", text: "Tarian Tradisional")
+                                CategoryButton(icon: "🎷", text: "Alat Musik Tradisional")
+                                CategoryButton(icon: "🎊", text: "Festival Budaya")
+                                CategoryButton(icon: "🥻", text: "Pakaian Adat")
+                            }
+                            
                             Spacer()
                             
                             Image("avatar")
@@ -66,7 +70,7 @@ struct ArtMapDetail: View {
                         }
                         
                         Button(action: {
-                            speakText()
+                            artMapViewModel.speakText(textUsing: fullText)
                         }) {
                             HStack {
                                 Text("Test")
@@ -86,17 +90,17 @@ struct ArtMapDetail: View {
             }
             .onAppear {
                 Task {
-                    await artMapViewModel.fetchArtMapBySlug(slug: slug)
+                    artMapViewModel.fetchArtMapBySlug(slug: slug)
                 }
             }
             .onDisappear {
-                speechSynthesizer.stopSpeaking(at: .immediate)
-                timer?.invalidate()
+                artMapViewModel.speakText(textUsing: "")
             }
-            .onChange(of: artMapViewModel.isLoading) { isLoading in
-                if !isLoading {
-                    startTextAnimation()
-                    speakText()
+            
+            .onChange(of: artMapViewModel.isLoading) {
+                if !artMapViewModel.isLoading {
+                    artMapViewModel.startTextAnimation(textUsing: fullText)
+                    artMapViewModel.speakText(textUsing: fullText)
                 }
             }
             .background(Color.white.ignoresSafeArea())
@@ -126,35 +130,4 @@ struct ArtMapDetail: View {
             }
         }
     }
-    
-    private func startTextAnimation() {
-        animatedText = ""
-        let characters = Array(fullText)
-        var index = 0
-
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { _ in
-            if index < characters.count {
-                animatedText.append(characters[index])
-                index += 1
-            } else {
-                timer?.invalidate()
-            }
-        }
-    }
-    
-    private func speakText() {
-        if speechSynthesizer.isSpeaking {
-            speechSynthesizer.stopSpeaking(at: .immediate)
-        }
-
-        let utterance = AVSpeechUtterance(string: fullText)
-        utterance.voice = AVSpeechSynthesisVoice(identifier: "com.apple.voice.compact.id-ID.Damayanti")
-        utterance.rate = 0.45
-        utterance.pitchMultiplier = 1.2
-        utterance.volume = 1.0
-
-        speechSynthesizer.speak(utterance)
-    }
 }
-

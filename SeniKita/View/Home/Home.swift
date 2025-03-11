@@ -9,14 +9,20 @@ import SwiftUI
 
 struct Home: View {
     
-    @StateObject var homeViewModel = HomeViewModel()
+    @ObservedObject var homeViewModel: HomeViewModel
+    @ObservedObject var profileViewModel: ProfileViewModel
+    
+    init(profileViewModel: ProfileViewModel, homeViewModel: HomeViewModel){
+        self.profileViewModel = profileViewModel
+        self.homeViewModel = homeViewModel
+    }
     
     var body: some View {
         ZStack {
             Color.black.opacity(0.06).edgesIgnoringSafeArea(.all)
             
             VStack {
-                Header()
+                Header(profileViewModel: profileViewModel)
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 20) {

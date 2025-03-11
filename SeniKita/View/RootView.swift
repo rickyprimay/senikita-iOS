@@ -11,6 +11,9 @@ struct RootView: View {
     
     @State private var selectedTab = 0
     @StateObject var homeViewModel = HomeViewModel()
+    @StateObject var profileViewModel = ProfileViewModel()
+    @StateObject var authViewModel = AuthViewModel()
+    @StateObject var artMapViewModel = ArtMapViewModel()
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -18,13 +21,13 @@ struct RootView: View {
             
             
             TabView(selection: $selectedTab) {
-                Home()
+                Home(profileViewModel: profileViewModel, homeViewModel: homeViewModel)
                     .tag(0)
                 
-                ArtMap()
+                ArtMap(artMapViewModel: artMapViewModel)
                     .tag(1)
                 
-                Profile()
+                Profile(authViewModel: authViewModel, profileViewModel: profileViewModel)
                     .tag(2)
             }
             .disabled(homeViewModel.isLoading)

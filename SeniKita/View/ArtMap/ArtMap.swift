@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 
 struct ArtMap: View {
-    @StateObject var artMapViewModel = ArtMapViewModel()
+    @ObservedObject var artMapViewModel: ArtMapViewModel
     
     @State private var cameraPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
@@ -21,6 +21,10 @@ struct ArtMap: View {
     @State private var selectedArt: ArtMapResult? = nil
     @State private var isFullScreen = false
     @State private var isZooming = false
+    
+    init(artMapViewModel: ArtMapViewModel) {
+        self.artMapViewModel = artMapViewModel
+    }
     
     var body: some View {
         ZStack {

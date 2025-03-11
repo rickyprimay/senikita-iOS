@@ -10,8 +10,12 @@ import SDWebImageSwiftUI
 
 struct Header: View {
     
-    @StateObject var profileViewModel = ProfileViewModel()
+    @ObservedObject var profileViewModel: ProfileViewModel
     @State var search: String = ""
+    
+    init(profileViewModel: ProfileViewModel) {
+        self.profileViewModel = profileViewModel
+    }
     
     var body: some View {
         ZStack {
@@ -38,7 +42,7 @@ struct Header: View {
                             .clipShape(Circle())
                     }
                     
-                    Text("Halo, \(profileViewModel.profile?.name ?? "Guest")👋")
+                    Text("Halo, \(profileViewModel.profile?.username ?? "Guest")👋")
                         .font(AppFont.Raleway.bodyMedium)
                         .fontWeight(.bold)
                         .foregroundColor(.black)

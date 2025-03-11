@@ -9,9 +9,14 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct Profile: View {
-    @StateObject var authViewModel = AuthViewModel()
-    @StateObject var profileViewModel = ProfileViewModel()
+    @ObservedObject var authViewModel: AuthViewModel
+    @ObservedObject var profileViewModel: ProfileViewModel
     @State private var showLogoutAlert = false
+    
+    init(authViewModel: AuthViewModel, profileViewModel: ProfileViewModel) {
+        self.authViewModel = authViewModel
+        self.profileViewModel = profileViewModel
+    }
     
     var body: some View {
         ZStack {
