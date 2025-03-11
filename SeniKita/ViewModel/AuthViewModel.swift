@@ -213,7 +213,7 @@ class AuthViewModel: ObservableObject {
                             completion(false, result.message)
                         }
 
-                    case .failure(let error):
+                    case .failure(_):
                         if let data = response.data,
                            let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                            var message = jsonObject["message"] as? String {

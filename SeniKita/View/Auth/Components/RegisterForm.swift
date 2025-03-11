@@ -51,7 +51,7 @@ struct RegisterForm: View {
                 isLast: false
             )
             .focused($emailFocus)
-            .onChange(of: email) { _ in
+            .onChange(of: email) {
                 isEmailValid = isValidEmail
             }
             

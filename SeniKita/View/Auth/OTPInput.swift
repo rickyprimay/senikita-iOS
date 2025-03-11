@@ -46,8 +46,8 @@ struct OTPInput: View {
                             .multilineTextAlignment(.center)
                             .keyboardType(.numberPad)
                             .focused($focusedIndex, equals: index)
-                            .onChange(of: otp[index]) { newValue in
-                                handleInputChange(newValue, at: index)
+                            .onChange(of: otp[index]) {
+                                handleInputChange(otp[index], at: index)
                             }
                     }
                 }
