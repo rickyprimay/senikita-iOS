@@ -35,21 +35,8 @@ struct ServiceDetail: View {
                             .resizable()
                             .indicator(.activity)
                             .scaledToFill()
-                            .frame(width: UIScreen.main.bounds.width - 40, height : 250)
+                            .frame(width: UIScreen.main.bounds.width - 40, height: 250)
                             .clipShape(RoundedRectangle(cornerRadius: 20))
-                        
-                        Button(action: {
-                            
-                        }) {
-                            Image(systemName: "heart.fill")
-                                .foregroundColor(.red)
-                                .padding(10)
-                                .background(.white)
-                                .clipShape(Circle())
-                                .shadow(radius: 3)
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.top)
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {
@@ -121,10 +108,10 @@ struct ServiceDetail: View {
                         
                         HStack {
                             
-                            Image(systemName: "mapping.and.ellipse")
+                            Image(systemName: "mappin.and.ellipse")
                                 .font(AppFont.Nunito.bodyMedium)
                             
-                            Text("Lokasi layanan dari")
+                            Text("Jasa dari")
                                 .font(AppFont.Nunito.bodyMedium)
                                 .foregroundColor(.black)
                             
@@ -242,7 +229,10 @@ struct ServiceDetail: View {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 18, weight: .bold))
+                            .font(AppFont.Crimson.bodyLarge)
+                            .frame(width: 40, height: 40)
+                            .background(Color.brown.opacity(0.3))
+                            .clipShape(Circle())
                     }
                     .tint(Color("tertiary"))
                 }

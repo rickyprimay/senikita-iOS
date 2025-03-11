@@ -49,17 +49,6 @@ struct Header: View {
                     Button {
                         
                     } label: {
-                        Image(systemName: "heart")
-                            .font(AppFont.Crimson.bodyMedium)
-                            .foregroundColor(.black)
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                    
-                    Button {
-                        
-                    } label: {
                         Image(systemName: "cart")
                             .font(AppFont.Crimson.bodyMedium)
                             .foregroundColor(.black)

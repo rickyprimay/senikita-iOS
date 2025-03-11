@@ -49,9 +49,10 @@ struct ArtMap: View {
                             Map(position: $cameraPosition) {
                                 ForEach(artMapViewModel.artMap) { art in
                                     Annotation("", coordinate: CLLocationCoordinate2D(latitude: art.latitude ?? 0.0, longitude: art.longitude ?? 0.0)) {
+                                        
                                         if selectedArt?.id == art.id {
                                             VStack(alignment: .leading, spacing: 5) {
-                                                HStack{
+                                                HStack {
                                                     Text(art.name ?? "")
                                                         .font(AppFont.Crimson.bodyMedium)
                                                         .foregroundStyle(Color("primary"))
@@ -82,15 +83,15 @@ struct ArtMap: View {
                                                 
                                                 HStack {
                                                     Spacer()
-                                                    Button {
-                                                        
-                                                    } label: {
-                                                        Text("Lihat lebih lanjut")
-                                                            .font(AppFont.Crimson.footnoteSmall)
-                                                            .foregroundStyle(Color("brick"))
-                                                        Image(systemName: "arrow.right")
-                                                            .font(AppFont.Crimson.footnoteSmall)
-                                                            .foregroundStyle(Color("brick"))
+                                                    NavigationLink(destination: ArtMapDetail(artMapViewModel: artMapViewModel, name: art.name ?? "", slug: art.slug ?? "")) {
+                                                        HStack {
+                                                            Text("Lihat lebih lanjut")
+                                                                .font(AppFont.Crimson.footnoteSmall)
+                                                                .foregroundStyle(Color("brick"))
+                                                            Image(systemName: "arrow.right")
+                                                                .font(AppFont.Crimson.footnoteSmall)
+                                                                .foregroundStyle(Color("brick"))
+                                                        }
                                                     }
                                                 }
                                             }
@@ -99,13 +100,10 @@ struct ArtMap: View {
                                             .cornerRadius(10)
                                             .shadow(radius: 5)
                                             .frame(width: 300, height: 200)
-                                        }
-                                        
-                                        VStack {
+                                        } else {
                                             Image("custom-marker-blue")
                                                 .resizable()
-                                                .frame(width: selectedArt?.id == art.id ? 40 : 30, height: selectedArt?.id == art.id ? 40 : 30)
-                                                .animation(.spring(), value: selectedArt?.id)
+                                                .frame(width: 30, height: 30)
                                                 .onTapGesture {
                                                     withAnimation {
                                                         selectedArt = art
@@ -118,8 +116,6 @@ struct ArtMap: View {
                                                         )
                                                     }
                                                 }
-                                            
-                                            
                                         }
                                     }
                                 }

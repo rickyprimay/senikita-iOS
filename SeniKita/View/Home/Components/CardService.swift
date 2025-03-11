@@ -22,7 +22,6 @@ struct CardService: View {
                     .cornerRadius(15)
                     .padding(.top, 10)
                 
-                favoriteButton
             }
             
             VStack(alignment: .leading, spacing: 8) {
@@ -40,18 +39,6 @@ struct CardService: View {
         .cornerRadius(20)
         .shadow(radius: 4)
         .padding(.horizontal, 8)
-    }
-    
-    private var favoriteButton: some View {
-        Button(action: {}) {
-            Image(systemName: "heart")
-                .foregroundColor(.red)
-                .padding(8)
-                .background(Color.white)
-                .clipShape(Circle())
-                .shadow(radius: 2)
-        }
-        .padding(12)
     }
     
     private var categoryText: some View {

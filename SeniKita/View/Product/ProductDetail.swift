@@ -38,18 +38,6 @@ struct ProductDetail: View {
                             .frame(width: UIScreen.main.bounds.width - 40, height: 250)
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                         
-                        Button(action: {
-                            
-                        }) {
-                            Image(systemName: "heart.fill")
-                                .foregroundColor(.red)
-                                .padding(10)
-                                .background(Color.white)
-                                .clipShape(Circle())
-                                .shadow(radius: 3)
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.top)
                     }
                     
                     VStack(alignment: .leading, spacing: 8) {

@@ -34,7 +34,6 @@ struct CardProduct: View {
                 .cornerRadius(15)
                 .padding(.top, 10)
             
-            favoriteButton
         }
     }
     
@@ -63,18 +62,6 @@ struct CardProduct: View {
         }
         .padding(.horizontal, 12)
         .padding(.bottom, 12)
-    }
-    
-    private var favoriteButton: some View {
-        Button(action: {}) {
-            Image(systemName: "heart")
-                .foregroundColor(.red)
-                .padding(8)
-                .background(Color.white)
-                .clipShape(Circle())
-                .shadow(radius: 2)
-        }
-        .padding(12)
     }
     
     private var ratingAndCartButton: some View {
