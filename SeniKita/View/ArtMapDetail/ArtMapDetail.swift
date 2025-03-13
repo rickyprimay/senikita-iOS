@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import AVFoundation
+import SDWebImageSwiftUI
 
 struct ArtMapDetail: View {
     
@@ -16,9 +16,9 @@ struct ArtMapDetail: View {
     var name: String
     var slug: String
     
+    @State var promptText: String = ""
     @State private var isAnimating = false
-    
-    let fullText = "Jawa Timur, wah asyik! Daerahnya kaya banget sama wisata alam, Gunung Bromo dan Kawah Ijen contohnya, sejuk banget deh. Ada juga Reog Ponorogo, tariannya unik banget dengan singa besarnya yang gagah berani. Jangan lupa Karinding, alat musik bambu yang suaranya khas, walau asalnya Sunda, di Jawa Timur juga banyak kok! Terakhir, ada Taman Nasional Bromo Tengger Semeru, tempat menikmati matahari terbit yang spektakuler sambil belajar budaya suku Tengger. Seru banget kan?"
+    @State private var selectedDetail: ArtProvinceDetail? = nil
     
     var body: some View {
         ZStack {
@@ -37,9 +37,10 @@ struct ArtMapDetail: View {
                             .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.black)
                             .padding(.bottom)
+                            .padding(.horizontal)
                     }
                     
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text(artMapViewModel.animatedText)
                             .font(AppFont.Raleway.footnoteSmall)
                             .foregroundColor(.white)
@@ -49,10 +50,18 @@ struct ArtMapDetail: View {
                         
                         HStack {
                             VStack(alignment: .leading, spacing: 8) {
-                                CategoryButton(icon: "💃", text: "Tarian Tradisional")
-                                CategoryButton(icon: "🎷", text: "Alat Musik Tradisional")
-                                CategoryButton(icon: "🎊", text: "Festival Budaya")
-                                CategoryButton(icon: "🥻", text: "Pakaian Adat")
+                                CategoryButton(icon: "💃", text: "Tarian Tradisional", action: {
+                                    promptText = "Tarian Tradisional di \(name)"
+                                })
+                                CategoryButton(icon: "🎷", text: "Alat Musik Tradisional", action: {
+                                    promptText = "Alat Musik Tradisional di \(name)"
+                                })
+                                CategoryButton(icon: "🎊", text: "Festival Budaya", action: {
+                                    promptText = "Festival Budaya di \(name)"
+                                })
+                                CategoryButton(icon: "🥻", text: "Pakaian Adat", action: {
+                                    promptText = "Pakaian Adat di \(name)"
+                                })
                             }
                             
                             Spacer()
@@ -69,20 +78,98 @@ struct ArtMapDetail: View {
                                 }
                         }
                         
-                        Button(action: {
-                            artMapViewModel.speakText(textUsing: fullText)
-                        }) {
-                            HStack {
-                                Text("Test")
+                        ZStack(alignment: .trailing) {
+                            TextField("Tanyakan tentang \(name)", text: $promptText)
+                                .font(AppFont.Raleway.footnoteSmall)
+                                .foregroundColor(.black)
+                                .padding(.trailing, 50)
+                                .padding(.leading, 12)
+                                .padding(.vertical, 16)
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(12)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.gray, lineWidth: 1)
+                                )
+                            
+                            Button(action: {
+                                artMapViewModel.animatedText = ""
+                                artMapViewModel.sendPromptToGemini(prompt: promptText, statue: name)
+                            }) {
+                                if artMapViewModel.isAnimatingText {
+                                    ProgressView()
+                                        .tint(.white)
+                                        .padding(8)
+                                        .background(Color("primary"))
+                                        .clipShape(Circle())
+                                        .padding(.trailing, 8)
+                                } else {
+                                    Image(systemName: "arrow.right.circle.fill")
+                                        .foregroundColor(.white)
+                                        .padding(8)
+                                        .background(Color("primary"))
+                                        .clipShape(Circle())
+                                        .padding(.trailing, 8)
+                                }
                             }
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(8)
+                            .disabled(artMapViewModel.isAnimatingText)
                         }
                     }
                     .padding(.horizontal)
+                    
+                    if let details = artMapViewModel.selectedArtMap?.artProvinceDetails {
+                        VStack(alignment: .leading, spacing: 16) {
+                            ForEach(details) { detail in
+                                Button(action: {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        selectedDetail = (selectedDetail?.id == detail.id) ? nil : detail
+                                    }
+                                }) {
+                                    ZStack {
+                                        if let imageUrl = URL(string: detail.image) {
+                                            WebImage(url: imageUrl)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(maxWidth: .infinity, maxHeight: selectedDetail?.id == detail.id ? 200 : 100)
+                                                .clipped()
+                                                .cornerRadius(12)
+                                                .opacity(0.6)
+                                                .overlay(
+                                                    Color.black.opacity(selectedDetail?.id == detail.id ? 0.6 : 0.3)
+                                                        .cornerRadius(12)
+                                                )
+                                        } else {
+                                            Color.gray
+                                                .frame(maxWidth: .infinity, maxHeight: 200)
+                                                .cornerRadius(12)
+                                        }
+                                        
+                                        VStack(spacing: 8) {
+                                            Text(detail.name)
+                                                .font(AppFont.Crimson.bodyMedium)
+                                                .foregroundColor(.white)
+                                                .multilineTextAlignment(.center)
+                                                .frame(maxWidth: .infinity)
+                                            
+                                            if selectedDetail?.id == detail.id {
+                                                Text(detail.description)
+                                                    .font(AppFont.Raleway.footnoteSmall)
+                                                    .foregroundColor(.white)
+                                                    .padding()
+                                                    .background(Color.black.opacity(0.5))
+                                                    .cornerRadius(12)
+                                            }
+                                        }
+                                        .padding()
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+
                     
                     Spacer()
                 }
@@ -91,6 +178,9 @@ struct ArtMapDetail: View {
             .onAppear {
                 Task {
                     artMapViewModel.fetchArtMapBySlug(slug: slug)
+                    if let firstDetail = artMapViewModel.selectedArtMap?.artProvinceDetails?.first {
+                        selectedDetail = firstDetail
+                    }
                 }
             }
             .onDisappear {
@@ -99,8 +189,8 @@ struct ArtMapDetail: View {
             
             .onChange(of: artMapViewModel.isLoading) {
                 if !artMapViewModel.isLoading {
-                    artMapViewModel.startTextAnimation(textUsing: fullText)
-                    artMapViewModel.speakText(textUsing: fullText)
+                    artMapViewModel.startTextAnimation(textUsing: artMapViewModel.content ?? "")
+                    artMapViewModel.speakText(textUsing: artMapViewModel.content ?? "")
                 }
             }
             .background(Color.white.ignoresSafeArea())
