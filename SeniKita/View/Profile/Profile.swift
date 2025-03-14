@@ -70,7 +70,9 @@ struct Profile: View {
                         ProfileRow(icon: "gearshape", title: "Pengaturan", color: .black)
                         ProfileRow(icon: "cart", title: "Pembelian Anda", color: .black)
                         ProfileRow(icon: "mappin.and.ellipse", title: "Alamat", color: .black)
-                        ProfileRow(icon: "newspaper", title: "Riwayat Pembelian", color: .black)
+                        NavigationLink(destination: History()) {
+                            ProfileRow(icon: "newspaper", title: "Daftar Transaksi", color: .black)
+                        }
                     }
                     
                     Divider()

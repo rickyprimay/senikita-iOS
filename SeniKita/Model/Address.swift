@@ -1,0 +1,22 @@
+//
+//  Address.swift
+//  SeniKita
+//
+//  Created by Ricky Primayuda Putra on 13/03/25.
+//
+
+
+struct Address: Codable {
+    let id: Int
+    let user_id: Int
+    let label_address: String
+    let name: String
+    let phone: String
+    let address_detail: String
+    let province_id: Int
+    let city_id: Int
+    let postal_code: Int
+    let note: String?
+    let created_at: String
+    let updated_at: String
+}

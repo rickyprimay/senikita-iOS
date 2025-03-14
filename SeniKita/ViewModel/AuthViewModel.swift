@@ -150,7 +150,6 @@ class AuthViewModel: ObservableObject {
             "password": password
         ]
         
-        print("📤 Sending request to: \(url)")
         
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
             .responseDecodable(of: RegisterResponse.self) { response in
@@ -167,8 +166,7 @@ class AuthViewModel: ObservableObject {
                         }
                         completion(false)
                     }
-                case .failure(let error):
-                    print("🚨 Network error: \(error.localizedDescription)")
+                case .failure(_):
                     DispatchQueue.main.async {
                         self.errorMessage = "An error occurred, please check your internet connection."
                     }
