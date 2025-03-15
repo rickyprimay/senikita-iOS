@@ -43,7 +43,7 @@ struct EditProfile: View {
     
     init(profileViewModel: ProfileViewModel) {
         self.profileViewModel = profileViewModel
-        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color("tertiary"))
+        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color("primary"))
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
         UISegmentedControl.appearance().backgroundColor = UIColor(Color("tertiary"))

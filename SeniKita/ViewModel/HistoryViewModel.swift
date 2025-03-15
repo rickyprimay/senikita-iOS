@@ -15,7 +15,10 @@ class HistoryViewModel: ObservableObject {
     
     @Published var history: [OrderHistory] = []
     @Published var historyProductDetail: OrderHistory?
+    @Published var historyService: [OrderServiceHistory] = []
+    @Published var historyServiceDetail: OrderServiceHistory?
     @Published var isLoading: Bool = false
+    private var hasFetchedServiceHistory = false
     
     init() {
         gethistoryProduct()
@@ -105,6 +108,81 @@ class HistoryViewModel: ObservableObject {
                                 print("Failed to parse history product data: \(error.localizedDescription)")
                             }
                         }
+                    case .failure(let error):
+                        DispatchQueue.main.async {
+                            print("Failed to fetch history product data: \(error.localizedDescription)")
+                            
+                            if let data = response.data, let jsonString = String(data: data, encoding: .utf8) {
+                                print("Server Error JSON: \(jsonString)")
+                            }
+                        }
+                    }
+                }
+        }
+    }
+    
+    func getHistoryService() {
+        guard !hasFetchedServiceHistory else { return }
+        
+        DispatchQueue.main.async { self.isLoading = true }
+        
+        guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
+            DispatchQueue.main.async { self.isLoading = false }
+            return
+        }
+        
+        let url = "\(baseUrl)/user/transaction-history-service"
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(token)",
+            "Accept": "application/json"
+        ]
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            AF.request(url, method: .get, headers: headers)
+                .validate(statusCode: 200..<300)
+                .responseData { [weak self] response in
+                    guard let self = self else { return }
+                    DispatchQueue.main.async { self.isLoading = false }
+                    
+                    switch response.result {
+                    case .success(let data):
+                        
+                        do {
+                            let historyServiceResponse = try JSONDecoder().decode(HistoryServiceResponse.self, from: data)
+                            DispatchQueue.main.async {
+                                self.historyService = historyServiceResponse.data
+                                self.hasFetchedServiceHistory = true
+                            }
+                        } catch let decodingError as DecodingError {
+                            DispatchQueue.main.async {
+                                print("Failed to parse history product data: \(decodingError.localizedDescription)")
+                                
+                                // Detail error decoding
+                                switch decodingError {
+                                case .dataCorrupted(let context):
+                                    print("Data corrupted: \(context)")
+                                case .keyNotFound(let key, let context):
+                                    print("Key '\(key.stringValue)' not found: \(context.debugDescription)")
+                                case .typeMismatch(let type, let context):
+                                    print("Type mismatch for type \(type): \(context.debugDescription)")
+                                case .valueNotFound(let type, let context):
+                                    print("Value not found for type \(type): \(context.debugDescription)")
+                                @unknown default:
+                                    print("Unknown decoding error: \(decodingError)")
+                                }
+                                
+                                // Cetak response JSON untuk debugging
+                                if let jsonString = String(data: data, encoding: .utf8) {
+                                    print("Response JSON: \(jsonString)")
+                                }
+                            }
+                        } catch {
+                            DispatchQueue.main.async {
+                                print("Unexpected error parsing history product data: \(error.localizedDescription)")
+                            }
+                        }
+
+                        
                     case .failure(let error):
                         DispatchQueue.main.async {
                             print("Failed to fetch history product data: \(error.localizedDescription)")

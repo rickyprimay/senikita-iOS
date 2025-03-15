@@ -39,12 +39,17 @@ struct History: View {
                                 }
                             }
                         } else {
-                            Text("Tidak ada riwayat pemesanan\nJasa Kesenian")
-                                .font(AppFont.Nunito.bodyLarge)
-                                .foregroundColor(Color("primary"))
-                                .multilineTextAlignment(.center)
-                                .lineLimit(nil)
-                                .frame(maxWidth: .infinity)
+                            if historyViewModel.historyService.isEmpty && !historyViewModel.isLoading {
+                                Text("Tidak ada riwayat pemesanan\nJasa Kesenian")
+                                    .font(AppFont.Nunito.bodyLarge)
+                                    .foregroundColor(Color("primary"))
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: .infinity)
+                            } else {
+                                ForEach(historyViewModel.historyService, id: \.id) { item in
+                                    HistoryCardService(historyViewModel: historyViewModel, historyItemService: item)
+                                }
+                            }
                         }
                     }
                     .padding(.top, 16)
@@ -52,7 +57,11 @@ struct History: View {
                 .background(Color.white.ignoresSafeArea())
                 .navigationBarBackButtonHidden(true)
                 .refreshable {
-                    historyViewModel.gethistoryProduct()
+                    if selectedTab == "Jasa Kesenian" {
+                        historyViewModel.getHistoryService()
+                    } else {
+                        historyViewModel.gethistoryProduct()
+                    }
                 }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
@@ -79,6 +88,11 @@ struct History: View {
             if historyViewModel.isLoading {
                 Loading(opacity: 0.5)
                     .zIndex(1)
+            }
+        }
+        .onChange(of: selectedTab) {
+            if selectedTab == "Jasa Kesenian" {
+                historyViewModel.getHistoryService()
             }
         }
     }
