@@ -7,6 +7,16 @@
 
 import Foundation
 
+struct HistoryResponseDetail: Codable {
+    let status: String
+    let message: String
+    let data: OrderDetailWrapper
+}
+
+struct OrderDetailWrapper: Codable {
+    let order: OrderHistory
+}
+
 struct HistoryResponse: Codable {
     let status: String
     let message: String

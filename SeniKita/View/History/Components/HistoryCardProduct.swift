@@ -11,30 +11,13 @@ import SDWebImageSwiftUI
 struct HistoryCardProduct: View {
     let historyItem: OrderHistory
     
-    func formattedDate(_ dateString: String?) -> String {
-        guard let dateString = dateString else { return "NaN" }
-        
-        let inputFormatter = DateFormatter()
-        inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
-        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
-        inputFormatter.timeZone = TimeZone(abbreviation: "UTC")
-
-        if let date = inputFormatter.date(from: dateString) {
-            let outputFormatter = DateFormatter()
-            outputFormatter.locale = Locale(identifier: "id_ID")
-            outputFormatter.dateFormat = "d MMMM yyyy"
-            return outputFormatter.string(from: date)
-        } else {
-            return "NaN"
-        }
-    }
+    @ObservedObject var historyViewModel: HistoryViewModel
     
-    func formatPrice(_ price: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.groupingSeparator = "."
-        return formatter.string(from: NSNumber(value: price)) ?? "0"
+    init(historyViewModel: HistoryViewModel, historyItem: OrderHistory) {
+        self.historyViewModel = historyViewModel
+        self.historyItem = historyItem
     }
+
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -55,7 +38,7 @@ struct HistoryCardProduct: View {
                 
                 Divider()
                 
-                Text("Produk Kesenian | \(historyItem.no_transaction) | \(formattedDate(firstProduct.created_at))")
+                Text("Produk Kesenian | \(historyItem.no_transaction) | \(firstProduct.created_at?.formattedDate() ?? "")")
                     .font(AppFont.Nunito.footnoteSmall)
                     .foregroundColor(.gray)
                 
@@ -79,10 +62,10 @@ struct HistoryCardProduct: View {
                         Text(firstProduct.name ?? "Nama tidak tersedia")
                             .font(AppFont.Nunito.bodyMedium)
                         
-                        Text("\(firstProduct.pivot?.qty ?? 0) item x \(formatPrice(Double(firstProduct.price ?? 0)))")
+                        Text("\(firstProduct.pivot?.qty ?? 0) item x \((firstProduct.price ?? 0).toDouble().formatPrice())")
                             .font(AppFont.Nunito.footnoteSmall)
                         
-                        Text("\(formatPrice(historyItem.price))")
+                        Text("\(historyItem.price.formatPrice())")
                             .font(AppFont.Nunito.bodyMedium)
                     }
                     
@@ -91,9 +74,7 @@ struct HistoryCardProduct: View {
                 HStack {
                     Spacer()
                     
-                    Button{
-                        
-                    } label: {
+                    NavigationLink(destination: HistoryProductDetail(historyViewModel: historyViewModel, idHistory: historyItem.id)){
                         Text("Lihat Detail Transaksi >")
                             .font(AppFont.Nunito.footnoteLarge)
                             .bold()

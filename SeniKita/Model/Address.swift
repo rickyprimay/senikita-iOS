@@ -19,4 +19,6 @@ struct Address: Codable {
     let note: String?
     let created_at: String
     let updated_at: String
+    let city: City?
+    let province: Province?
 }
