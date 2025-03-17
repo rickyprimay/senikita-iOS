@@ -38,7 +38,7 @@ struct HistoryCardService: View {
             
             Divider()
             
-            Text("Jasa Kesenian | \(historyItemService.no_transaction) | \(historyItemService.created_at.formattedDate() ?? "")")
+            Text("Jasa Kesenian | \(historyItemService.no_transaction) | \(historyItemService.created_at.formattedDate())")
                 .font(AppFont.Nunito.footnoteSmall)
                 .foregroundColor(.gray)
             
@@ -71,9 +71,7 @@ struct HistoryCardService: View {
             HStack {
                 Spacer()
                 
-                Button{
-                    
-                } label: {
+                NavigationLink(destination: HistoryServiceDetail(historyViewModel: historyViewModel, idHistory: historyItemService.id)) {
                     Text("Lihat Detail Transaksi >")
                         .font(AppFont.Nunito.footnoteLarge)
                         .bold()

@@ -69,7 +69,9 @@ struct Profile: View {
                         }
                         ProfileRow(icon: "gearshape", title: "Pengaturan", color: .black)
                         ProfileRow(icon: "cart", title: "Pembelian Anda", color: .black)
-                        ProfileRow(icon: "mappin.and.ellipse", title: "Alamat", color: .black)
+                        NavigationLink(destination: AddressDetail()) {
+                            ProfileRow(icon: "mappin.and.ellipse", title: "Alamat", color: .black)
+                        }
                         NavigationLink(destination: History()) {
                             ProfileRow(icon: "newspaper", title: "Daftar Transaksi", color: .black)
                         }
@@ -78,7 +80,7 @@ struct Profile: View {
                     Divider()
                     
                     VStack {
-                        Button(action: {}) {
+                        NavigationLink(destination: Help()) {
                             ProfileRow(icon: "questionmark.circle", title: "Support & Bantuan", color: .black)
                         }
                         Button(action: {

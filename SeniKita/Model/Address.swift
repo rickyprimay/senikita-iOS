@@ -5,6 +5,10 @@
 //  Created by Ricky Primayuda Putra on 13/03/25.
 //
 
+struct AddressResponse: Codable {
+    let status: String
+    let data: [Address]
+}
 
 struct Address: Codable {
     let id: Int
