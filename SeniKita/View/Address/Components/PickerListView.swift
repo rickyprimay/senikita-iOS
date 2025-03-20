@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct PickerListView<T: Identifiable & Hashable>: View {
     var title: String
     var options: [T]

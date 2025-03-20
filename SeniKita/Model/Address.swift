@@ -5,6 +5,11 @@
 //  Created by Ricky Primayuda Putra on 13/03/25.
 //
 
+struct SingleAddressResponse: Codable {
+    let status: String
+    let data: Address
+}
+
 struct AddressResponse: Codable {
     let status: String
     let data: [Address]

@@ -12,6 +12,12 @@ struct CardProduct: View {
     
     let product: ProductData
     
+    @ObservedObject var homeViewModel: HomeViewModel
+    
+    @State private var isPopupVisible = false
+    @State private var popupMessage = ""
+    @State private var isSuccess = false
+    
     var body: some View {
         VStack(spacing: 12) {
             productImage
@@ -87,7 +93,9 @@ struct CardProduct: View {
     
     private var cartButton: some View {
         Button(action: {
-            
+            homeViewModel.addProductToCart(productId: product.id, isLoad: true) { success, message in
+                homeViewModel.showPopup(message: message, isSuccess: success)
+            }
         }) {
             Image(systemName: "cart.fill")
                 .foregroundColor(.white)

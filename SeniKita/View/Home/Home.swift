@@ -12,6 +12,10 @@ struct Home: View {
     @ObservedObject var homeViewModel: HomeViewModel
     @ObservedObject var profileViewModel: ProfileViewModel
     
+    @State private var isPopupVisible = false
+    @State private var popupMessage = ""
+    @State private var isSuccess = false
+    
     init(profileViewModel: ProfileViewModel, homeViewModel: HomeViewModel){
         self.profileViewModel = profileViewModel
         self.homeViewModel = homeViewModel
@@ -22,7 +26,7 @@ struct Home: View {
             Color.black.opacity(0.06).edgesIgnoringSafeArea(.all)
             
             VStack {
-                Header(profileViewModel: profileViewModel)
+                Header(profileViewModel: profileViewModel, homeViewModel: homeViewModel)
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 20) {
@@ -45,7 +49,7 @@ struct Home: View {
                                         NavigationLink(
                                             destination: ProductDetail(idProduct: product.id, homeViewModel: homeViewModel),
                                             label: {
-                                                CardProduct(product: product)
+                                                CardProduct(product: product, homeViewModel: homeViewModel)
                                             }
                                         )
                                     }
@@ -90,7 +94,23 @@ struct Home: View {
             if homeViewModel.isLoading {
                 Loading(opacity: 1)
             }
+            
+            if isPopupVisible {
+                BasePopup(isShowing: $isPopupVisible, message: popupMessage, onConfirm: {
+                    isPopupVisible = false
+                }, isSuccess: isSuccess)
+            }
         }
         .navigationBarHidden(true)
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ShowPopup"))) { notification in
+            if let userInfo = notification.userInfo,
+               let message = userInfo["message"] as? String,
+               let success = userInfo["isSuccess"] as? Bool {
+                self.popupMessage = message
+                self.isSuccess = success
+                self.isPopupVisible = true
+            }
+        }
+
     }
 }

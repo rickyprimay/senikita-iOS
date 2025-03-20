@@ -201,7 +201,7 @@ struct ProductDetail: View {
                                         NavigationLink(
                                             destination: ProductDetail(idProduct: product.id, homeViewModel: homeViewModel),
                                             label: {
-                                                CardProduct(product: product)
+                                                CardProduct(product: product, homeViewModel: homeViewModel)
                                             }
                                         )
                                     }

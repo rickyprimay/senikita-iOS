@@ -11,10 +11,12 @@ import SDWebImageSwiftUI
 struct Header: View {
     
     @ObservedObject var profileViewModel: ProfileViewModel
+    @ObservedObject var homeViewModel: HomeViewModel
     @State var search: String = ""
     
-    init(profileViewModel: ProfileViewModel) {
+    init(profileViewModel: ProfileViewModel, homeViewModel: HomeViewModel) {
         self.profileViewModel = profileViewModel
+        self.homeViewModel = homeViewModel
     }
     
     var body: some View {
@@ -50,9 +52,7 @@ struct Header: View {
                     
                     Spacer()
                     
-                    Button {
-                        
-                    } label: {
+                    NavigationLink(destination: CartView(viewModel: homeViewModel)){
                         Image(systemName: "cart")
                             .font(AppFont.Crimson.bodyMedium)
                             .foregroundColor(.black)

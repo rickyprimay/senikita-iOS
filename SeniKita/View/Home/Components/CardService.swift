@@ -90,15 +90,6 @@ struct CardService: View {
                 .foregroundColor(.gray)
             
             Spacer()
-            
-            Button(action: {}) {
-                Image(systemName: "cart.fill")
-                    .foregroundColor(.white)
-                    .padding(8)
-                    .background(LinearGradient(gradient: Gradient(colors: [Color("primary"), Color("tertiary")]), startPoint: .leading, endPoint: .trailing))
-                    .clipShape(Circle())
-                    .shadow(radius: 3)
-            }
         }
     }
 }
