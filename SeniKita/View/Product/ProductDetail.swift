@@ -16,6 +16,9 @@ struct ProductDetail: View {
     @ObservedObject var homeViewModel: HomeViewModel
     
     @State private var showShareSheet = false
+    @State private var isPopupVisible = false
+    @State private var popupMessage = ""
+    @State private var isSuccess = false
     
     var idProduct: Int
     
@@ -217,6 +220,7 @@ struct ProductDetail: View {
                     
                 }
                 .padding(.horizontal)
+                .padding(.bottom, 80)
             }
             .onAppear{
                 productViewModel.fetchProductById(idProduct: idProduct, isLoad: true)
@@ -243,16 +247,29 @@ struct ProductDetail: View {
                         .foregroundColor(Color("tertiary"))
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button{
-                        showShareSheet.toggle()
-                    } label: {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(AppFont.Crimson.bodyLarge)
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
+                    HStack(spacing: 6) {
+                        
+                        Button{
+                            showShareSheet.toggle()
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(AppFont.Crimson.bodyLarge)
+                                .frame(width: 40, height: 40)
+                                .background(Color.brown.opacity(0.3))
+                                .clipShape(Circle())
+                        }
+                        .tint(Color("tertiary"))
+                        
+                        NavigationLink(destination: CartView(viewModel: homeViewModel)) {
+                            Image(systemName: "cart")
+                                .font(AppFont.Crimson.bodyLarge)
+                                .frame(width: 40, height: 40)
+                                .background(Color.brown.opacity(0.3))
+                                .clipShape(Circle())
+                        }
+                        .tint(Color("tertiary"))
+                        
                     }
-                    .tint(Color("tertiary"))
                 }
             }
             .sheet(isPresented: $showShareSheet) {
@@ -261,14 +278,65 @@ struct ProductDetail: View {
             if productViewModel.isLoading {
                 Loading(opacity: 0.5)
             }
+            
+            if isPopupVisible {
+                BasePopup(isShowing: $isPopupVisible, message: popupMessage, onConfirm: {
+                    isPopupVisible = false
+                }, isSuccess: isSuccess)
+            }
+            
+            VStack {
+                Spacer()
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Beli Sekarang")
+                            .font(AppFont.Nunito.bodyMedium)
+                            .bold()
+                            .foregroundColor(.white)
+                            .frame(width: 120)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                            .background(Color("primary"))
+                            .cornerRadius(10)
+                        
+                        Button {
+                            homeViewModel.addProductToCart(productId: idProduct, isLoad: true) { success, message in
+                                homeViewModel.showPopup(message: message, isSuccess: success)
+                            }
+                        } label: {
+                            Text("Keranjang")
+                                .font(AppFont.Nunito.bodyMedium)
+                                .bold()
+                                .foregroundColor(.white)
+                                .frame(width: 120)
+                                .multilineTextAlignment(.center)
+                                .padding()
+                                .background(Color.black)
+                                .cornerRadius(10)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 10)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(radius: 2)
+                }
+                .padding(.bottom, 25)
+                .background(Color.clear)
+            }
+            .ignoresSafeArea(edges: .bottom)
+            
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ShowPopup"))) { notification in
+            if let userInfo = notification.userInfo,
+               let message = userInfo["message"] as? String,
+               let success = userInfo["isSuccess"] as? Bool {
+                self.popupMessage = message
+                self.isSuccess = success
+                self.isPopupVisible = true
+            }
         }
     }
 }
 
-extension String {
-    var stripHTML: String {
-        let withoutHTML = self.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
-        let withoutNbsp = withoutHTML.replacingOccurrences(of: "&nbsp;", with: " ")
-        return withoutNbsp
-    }
-}
+

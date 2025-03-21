@@ -39,4 +39,11 @@ extension String {
             return "NaN"
         }
     }
+    
+    var stripHTML: String {
+        let withoutHTML = self.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+        let withoutNbsp = withoutHTML.replacingOccurrences(of: "&nbsp;", with: " ")
+        return withoutNbsp
+    }
+    
 }

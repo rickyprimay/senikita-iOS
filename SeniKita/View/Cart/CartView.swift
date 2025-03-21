@@ -127,7 +127,7 @@ struct CartView: View {
                     .shadow(radius: 2)
                     
                     Button(action: {
-                        // Panggil metode untuk beli di sini
+                       
                     }) {
                         Text("Beli (\(selectedProductCount))")
                             .font(AppFont.Crimson.bodyMedium)
