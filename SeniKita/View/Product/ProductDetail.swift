@@ -289,15 +289,27 @@ struct ProductDetail: View {
                 Spacer()
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text("Beli Sekarang")
-                            .font(AppFont.Nunito.bodyMedium)
-                            .bold()
-                            .foregroundColor(.white)
-                            .frame(width: 120)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                            .background(Color("primary"))
-                            .cornerRadius(10)
+                        NavigationLink(destination: Payment(
+                            storeAvatar: productViewModel.product?.shop?.profile_picture ?? "",
+                            storeName: productViewModel.product?.shop?.name ?? "",
+                            storeLocation: productViewModel.product?.shop?.region ?? "",
+                            productId: idProduct,
+                            productImage: productViewModel.product?.thumbnail ?? "",
+                            productName: productViewModel.product?.name ?? "",
+                            productPrice: productViewModel.product?.price ?? 0,
+                            productQty: 1,
+                            originId: productViewModel.product?.shop?.city?.id ?? 0
+                        )){
+                            Text("Beli Sekarang")
+                                .font(AppFont.Nunito.bodyMedium)
+                                .bold()
+                                .foregroundColor(.white)
+                                .frame(width: 120)
+                                .multilineTextAlignment(.center)
+                                .padding()
+                                .background(Color("primary"))
+                                .cornerRadius(10)
+                        }
                         
                         Button {
                             homeViewModel.addProductToCart(productId: idProduct, isLoad: true) { success, message in

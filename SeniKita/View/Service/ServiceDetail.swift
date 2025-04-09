@@ -216,7 +216,7 @@ struct ServiceDetail: View {
                     
                 }
                 .padding(.horizontal)
-                
+                .padding(.bottom, 80)
             }
             .onAppear{
                 serviceViewModel.fetchServiceById(idService: idService, isLoad: true)
@@ -225,9 +225,9 @@ struct ServiceDetail: View {
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
+                    Button {
                         presentationMode.wrappedValue.dismiss()
-                    }) {
+                    } label: {
                         Image(systemName: "chevron.left")
                             .font(AppFont.Crimson.bodyLarge)
                             .frame(width: 40, height: 40)
@@ -261,6 +261,31 @@ struct ServiceDetail: View {
             if serviceViewModel.isLoading {
                 Loading(opacity: 0.5)
             }
+            
+            VStack {
+                Spacer()
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Pesan Sekarang")
+                            .font(AppFont.Nunito.bodyMedium)
+                            .bold()
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                            .background(Color("primary"))
+                            .cornerRadius(10)
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 10)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(radius: 2)
+                }
+                .padding(.bottom, 25)
+                .background(Color.clear)
+            }
+            .ignoresSafeArea(edges: .bottom)
         }
     }
     
