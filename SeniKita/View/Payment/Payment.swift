@@ -33,6 +33,9 @@ struct Payment: View {
     @State private var selectedShipping: String = "Pilih Pengiriman"
     @State private var selectedService: String = ""
     @State private var showAddressSheet = false
+    @State private var showPopup = false
+    @State private var popupMessage = ""
+    @State private var navigateToHistory = false
     
     var shippingOptions: [String] {
         ["Pilih Pengiriman"] + paymentViewModel.ongkir.map { "\($0.description) - Rp. \($0.cost.first?.value ?? 0)" }
@@ -44,7 +47,7 @@ struct Payment: View {
         }
         return 0
     }
-
+    
     var totalOrderPrice: Int {
         return totalPriceOrder + selectedShippingCost + 5000
     }
@@ -220,9 +223,9 @@ struct Payment: View {
                                     .font(AppFont.Nunito.bodyMedium)
                             }
                         }
-
+                        
                         Divider()
-
+                        
                         HStack {
                             Text("Total Belanja")
                                 .font(AppFont.Raleway.bodyMedium)
@@ -236,7 +239,7 @@ struct Payment: View {
                             
                             let addressId = paymentViewModel.firstAddress?.id ?? 0
                             let addressNote = paymentViewModel.firstAddress?.note ?? ""
-
+                            
                             print("== Checkout Params ==")
                             print("Product IDs: [\(productId)]")
                             print("Qtys: [\(productQty)]")
@@ -286,6 +289,12 @@ struct Payment: View {
                     }
                 }
             }
+            .onReceive(paymentViewModel.$isCheckoutSuccess) { success in
+                if success {
+                    popupMessage = "Pemesanan Berhasil, Lanjut ke Pembayaran?"
+                    showPopup = true
+                }
+            }
             .background(Color.white.ignoresSafeArea())
             .navigationBarBackButtonHidden(true)
             .toolbar {
@@ -314,6 +323,20 @@ struct Payment: View {
             
             if paymentViewModel.isLoading {
                 Loading(opacity: 0.5)
+            }
+            if showPopup {
+                BasePopup(
+                    isShowing: $showPopup,
+                    message: popupMessage,
+                    onConfirm: {
+                        showPopup = false
+                        navigateToHistory = true
+                    },
+                    isSuccess: true
+                )
+            }
+            NavigationLink(destination: History(isFromPayment: true), isActive: $navigateToHistory) {
+                EmptyView()
             }
         }
     }

@@ -72,7 +72,7 @@ struct Profile: View {
                         NavigationLink(destination: AddressDetail()) {
                             ProfileRow(icon: "mappin.and.ellipse", title: "Alamat", color: .black)
                         }
-                        NavigationLink(destination: History()) {
+                        NavigationLink(destination: History(isFromPayment: false)) {
                             ProfileRow(icon: "newspaper", title: "Daftar Transaksi", color: .black)
                         }
                     }

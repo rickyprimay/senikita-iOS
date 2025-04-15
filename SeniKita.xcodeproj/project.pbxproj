@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		EA545CBE2D6065FA004AED30 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = EA545CBD2D6065FA004AED30 /* SDWebImageSwiftUI */; };
 		EA67650E2D82CFB500B9C90C /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = EA67650D2D82CFB500B9C90C /* GoogleGenerativeAI */; };
+		EAB27A082DAE7AEF00D0BF81 /* ElevenlabsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = EAB27A072DAE7AEF00D0BF81 /* ElevenlabsSwift */; };
 		EAC586B62D61C6F400F856FE /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = EAC586B52D61C6F400F856FE /* Alamofire */; };
 		EACA78AB2D79857B00CBC082 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = EACA78AA2D79857B00CBC082 /* GoogleSignIn */; };
 		EACA78AD2D79857B00CBC082 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = EACA78AC2D79857B00CBC082 /* GoogleSignInSwift */; };
@@ -60,6 +61,7 @@
 				EA67650E2D82CFB500B9C90C /* GoogleGenerativeAI in Frameworks */,
 				EA545CBE2D6065FA004AED30 /* SDWebImageSwiftUI in Frameworks */,
 				EAC586B62D61C6F400F856FE /* Alamofire in Frameworks */,
+				EAB27A082DAE7AEF00D0BF81 /* ElevenlabsSwift in Frameworks */,
 				EACA78AB2D79857B00CBC082 /* GoogleSignIn in Frameworks */,
 				EACA78AD2D79857B00CBC082 /* GoogleSignInSwift in Frameworks */,
 			);
@@ -118,6 +120,7 @@
 				EACA78AA2D79857B00CBC082 /* GoogleSignIn */,
 				EACA78AC2D79857B00CBC082 /* GoogleSignInSwift */,
 				EA67650D2D82CFB500B9C90C /* GoogleGenerativeAI */,
+				EAB27A072DAE7AEF00D0BF81 /* ElevenlabsSwift */,
 			);
 			productName = SeniKita;
 			productReference = EAD89E762D6056BA006A7401 /* SeniKita.app */;
@@ -152,6 +155,7 @@
 				EAC586B42D61C6F400F856FE /* XCRemoteSwiftPackageReference "Alamofire" */,
 				EACA78A92D79857B00CBC082 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				EA67650C2D82CFB500B9C90C /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
+				EAB27A062DAE7AEF00D0BF81 /* XCRemoteSwiftPackageReference "ElevenlabsSwift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EAD89E772D6056BA006A7401 /* Products */;
@@ -406,6 +410,14 @@
 				minimumVersion = 0.5.6;
 			};
 		};
+		EAB27A062DAE7AEF00D0BF81 /* XCRemoteSwiftPackageReference "ElevenlabsSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ArchieGoodwin/ElevenlabsSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.0;
+			};
+		};
 		EAC586B42D61C6F400F856FE /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -434,6 +446,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EA67650C2D82CFB500B9C90C /* XCRemoteSwiftPackageReference "generative-ai-swift" */;
 			productName = GoogleGenerativeAI;
+		};
+		EAB27A072DAE7AEF00D0BF81 /* ElevenlabsSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EAB27A062DAE7AEF00D0BF81 /* XCRemoteSwiftPackageReference "ElevenlabsSwift" */;
+			productName = ElevenlabsSwift;
 		};
 		EAC586B52D61C6F400F856FE /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;

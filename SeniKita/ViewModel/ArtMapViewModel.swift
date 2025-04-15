@@ -24,6 +24,7 @@ class ArtMapViewModel: ObservableObject {
     @Published var isAnimatingText = false
     
     var errorMessage: String = ""
+    private var audioPlayer: AVAudioPlayer?
     
     private let speechSynthesizer = AVSpeechSynthesizer()
     
@@ -113,16 +114,44 @@ class ArtMapViewModel: ObservableObject {
     
     @MainActor
     func speakText(textUsing: String) {
-        if speechSynthesizer.isSpeaking {
-            speechSynthesizer.stopSpeaking(at: .immediate)
-        }
-        
-        let utterance = AVSpeechUtterance(string: textUsing)
-        utterance.voice = AVSpeechSynthesisVoice(identifier: "com.apple.voice.compact.id-ID.Damayanti")
-        utterance.rate = 0.45
-        utterance.pitchMultiplier = 1.2
-        utterance.volume = 1.0
-        
-        speechSynthesizer.speak(utterance)
+        let apiKey = "sk_941d4a3d2cebe8246beabb129c03a0a24b8a360ead39f5d1"
+        let voiceID = "omZp0hMnZ2cUGFuEaRws"
+        let url = "https://api.elevenlabs.io/v1/text-to-speech/\(voiceID)/stream"
+
+        let headers: HTTPHeaders = [
+            "xi-api-key": apiKey,
+            "Content-Type": "application/json"
+        ]
+
+        let parameters: [String: Any] = [
+            "text": textUsing,
+            "model_id": "eleven_multilingual_v2",
+            "voice_settings": [
+                "stability": 0.5,
+                "similarity_boost": 0.7
+            ]
+        ]
+
+        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
+            .validate()
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("tts.mp3")
+                    do {
+                        try data.write(to: tempURL)
+                        self.audioPlayer = try AVAudioPlayer(contentsOf: tempURL)
+                        self.audioPlayer?.prepareToPlay()
+                        self.audioPlayer?.play()
+                        print("terplay")
+                    } catch {
+                        print("Gagal memutar audio: \(error)")
+                    }
+
+                case .failure(let error):
+                    print("Streaming gagal: \(error.localizedDescription)")
+                }
+            }
     }
+
 }

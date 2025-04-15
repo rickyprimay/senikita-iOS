@@ -1,5 +1,5 @@
 {
-  "originHash" : "40d98d40b93283dbda47f05907fcb116f3ff3103371fbe3bfafb92941d13b613",
+  "originHash" : "26613fd5176635a6129fbebea4364d1059ada0226a2a7190c0260ed8dc76a9ec",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -26,6 +26,15 @@
       "state" : {
         "revision" : "2781038865a80e2c425a1da12cc1327bcd56501f",
         "version" : "1.7.6"
+      }
+    },
+    {
+      "identity" : "elevenlabsswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ArchieGoodwin/ElevenlabsSwift.git",
+      "state" : {
+        "revision" : "de77f0b1a7ca16762b6d2d75bf4fee31f3709833",
+        "version" : "0.8.0"
       }
     },
     {

@@ -12,6 +12,9 @@ struct History: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject var historyViewModel = HistoryViewModel()
     
+    var isFromPayment: Bool
+    @State private var navigateToRootView = false
+    
     @State private var selectedTab: String = "Produk Kesenian"
     
     var body: some View {
@@ -66,7 +69,11 @@ struct History: View {
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: {
-                            presentationMode.wrappedValue.dismiss()
+                            if !isFromPayment {
+                                presentationMode.wrappedValue.dismiss()
+                            } else {
+                                navigateToRootView = true
+                            }
                         }) {
                             Image(systemName: "chevron.left")
                                 .font(AppFont.Crimson.bodyLarge)
@@ -83,6 +90,9 @@ struct History: View {
                             .foregroundColor(Color("tertiary"))
                     }
                 }
+                NavigationLink(destination: RootView(), isActive: $navigateToRootView) {
+                    EmptyView()
+                }
             }
             
             if historyViewModel.isLoading {
@@ -95,11 +105,5 @@ struct History: View {
                 historyViewModel.getHistoryService()
             }
         }
-    }
-}
-
-#Preview {
-    NavigationView {
-        History()
     }
 }

@@ -184,13 +184,17 @@ struct ArtMapDetail: View {
                 }
             }
             .onDisappear {
-                artMapViewModel.speakText(textUsing: "")
+                Task {
+                    await artMapViewModel.speakText(textUsing: "")
+                }
             }
             
             .onChange(of: artMapViewModel.isLoading) {
                 if !artMapViewModel.isLoading {
                     artMapViewModel.startTextAnimation(textUsing: artMapViewModel.content ?? "")
-                    artMapViewModel.speakText(textUsing: artMapViewModel.content ?? "")
+                    Task {
+                        await artMapViewModel.speakText(textUsing: artMapViewModel.content ?? "")
+                    }
                 }
             }
             .background(Color.white.ignoresSafeArea())

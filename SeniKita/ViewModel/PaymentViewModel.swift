@@ -21,6 +21,7 @@ class PaymentViewModel: ObservableObject {
     @Published var cityByProvince: [City] = []
     @Published var detailAddress: Address?
     @Published var isAddressLoaded = false
+    @Published var isCheckoutSuccess: Bool = false
     
     func getOngkirCost(originId: Int, destination: Int, completion: @escaping (Bool, String) -> Void) {
         
@@ -153,6 +154,9 @@ class PaymentViewModel: ObservableObject {
                 switch response.result {
                 case .success(let data):
                     print("Order success: \(String(data: data, encoding: .utf8) ?? "")")
+                    DispatchQueue.main.async {
+                        self.isCheckoutSuccess = true
+                    }
                 case .failure(let error):
                     print("Order failed: \(error.localizedDescription)")
                     if let data = response.data {

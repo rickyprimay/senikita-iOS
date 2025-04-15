@@ -19,7 +19,7 @@ struct ArtMap: View {
     )
     
     @State private var selectedArt: ArtMapResult? = nil
-    @State private var isFullScreen = false
+    @State private var showDetail = false
     @State private var isZooming = false
     
     init(artMapViewModel: ArtMapViewModel) {
@@ -28,125 +28,63 @@ struct ArtMap: View {
     
     var body: some View {
         ZStack {
-            Color.black.opacity(0.06).edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                ScrollView(.vertical, showsIndicators: false) {
-                    if !isFullScreen {
-                        VStack(alignment: .center, spacing: 10) {
-                            Text("Peta Kesenian")
-                                .font(AppFont.Crimson.headerMedium)
-                                .foregroundStyle(.black)
-                            
-                            Text("Peta ini menunjukkan provinsi-provinsi di Indonesia dengan kesenian khas yang unik. Klik pada setiap provinsi untuk mengetahui lebih lanjut tentang budaya dan seni yang dimilikinya.")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundStyle(.black)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 15)
-                                .padding(.vertical, 10)
-                        }
-                        .padding(.vertical)
-                    }
-                    
-                    ZStack(alignment: .topTrailing) {
-                        if #available(iOS 17.0, *) {
-                            Map(position: $cameraPosition) {
-                                ForEach(artMapViewModel.artMap) { art in
-                                    Annotation("", coordinate: CLLocationCoordinate2D(latitude: art.latitude ?? 0.0, longitude: art.longitude ?? 0.0)) {
-                                        
-                                        if selectedArt?.id == art.id {
-                                            VStack(alignment: .leading, spacing: 5) {
-                                                HStack {
-                                                    Text(art.name ?? "")
-                                                        .font(AppFont.Crimson.bodyMedium)
-                                                        .foregroundStyle(Color("primary"))
-                                                    Spacer()
-                                                    Button(action: {
-                                                        withAnimation {
-                                                            selectedArt = nil
-                                                            isZooming = false
-                                                            cameraPosition = .region(
-                                                                MKCoordinateRegion(
-                                                                    center: CLLocationCoordinate2D(latitude: -2.5489, longitude: 118.0149),
-                                                                    span: MKCoordinateSpan(latitudeDelta: 20, longitudeDelta: 20)
-                                                                )
-                                                            )
-                                                        }
-                                                    }) {
-                                                        Image(systemName: "x.circle")
-                                                            .font(AppFont.Raleway.bodyMedium)
-                                                            .foregroundColor(.black)
-                                                    }
-                                                }
-                                                .padding(.bottom, 5)
-                                                
-                                                Text(art.subtitle ?? "")
-                                                    .font(AppFont.Raleway.footnoteSmall)
-                                                    .foregroundStyle(.black)
-                                                    .multilineTextAlignment(.leading)
-                                                
-                                                HStack {
-                                                    Spacer()
-                                                    NavigationLink(destination: ArtMapDetail(artMapViewModel: artMapViewModel, name: art.name ?? "", slug: art.slug ?? "")) {
-                                                        HStack {
-                                                            Text("Lihat lebih lanjut")
-                                                                .font(AppFont.Crimson.footnoteSmall)
-                                                                .foregroundStyle(Color("brick"))
-                                                            Image(systemName: "arrow.right")
-                                                                .font(AppFont.Crimson.footnoteSmall)
-                                                                .foregroundStyle(Color("brick"))
-                                                        }
-                                                    }
-                                                }
+            VStack(spacing: 0) {
+                if #available(iOS 17.0, *) {
+                    Map(position: $cameraPosition) {
+                        ForEach(artMapViewModel.artMap) { art in
+                            Annotation("", coordinate: CLLocationCoordinate2D(latitude: art.latitude ?? 0.0, longitude: art.longitude ?? 0.0)) {
+                                Image("custom-marker-red")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 25, height: 25)
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            selectedArt = art
+                                            showDetail = false
+                                        }
+
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            withAnimation(.easeInOut(duration: 0.5)) {
+                                                cameraPosition = .region(
+                                                    MKCoordinateRegion(
+                                                        center: CLLocationCoordinate2D(latitude: art.latitude ?? 0.0, longitude: art.longitude ?? 0.0),
+                                                        span: MKCoordinateSpan(latitudeDelta: 5, longitudeDelta: 5)
+                                                    )
+                                                )
+                                            }	
+                                        }
+
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                            withAnimation(.easeInOut(duration: 0.3)) {
+                                                showDetail = true
                                             }
-                                            .padding()
-                                            .background(Color.white)
-                                            .cornerRadius(10)
-                                            .shadow(radius: 5)
-                                            .frame(width: 300, height: 200)
-                                        } else {
-                                            Image("custom-marker-blue")
-                                                .resizable()
-                                                .frame(width: 30, height: 30)
-                                                .onTapGesture {
-                                                    withAnimation {
-                                                        selectedArt = art
-                                                        isZooming = true
-                                                        cameraPosition = .region(
-                                                            MKCoordinateRegion(
-                                                                center: CLLocationCoordinate2D(latitude: art.latitude ?? 0.0, longitude: art.longitude ?? 0.0),
-                                                                span: MKCoordinateSpan(latitudeDelta: 5, longitudeDelta: 5)
-                                                            )
-                                                        )
-                                                    }
-                                                }
                                         }
                                     }
-                                }
                             }
-                            .frame(height: isFullScreen ? UIScreen.main.bounds.height : 400)
-                            .edgesIgnoringSafeArea(isFullScreen ? .all : .top)
-                            .cornerRadius(isFullScreen ? 0 : 10)
-                            .padding(isFullScreen ? 0 : 10)
                         }
-                        
-                        Button(action: {
-                            withAnimation {
-                                isFullScreen.toggle()
-                            }
-                        }) {
-                            Image(systemName: isFullScreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                                .font(.system(size: 20))
-                                .padding(10)
-                                .background(Color.white.opacity(0.8))
-                                .clipShape(Circle())
-                                .shadow(radius: 5)
-                        }
-                        .padding(.trailing, 20)
-                        .padding(.top, 20)
                     }
-                } 
+                    .frame(height: UIScreen.main.bounds.height * 0.7)
+                    .cornerRadius(16)
+                    .padding(.horizontal, 15)
+                    .padding(.top)
+                    .shadow(radius: 3)
+                }
+
+                Spacer()
             }
+            .overlay(
+                Group {
+                    if let art = selectedArt, showDetail {
+                        detailCard(for: art)
+                            .transition(.move(edge: .bottom))
+                    } else {
+                        instructionCard
+                            .transition(.opacity)
+                    }
+                }
+                .animation(.easeInOut, value: showDetail),
+                alignment: .bottom
+            )
             
             if artMapViewModel.isLoading {
                 Loading(opacity: 1)
@@ -157,4 +95,84 @@ struct ArtMap: View {
         }
         .navigationBarHidden(true)
     }
+    
+    @ViewBuilder
+    private func detailCard(for art: ArtMapResult) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack {
+                Text(art.name ?? "")
+                    .font(AppFont.Crimson.headerMedium)
+                    .foregroundStyle(Color("primary"))
+                Spacer()
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        showDetail = false
+                        selectedArt = nil
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            cameraPosition = .region(
+                                MKCoordinateRegion(
+                                    center: CLLocationCoordinate2D(latitude: -2.5489, longitude: 118.0149),
+                                    span: MKCoordinateSpan(latitudeDelta: 20, longitudeDelta: 20)
+                                )
+                            )
+                        }
+                    }
+                }) {
+                    Image(systemName: "x.circle")
+                        .font(AppFont.Raleway.bodyMedium)
+                        .foregroundColor(.black)
+                }
+
+            }
+            .padding(.bottom, 5)
+
+            Text(art.subtitle ?? "")
+                .font(AppFont.Raleway.bodyLarge)
+                .foregroundStyle(.black)
+                .multilineTextAlignment(.leading)
+
+            Spacer()
+
+            HStack {
+                Spacer()
+                NavigationLink(destination: ArtMapDetail(artMapViewModel: artMapViewModel, name: art.name ?? "", slug: art.slug ?? "")) {
+                    HStack {
+                        Text("Lihat lebih lanjut")
+                            .font(AppFont.Crimson.bodyLarge)
+                            .foregroundStyle(Color("brick"))
+                        Image(systemName: "arrow.right")
+                            .font(AppFont.Crimson.bodyLarge)
+                            .foregroundStyle(Color("brick"))
+                    }
+                }
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .frame(height: 180)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(radius: 3)
+        .padding(.horizontal, 15)
+        .padding(.bottom, 40)
+    }
+
+    private var instructionCard: some View {
+        Text("Klik pada setiap provinsi untuk mengetahui lebih lanjut tentang budaya dan seni yang dimilikinya.")
+            .font(AppFont.Raleway.footnoteSmall)
+            .foregroundStyle(Color("brick"))
+            .multilineTextAlignment(.center)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(radius: 3)
+            .padding(.horizontal, 15)
+            .padding(.bottom, 40)
+    }
+
+
 }
