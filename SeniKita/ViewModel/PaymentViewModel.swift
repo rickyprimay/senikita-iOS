@@ -119,4 +119,46 @@ class PaymentViewModel: ObservableObject {
                     }
             }
     }
+    
+    func makeCheckout(productIDs: [Int], qtys: [Int], courier: String, service: String, addressID: Int, note: String) {
+        DispatchQueue.main.async { self.isLoading = true }
+
+        guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
+            DispatchQueue.main.async { self.isLoading = false }
+            return
+        }
+
+        let url = "\(baseUrl)user/order"
+        let headers: HTTPHeaders = [
+            "Authorization": "Bearer \(token)",
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        ]
+
+        let parameters: [String: Any] = [
+            "product_ids": productIDs,
+            "qtys": qtys,
+            "courier": "JNE",
+            "service": service,
+            "address_id": addressID,
+            "note": note
+        ]
+
+        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
+            .validate(statusCode: 200..<300)
+            .responseData { [weak self] response in
+                guard let self = self else { return }
+                DispatchQueue.main.async { self.isLoading = false }
+
+                switch response.result {
+                case .success(let data):
+                    print("Order success: \(String(data: data, encoding: .utf8) ?? "")")
+                case .failure(let error):
+                    print("Order failed: \(error.localizedDescription)")
+                    if let data = response.data {
+                        print("Server response: \(String(data: data, encoding: .utf8) ?? "")")
+                    }
+                }
+            }
+    }
 }

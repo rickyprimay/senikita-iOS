@@ -2,7 +2,7 @@
 //  Payment.swift
 //  SeniKita
 //
-//  Created by Ricky Primayuda Putra sayang muna banget lv emuach on 22/03/25.
+//  Created by Ricky Primayuda Putra on 22/03/25.
 //
 
 import SDWebImageSwiftUI
@@ -31,6 +31,7 @@ struct Payment: View {
     @State private var cityId: Int = 0
     
     @State private var selectedShipping: String = "Pilih Pengiriman"
+    @State private var selectedService: String = ""
     @State private var showAddressSheet = false
     
     var shippingOptions: [String] {
@@ -129,6 +130,15 @@ struct Payment: View {
                             )
                             .background(Color("tertiary").opacity(0.3))
                             .cornerRadius(8)
+                            .onChange(of: selectedShipping) {
+                                if let selectedOption = paymentViewModel.ongkir.first(where: {
+                                    "\($0.description) - Rp. \($0.cost.first?.value ?? 0)" == selectedShipping
+                                }) {
+                                    selectedService = selectedOption.service
+                                } else {
+                                    selectedService = ""
+                                }
+                            }
                         }
                         .frame(maxWidth: .infinity, maxHeight: 40)
                     }
@@ -222,15 +232,39 @@ struct Payment: View {
                                 .font(AppFont.Nunito.bodyMedium)
                         }
                         
-                        Text("Checkout")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .bold()
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .frame(height: 40)
-                            .background(Color("primary"))
-                            .cornerRadius(10)
-                            .padding(.vertical)
+                        Button{
+                            
+                            let addressId = paymentViewModel.firstAddress?.id ?? 0
+                            let addressNote = paymentViewModel.firstAddress?.note ?? ""
+
+                            print("== Checkout Params ==")
+                            print("Product IDs: [\(productId)]")
+                            print("Qtys: [\(productQty)]")
+                            print("Courier: JNE")
+                            print("Service: REG")
+                            print("Address ID: \(addressId)")
+                            print("Note: \(addressNote)")
+                            
+                            paymentViewModel.makeCheckout(
+                                productIDs: [productId],
+                                qtys: [productQty],
+                                courier: "jne",
+                                service: selectedService,
+                                addressID: addressId,
+                                note: paymentViewModel.firstAddress?.note ?? ""
+                            )
+                            
+                        } label: {
+                            Text("Checkout")
+                                .font(AppFont.Raleway.bodyMedium)
+                                .bold()
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .frame(height: 40)
+                                .background(Color("primary"))
+                                .cornerRadius(10)
+                                .padding(.vertical)
+                        }
                         
                     }
                     .padding()
