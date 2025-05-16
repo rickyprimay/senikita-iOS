@@ -44,17 +44,17 @@ struct Register: View {
                     Spacer()
                     
                     Text("Daftar di Senikita")
-                        .font(AppFont.Nunito.titleMedium)
+                        .font(AppFont.Crimson.titleMedium)
                         .bold()
                     
                     HStack {
                         Text("Sudah punya akun?")
-                            .font(AppFont.Nunito.footnoteLarge)
+                            .font(AppFont.Raleway.footnoteLarge)
                         
                         NavigationLink(destination: Login()) {
                             Text("Masuk disini")
                                 .foregroundColor(Color("brick"))
-                                .font(AppFont.Nunito.footnoteLarge)
+                                .font(AppFont.Raleway.footnoteLarge)
                         }
                     }
                     
@@ -77,7 +77,7 @@ struct Register: View {
                     
                     Toggle(isOn: $isAgreed) {
                         Text("Saya menyetujui dengan mendaftarkan akun di Senikita")
-                            .font(AppFont.Nunito.footnoteSmall)
+                            .font(AppFont.Raleway.footnoteSmall)
                     }
                     .padding(.vertical)
                     

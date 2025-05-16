@@ -23,7 +23,7 @@ struct AddressDetail: View {
             VStack {
                 HStack {
                     Text("Daftar Alamat")
-                        .font(AppFont.Nunito.bodyLarge)
+                        .font(AppFont.Crimson.bodyLarge)
                         .bold()
                     
                     Spacer()
@@ -36,7 +36,7 @@ struct AddressDetail: View {
                             Image(systemName: "plus")
                             Text("Tambah Alamat")
                         }
-                        .font(AppFont.Nunito.bodyMedium)
+                        .font(AppFont.Raleway.bodyMedium)
                         .foregroundStyle(.white)
                         .padding(8)
                         .background(Color("primary"))
@@ -47,7 +47,7 @@ struct AddressDetail: View {
                 ScrollView {
                     if addressViewModel.address.isEmpty {
                         Text("Anda belum mempunyai alamat")
-                            .font(AppFont.Nunito.bodyLarge)
+                            .font(AppFont.Raleway.bodyLarge)
                             .foregroundColor(Color("primary"))
                             .multilineTextAlignment(.center)
                             .lineLimit(nil)
@@ -87,7 +87,7 @@ struct AddressDetail: View {
                             presentationMode.wrappedValue.dismiss()
                         }) {
                             Image(systemName: "chevron.left")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .frame(width: 40, height: 40)
                                 .background(Color.brown.opacity(0.3))
                                 .clipShape(Circle())
@@ -96,7 +96,7 @@ struct AddressDetail: View {
                     }
                     ToolbarItem(placement: .principal) {
                         Text("Alamat")
-                            .font(AppFont.Nunito.bodyLarge)
+                            .font(AppFont.Raleway.bodyLarge)
                             .bold()
                             .foregroundColor(Color("tertiary"))
                     }

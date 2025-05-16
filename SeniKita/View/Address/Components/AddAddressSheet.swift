@@ -48,12 +48,12 @@ struct AddAddressSheet: View {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Tambah Alamat Baru")
-                        .font(AppFont.Nunito.bodyLarge)
+                        .font(AppFont.Raleway.bodyLarge)
                         .bold()
                         .padding(.horizontal)
                     
                     Text("Masukkan alamat lengkap baru")
-                        .font(AppFont.Nunito.subtitle)
+                        .font(AppFont.Raleway.subtitle)
                         .foregroundStyle(.gray)
                         .padding(.horizontal)
                     
@@ -200,7 +200,7 @@ struct AddAddressSheet: View {
                     }
                 }) {
                     Text(isEditing ? "Ubah" : "Simpan")
-                        .font(AppFont.Nunito.bodyMedium)
+                        .font(AppFont.Raleway.bodyMedium)
                         .bold()
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)

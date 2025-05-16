@@ -31,7 +31,7 @@ struct History: View {
                         if selectedTab == "Produk Kesenian" {
                             if historyViewModel.history.isEmpty && !historyViewModel.isLoading {
                                 Text("Tidak ada riwayat pembelian\nProduk Kesenian")
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .foregroundColor(Color("primary"))
                                     .multilineTextAlignment(.center)
                                     .lineLimit(nil)
@@ -44,7 +44,7 @@ struct History: View {
                         } else {
                             if historyViewModel.historyService.isEmpty && !historyViewModel.isLoading {
                                 Text("Tidak ada riwayat pemesanan\nJasa Kesenian")
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .foregroundColor(Color("primary"))
                                     .multilineTextAlignment(.center)
                                     .frame(maxWidth: .infinity)
@@ -76,7 +76,7 @@ struct History: View {
                             }
                         }) {
                             Image(systemName: "chevron.left")
-                                .font(AppFont.Crimson.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .frame(width: 40, height: 40)
                                 .background(Color.brown.opacity(0.3))
                                 .clipShape(Circle())
@@ -85,7 +85,7 @@ struct History: View {
                     }
                     ToolbarItem(placement: .principal) {
                         Text("Daftar Transaksi")
-                            .font(AppFont.Crimson.bodyLarge)
+                            .font(AppFont.Raleway.bodyLarge)
                             .bold()
                             .foregroundColor(Color("tertiary"))
                     }

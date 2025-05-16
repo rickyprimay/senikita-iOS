@@ -82,7 +82,7 @@ class ArtMapViewModel: ObservableObject {
     func sendPromptToGemini(prompt: String, statue: String) {
         Task {
             do {
-                let systemMessage = "Anda adalah sistem yang memberikan pengetahuan tentang budaya dan kesenian. Jawablah setiap pertanyaan dengan ramah menggunakan bahasa Indonesia. Hindari sapaan dan jawaban yang terlalu panjang. Fokuslah pada jawaban yang informatif dan mudah dipahami. Jangan jawab pertanyaan jika tidak berkaitan dan berhubungan dengan seni dan budaya di indonesia terutama di wilayah \(statue). Jawab dengan jawaban yang friendly dan ramah bagi anak anak."
+                let systemMessage = "Anda adalah sistem yang memberikan pengetahuan tentang budaya dan kesenian. Jawablah setiap pertanyaan dengan ramah menggunakan bahasa Indonesia. Hindari sapaan dan jawaban yang terlalu panjang. Fokuslah pada jawaban yang informatif dan mudah dipahami. Jangan jawab pertanyaan jika tidak berkaitan dan berhubungan dengan seni dan budaya di indonesia terutama di wilayah \(statue). Jawab dengan jawaban yang friendly dan ramah bagi anak anak. Hindari sapaan dan jawaban panjang. Jawab hanya jika pertanyaan berkaitan dengan seni dan budaya Indonesia. maksimal 20 text"
                 let response = try await model.generateContent(systemMessage + prompt)
                 if let text = response.text {
                     await MainActor.run {
@@ -92,7 +92,7 @@ class ArtMapViewModel: ObservableObject {
                 }
             } catch {
                 print("Error sending prompt to Gemini: \(error.localizedDescription)")
-            }
+            }   
         }
     }
     
@@ -114,8 +114,8 @@ class ArtMapViewModel: ObservableObject {
     
     @MainActor
     func speakText(textUsing: String) {
-        let apiKey = "sk_941d4a3d2cebe8246beabb129c03a0a24b8a360ead39f5d1"
-        let voiceID = "omZp0hMnZ2cUGFuEaRws"
+        let apiKey = "sk_9b43b29cb378cb3978d3d1c5b7abb0fb25d4f7038054bc3b"
+        let voiceID = "gmnazjXOFoOcWA59sd5m"
         let url = "https://api.elevenlabs.io/v1/text-to-speech/\(voiceID)/stream"
 
         let headers: HTTPHeaders = [

@@ -36,7 +36,7 @@ struct CardService: View {
         }
         .frame(width: 230)
         .background(Color.white)
-        .cornerRadius(20)
+        .cornerRadius(15)
         .shadow(radius: 4)
         .padding(.horizontal, 8)
     }
@@ -50,7 +50,7 @@ struct CardService: View {
     private var nameText: some View {
         Text(service.name ?? "")
             .font(AppFont.Raleway.bodyMedium)
-            .fontWeight(.bold)
+            .fontWeight(.regular)
             .lineLimit(1)
             .padding(.bottom, 2)
     }
@@ -59,7 +59,7 @@ struct CardService: View {
         HStack {
             Text("Rp\(service.price ?? 0)")
                 .font(AppFont.Nunito.titleMedium)
-                .fontWeight(.bold)
+                .fontWeight(.regular)
                 .foregroundColor(.orange)
             
             Text("per \(service.type ?? "")")
@@ -82,7 +82,7 @@ struct CardService: View {
             
             Text(String(format: "%.1f", service.average_rating ?? 0))
                 .font(AppFont.Raleway.bodyMedium)
-                .fontWeight(.bold)
+                .fontWeight(.regular)
                 .foregroundColor(.gray)
             
             Text("| Terjual \(service.sold ?? 0)")

@@ -55,10 +55,10 @@ struct CartView: View {
                                     
                                     VStack(alignment: .leading) {
                                         Text(shopName)
-                                            .font(AppFont.Nunito.bodyMedium)
+                                            .font(AppFont.Raleway.bodyMedium)
                                         
                                         Text(firstProduct.storeLocation)
-                                            .font(AppFont.Nunito.footnoteLarge)
+                                            .font(AppFont.Raleway.footnoteLarge)
                                     }
                                 }
                                 .padding(.horizontal)
@@ -110,13 +110,13 @@ struct CartView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Text("Total Belanja")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .bold()
                         
                         Spacer()
                         
                         Text("Rp\(totalHarga, specifier: "%.2f")")
-                            .font(AppFont.Crimson.titleMedium)
+                            .font(AppFont.Nunito.titleMedium)
                             .bold()
                             .foregroundColor(Color("tertiary"))
                     }
@@ -130,7 +130,7 @@ struct CartView: View {
                        
                     }) {
                         Text("Beli (\(selectedProductCount))")
-                            .font(AppFont.Crimson.bodyMedium)
+                            .font(AppFont.Nunito.bodyMedium)
                             .bold()
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -196,15 +196,15 @@ struct CartProductView: View {
                 
                 VStack(alignment: .leading, spacing: 5) {
                     Text(product.storeName)
-                        .font(AppFont.Nunito.footnoteSmall)
+                        .font(AppFont.Raleway.footnoteSmall)
                         .foregroundColor(.gray)
                     
                     Text(product.productName)
-                        .font(AppFont.Nunito.bodyMedium)
+                        .font(AppFont.Raleway.bodyMedium)
                         .bold()
                     
                     Text(product.storeLocation)
-                        .font(AppFont.Nunito.footnoteSmall)
+                        .font(AppFont.Raleway.footnoteSmall)
                         .foregroundColor(.gray)
                 }
                 
@@ -223,7 +223,7 @@ struct CartProductView: View {
                     viewModel.deleteCartByIdItem(cartItemId: product.cart_item_id)
                 }) {
                     Text("Hapus")
-                        .font(AppFont.Nunito.footnoteSmall)
+                        .font(AppFont.Raleway.footnoteSmall)
                         .foregroundColor(.red)
                 }
             }

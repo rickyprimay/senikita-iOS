@@ -40,6 +40,14 @@ extension String {
         }
     }
     
+    func toDate() -> Date? {
+            let inputFormatter = DateFormatter()
+            inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
+            inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+            inputFormatter.timeZone = TimeZone(abbreviation: "UTC")
+            return inputFormatter.date(from: self)
+        }
+    
     var stripHTML: String {
         let withoutHTML = self.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
         let withoutNbsp = withoutHTML.replacingOccurrences(of: "&nbsp;", with: " ")

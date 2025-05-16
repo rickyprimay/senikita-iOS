@@ -95,7 +95,7 @@ struct Payment: View {
                             
                             VStack(alignment: .leading) {
                                 Text(productName)
-                                    .font(AppFont.Nunito.bodyMedium)
+                                    .font(AppFont.Raleway.bodyMedium)
                                 
                                 Text("\(productQty) item x Rp\(productPrice)")
                                     .font(AppFont.Nunito.footnoteLarge)
@@ -121,7 +121,7 @@ struct Payment: View {
                                         Image(systemName: "truck.box")
                                         Text(option)
                                     }
-                                    .font(AppFont.Nunito.bodyMedium)
+                                    .font(AppFont.Raleway.bodyMedium)
                                 }
                             }
                             .accentColor(Color("primary"))
@@ -155,7 +155,7 @@ struct Payment: View {
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
                             Text("Alamat Anda")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .bold()
                             
                             Spacer()
@@ -164,7 +164,7 @@ struct Payment: View {
                                 showAddressSheet.toggle()
                             } label: {
                                 Text("Ganti alamat")
-                                    .font(AppFont.Nunito.bodyMedium)
+                                    .font(AppFont.Raleway.bodyMedium)
                                     .bold()
                                     .foregroundColor(Color("primary"))
                             }
@@ -175,7 +175,7 @@ struct Payment: View {
                                 AddressPaymentCard(address: firstAddress)
                             } else {
                                 Text("Anda belum memiliki alamat")
-                                    .font(AppFont.Nunito.bodyMedium)
+                                    .font(AppFont.Raleway.bodyMedium)
                                     .foregroundColor(.red)
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .center)
@@ -195,7 +195,7 @@ struct Payment: View {
                     
                     VStack(alignment: .leading) {
                         Text("Ringkasan Belanja")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .bold()
                         
                         HStack {

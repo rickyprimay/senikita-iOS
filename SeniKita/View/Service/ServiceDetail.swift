@@ -49,19 +49,19 @@ struct ServiceDetail: View {
                                 .lineLimit(1)
                             
                             Text("per \(serviceViewModel.service?.type ?? "")")
-                                .font(AppFont.Nunito.footnoteSmall)
+                                .font(AppFont.Raleway.footnoteSmall)
                                 .foregroundColor(.black)
                             
                         }
                         
                         Text(serviceViewModel.service?.name ?? "")
-                            .font(AppFont.Crimson.titleMedium)
+                            .font(AppFont.Raleway.titleMedium)
                             .foregroundColor(.black)
                             .lineLimit(1)
                         
                         HStack(spacing: 4) {
                             Text("Sudah menerima \(serviceViewModel.service?.sold ?? 0) pesanan")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .lineLimit(1)
                             
@@ -72,17 +72,17 @@ struct ServiceDetail: View {
                                 .font(.system(size: 12))
                             
                             Text(String(format: "%.1f", serviceViewModel.service?.average_rating ?? 0.0))
-                                .font(AppFont.Nunito.bodyMedium)
-                                .fontWeight(.bold)
+                                .font(AppFont.Raleway.bodyMedium)
+                                .fontWeight(.regular)
                                 .foregroundColor(.black)
                             
                             Text("(\(serviceViewModel.service?.rating_count ?? 0) Rating)")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                         }
                         
                         Text("Jumlah orang: \(serviceViewModel.service?.person_amount ?? 0)")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.black)
                             .lineLimit(1)
                         
@@ -90,33 +90,33 @@ struct ServiceDetail: View {
                             Text("Kategori:")
                             Text(serviceViewModel.service?.category?.name ?? "")
                                 .foregroundStyle(Color("primary"))
-                                .fontWeight(.bold)
+                                .fontWeight(.regular)
                         }
-                        .font(AppFont.Nunito.bodyMedium)
+                        .font(AppFont.Raleway.bodyMedium)
                         .foregroundColor(.black)
                         .lineLimit(1)
                         
                         Text(serviceViewModel.service?.desc?.stripHTML ?? "")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.black)
                             .lineLimit(nil)
                         
                         Text("Alamat Layanan Kesenian")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.black)
                             .bold()
                         
                         HStack {
                             
                             Image(systemName: "mappin.and.ellipse")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                             
                             Text("Jasa dari")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                             
                             Text(serviceViewModel.service?.shop?.region ?? "")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .bold()
                             
@@ -124,20 +124,20 @@ struct ServiceDetail: View {
                         
                         HStack{
                             Image(systemName: "dollarsign.circle.fill")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                             
                             Text("Pembayaran per")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                             
                             Text(serviceViewModel.service?.type ?? "")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                         }
                         
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Profil Seniman")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .bold()
                             
@@ -161,18 +161,18 @@ struct ServiceDetail: View {
                                 
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(serviceViewModel.service?.shop?.name ?? "")
-                                        .font(AppFont.Nunito.bodyMedium)
+                                        .font(AppFont.Raleway.bodyMedium)
                                         .foregroundColor(.black)
                                         .bold()
                                     
                                     Text(serviceViewModel.service?.shop?.region ?? "")
-                                        .font(AppFont.Nunito.bodyMedium)
+                                        .font(AppFont.Raleway.bodyMedium)
                                         .foregroundColor(.black)
                                 }
                             }
                             
                             Text(serviceViewModel.service?.shop?.desc ?? "")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .fixedSize(horizontal: false, vertical: false)
                         }
@@ -266,15 +266,22 @@ struct ServiceDetail: View {
                 Spacer()
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text("Pesan Sekarang")
-                            .font(AppFont.Nunito.bodyMedium)
-                            .bold()
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                            .background(Color("primary"))
-                            .cornerRadius(10)
+                        NavigationLink(destination: PaymentService(
+                            imageService: serviceViewModel.service?.thumbnail ?? "",
+                            nameShop: serviceViewModel.service?.shop?.name ?? "",
+                            nameService: serviceViewModel.service?.name ?? "",
+                            price: serviceViewModel.service?.price?.toDouble() ?? 0
+                        )){
+                            Text("Pesan Sekarang")
+                                .font(AppFont.Nunito.bodyMedium)
+                                .bold()
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .multilineTextAlignment(.center)
+                                .padding()
+                                .background(Color("primary"))
+                                .cornerRadius(10)
+                        }
                     }
                     .padding(.horizontal)
                     .padding(.vertical, 10)

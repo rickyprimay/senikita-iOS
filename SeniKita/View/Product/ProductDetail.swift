@@ -56,7 +56,7 @@ struct ProductDetail: View {
                         
                         HStack(spacing: 4) {
                             Text("Terjual \(productViewModel.product?.sold ?? 0)")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .lineLimit(1)
                             
@@ -67,17 +67,17 @@ struct ProductDetail: View {
                                 .font(.system(size: 12))
                             
                             Text(String(format: "%.1f", productViewModel.product?.average_rating ?? 0))
-                                .font(AppFont.Nunito.bodyMedium)
-                                .fontWeight(.bold)
+                                .font(AppFont.Raleway.bodyMedium)
+                                .fontWeight(.regular)
                                 .foregroundColor(.black)
                             
                             Text("(\(productViewModel.product?.rating_count ?? 0) Rating)")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                         }
                         
                         Text("Stok: \(productViewModel.product?.stock ?? 0)")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.black)
                             .lineLimit(1)
                         
@@ -85,33 +85,33 @@ struct ProductDetail: View {
                             Text("Kategori:")
                             Text(productViewModel.product?.category?.name ?? "")
                                 .foregroundStyle(Color("primary"))
-                                .fontWeight(.bold)
+                                .fontWeight(.regular)
                         }
-                        .font(AppFont.Nunito.bodyMedium)
+                        .font(AppFont.Raleway.bodyMedium)
                         .foregroundColor(.black)
                         .lineLimit(1)
                         
                         Text(productViewModel.product?.desc?.stripHTML ?? "")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.black)
                             .lineLimit(nil)
                         
                         Text("Pengiriman")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.black)
                             .bold()
                         
                         HStack{
                             
                             Image(systemName: "mappin.and.ellipse")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                             
                             Text("Dikirim dari")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                             
                             Text(productViewModel.product?.shop?.region ?? "")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .bold()
                             
@@ -120,10 +120,10 @@ struct ProductDetail: View {
                         HStack{
                             
                             Image(systemName: "truck.box")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                             
                             Text("Estimasi Ongkir")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                             
                             Text("Rp. 26.000 - 30.000")
@@ -137,7 +137,7 @@ struct ProductDetail: View {
                         VStack(alignment: .leading, spacing: 12) {
                             
                             Text("Profil Seniman")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .bold()
                             
@@ -162,18 +162,18 @@ struct ProductDetail: View {
                                 
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(productViewModel.product?.shop?.name ?? "Nama Toko Tidak Ada")
-                                        .font(AppFont.Nunito.bodyMedium)
+                                        .font(AppFont.Raleway.bodyMedium)
                                         .foregroundColor(.black)
                                         .bold()
                                     
                                     Text(productViewModel.product?.shop?.region ?? "Wilayah Tidak Ada")
-                                        .font(AppFont.Nunito.bodyMedium)
+                                        .font(AppFont.Raleway.bodyMedium)
                                         .foregroundColor(.black)
                                 }
                             }
                             
                             Text(productViewModel.product?.shop?.desc ?? "Deskripsi toko belum tersedia.")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .fixedSize(horizontal: false, vertical: true)
                             

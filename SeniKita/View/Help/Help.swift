@@ -25,12 +25,12 @@ struct Help: View {
                     VStack {
                         VStack(spacing: 8) {
                             Text("Cara Senikita Bekerja untuk Pembeli")
-                                .font(AppFont.Nunito.headerMedium)
+                                .font(AppFont.Crimson.headerMedium)
                                 .foregroundColor(.white)
                                 .multilineTextAlignment(.center)
 
                             Text("Jelajahi, pilih layanan atau produk seni, dan lakukan transaksi dengan mudah di satu platform.")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.white.opacity(0.9))
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 24)
@@ -62,7 +62,7 @@ struct Help: View {
                             presentationMode.wrappedValue.dismiss()
                         }) {
                             Image(systemName: "chevron.left")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .frame(width: 40, height: 40)
                                 .background(Color.brown.opacity(0.3))
                                 .clipShape(Circle())
@@ -71,7 +71,7 @@ struct Help: View {
                     }
                     ToolbarItem(placement: .principal) {
                         Text("Support & Bantuan")
-                            .font(AppFont.Nunito.bodyLarge)
+                            .font(AppFont.Raleway.bodyLarge)
                             .bold()
                             .foregroundColor(Color("tertiary"))
                     }

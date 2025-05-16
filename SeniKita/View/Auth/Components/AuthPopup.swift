@@ -34,7 +34,7 @@ struct AuthPopup: View {
                 
                 Button(action: onConfirm) {
                     Text("OK")
-                        .font(AppFont.Nunito.footnoteLarge)
+                        .font(AppFont.Raleway.footnoteLarge)
                         .bold()
                         .frame(maxWidth: .infinity, minHeight: 40)
                         .background(Color("brick"))

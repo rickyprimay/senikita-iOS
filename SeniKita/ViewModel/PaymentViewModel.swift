@@ -7,6 +7,7 @@
 
 import Foundation
 import Alamofire
+import UserNotifications
 
 @MainActor
 class PaymentViewModel: ObservableObject {
@@ -44,7 +45,7 @@ class PaymentViewModel: ObservableObject {
         .responseData { [weak self] response in
             guard let self = self else { return }
             DispatchQueue.main.async { self.isLoading = false }
-
+            
             switch response.result {
             case .success(let data):
                 let jsonString = String(data: data, encoding: .utf8)
@@ -123,19 +124,19 @@ class PaymentViewModel: ObservableObject {
     
     func makeCheckout(productIDs: [Int], qtys: [Int], courier: String, service: String, addressID: Int, note: String) {
         DispatchQueue.main.async { self.isLoading = true }
-
+        
         guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
             DispatchQueue.main.async { self.isLoading = false }
             return
         }
-
+        
         let url = "\(baseUrl)user/order"
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(token)",
             "Accept": "application/json",
             "Content-Type": "application/json"
         ]
-
+        
         let parameters: [String: Any] = [
             "product_ids": productIDs,
             "qtys": qtys,
@@ -144,18 +145,19 @@ class PaymentViewModel: ObservableObject {
             "address_id": addressID,
             "note": note
         ]
-
+        
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
             .validate(statusCode: 200..<300)
             .responseData { [weak self] response in
                 guard let self = self else { return }
                 DispatchQueue.main.async { self.isLoading = false }
-
+                
                 switch response.result {
                 case .success(let data):
                     print("Order success: \(String(data: data, encoding: .utf8) ?? "")")
                     DispatchQueue.main.async {
                         self.isCheckoutSuccess = true
+                        self.sendCheckoutSuccessNotification()
                     }
                 case .failure(let error):
                     print("Order failed: \(error.localizedDescription)")
@@ -164,5 +166,24 @@ class PaymentViewModel: ObservableObject {
                     }
                 }
             }
+    }
+    
+    func sendCheckoutSuccessNotification() {
+        let content = UNMutableNotificationContent()
+        content.title = "Checkout Berhasil!"
+        content.body = "Terima kasih telah melakukan checkout. proses selanjutnya silahkan lanjutkan ke pembayaran"
+        content.sound = .default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error sending notification: \(error.localizedDescription)")
+            } else {
+                print("Checkout success notification sent!")
+            }
+        }
     }
 }

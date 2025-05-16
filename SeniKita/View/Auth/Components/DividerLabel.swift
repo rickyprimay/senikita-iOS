@@ -17,7 +17,7 @@ struct DividerLabel: View {
                 .frame(height: 1)
                 .foregroundColor(color)
             Text(label)
-                .font(AppFont.Nunito.footnoteLarge)
+                .font(AppFont.Raleway.footnoteLarge)
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 8)
             Rectangle()

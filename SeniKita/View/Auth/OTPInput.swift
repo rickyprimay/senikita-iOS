@@ -26,13 +26,13 @@ struct OTPInput: View {
         ZStack{
             VStack(alignment: .leading, spacing: 16) {
                 Text("Masukkan Kode OTP")
-                    .font(AppFont.Nunito.titleMedium)
+                    .font(AppFont.Crimson.titleMedium)
                     .bold()
                     .foregroundColor(.black)
                     .padding(.top, 60)
                 
                 Text("Silakan masukkan kode OTP yang telah dikirim ke nomor Anda.")
-                    .font(AppFont.Nunito.bodyMedium)
+                    .font(AppFont.Raleway.bodyMedium)
                     .foregroundColor(.gray)
                     .padding(.bottom, 10)
                 
@@ -55,10 +55,10 @@ struct OTPInput: View {
                 
                 HStack{
                     Text("Otp tidak terkirim? ")
-                        .font(AppFont.Nunito.bodyMedium)
+                        .font(AppFont.Raleway.bodyMedium)
                     Button(action: resendOTP) {
                         Text(isCountingDown ? "Tunggu dalam \(formattedTime()) lagi" : "Kirim Ulang")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(Color("brick"))
                     }
                     .disabled(isCountingDown)
@@ -69,7 +69,7 @@ struct OTPInput: View {
                     verifyOTP()
                 }) {
                     Text("Verifikasi")
-                        .font(AppFont.Nunito.footnoteLarge)
+                        .font(AppFont.Raleway.footnoteLarge)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                         .background(Color("brick"))

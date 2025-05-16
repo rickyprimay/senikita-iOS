@@ -27,37 +27,58 @@ struct HistoryProductDetail: View {
             VStack{
                 ScrollView {
                     VStack(alignment: .leading) {
-                        if let statusInfo = statusMap[historyViewModel.historyProductDetail?.computedStatus ?? "selesai"] {
-                            HStack {
-                                Image(systemName: statusInfo.icon)
-                                Text(statusInfo.text)
+                        if let historyDetail = historyViewModel.historyProductDetail,
+                           let statusInfo = statusMap[historyDetail.computedStatus] {
+                            
+                            if historyDetail.computedStatus == "pending",
+                               let createdDate = historyDetail.created_at.toDate(),
+                               let daysPassed = Calendar.current.dateComponents([.day], from: createdDate, to: Date()).day,
+                               daysPassed > 2 {
+                                
+                                if let failedStatusInfo = statusMap["gagal"] {
+                                    HStack {
+                                        Image(systemName: failedStatusInfo.icon)
+                                        Text(failedStatusInfo.text)
+                                    }
+                                    .font(AppFont.Raleway.footnoteSmall)
+                                    .bold()
+                                    .padding(8)
+                                    .background(failedStatusInfo.bgColor)
+                                    .foregroundColor(failedStatusInfo.textColor)
+                                    .cornerRadius(10)
+                                }
+                            } else {
+                                HStack {
+                                    Image(systemName: statusInfo.icon)
+                                    Text(statusInfo.text)
+                                }
+                                .font(AppFont.Raleway.footnoteSmall)
+                                .bold()
+                                .padding(8)
+                                .background(statusInfo.bgColor)
+                                .foregroundColor(statusInfo.textColor)
+                                .cornerRadius(10)
                             }
-                            .font(AppFont.Nunito.footnoteSmall)
-                            .bold()
-                            .padding(8)
-                            .background(statusInfo.bgColor)
-                            .foregroundColor(statusInfo.textColor)
-                            .cornerRadius(10)
                         }
                         
                         HStack {
                             Text("No. Invoice")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .fontWeight(.light)
                             Spacer()
                             Text(historyViewModel.historyProductDetail?.no_transaction ?? "")
                                 .font(AppFont.Nunito.bodyLarge)
-                                .fontWeight(.bold)
+                                .fontWeight(.regular)
                         }
                         
                         HStack {
                             Text("Tanggal Pembelian")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .fontWeight(.light)
                             Spacer()
                             Text(historyViewModel.historyProductDetail?.created_at.formattedDateWithTime() ?? "")
                                 .font(AppFont.Nunito.bodyLarge)
-                                .fontWeight(.bold)
+                                .fontWeight(.regular)
                         }
                         HStack(spacing: 12) {
                             if let imageUrl = URL(string: historyViewModel.historyProductDetail?.product.first?.thumbnail ?? "") {
@@ -73,7 +94,7 @@ struct HistoryProductDetail: View {
                             
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(historyViewModel.historyProductDetail?.product.first?.name ?? "Nama tidak tersedia")
-                                    .font(AppFont.Nunito.bodyMedium)
+                                    .font(AppFont.Raleway.bodyMedium)
                                     .foregroundColor(.black)
                                 
                                 Text("\(historyViewModel.historyProductDetail?.product.first?.pivot?.qty ?? 0) item x \((historyViewModel.historyProductDetail?.product.first?.price ?? 0).toDouble().formatPrice())")
@@ -99,12 +120,12 @@ struct HistoryProductDetail: View {
                         
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Catatan")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .bold()
                                 .padding(.bottom, 4)
                             
                             Text("Info Pengiriman")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .bold()
                                 .padding(.bottom, 8)
                             
@@ -112,107 +133,112 @@ struct HistoryProductDetail: View {
                                 HStack {
                                     Text("Kurir")
                                         .frame(width: 70, alignment: .leading)
-                                        .font(AppFont.Nunito.bodyLarge)
+                                        .font(AppFont.Raleway.bodyLarge)
                                         .fontWeight(.light)
                                     
                                     Text("\(historyViewModel.historyProductDetail?.courier ?? "") - \(historyViewModel.historyProductDetail?.service ?? "")")
-                                        .font(AppFont.Nunito.bodyLarge)
-                                        .fontWeight(.semibold)
+                                        .font(AppFont.Raleway.bodyLarge)
+                                        .fontWeight(.regular)
                                 }
                                 
                                 HStack {
                                     Text("No. Resi")
                                         .frame(width: 70, alignment: .leading)
-                                        .font(AppFont.Nunito.bodyLarge)
+                                        .font(AppFont.Raleway.bodyLarge)
                                         .fontWeight(.light)
                                     
                                     Text("Nomor Resi")
-                                        .font(AppFont.Nunito.bodyLarge)
-                                        .fontWeight(.semibold)
+                                        .font(AppFont.Raleway.bodyLarge)
+                                        .fontWeight(.regular)
                                 }
                                 
                                 HStack(alignment: .top) {
                                     Text("Alamat")
                                         .frame(width: 70, alignment: .leading)
-                                        .font(AppFont.Nunito.bodyLarge)
+                                        .font(AppFont.Raleway.bodyLarge)
                                         .fontWeight(.light)
                                     
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(historyViewModel.historyProductDetail?.address.name ?? "")
-                                            .font(AppFont.Nunito.bodyLarge)
-                                            .fontWeight(.bold)
+                                            .font(AppFont.Raleway.bodyLarge)
+                                            .fontWeight(.regular)
                                         
                                         Text(historyViewModel.historyProductDetail?.address.phone ?? "")
-                                            .font(AppFont.Nunito.bodyLarge)
-                                            .fontWeight(.semibold)
+                                            .font(AppFont.Raleway.bodyLarge)
+                                            .fontWeight(.regular)
                                         
                                         Text(historyViewModel.historyProductDetail?.address.address_detail ?? "")
-                                            .font(AppFont.Nunito.bodyLarge)
-                                            .fontWeight(.semibold)
+                                            .font(AppFont.Raleway.bodyLarge)
+                                            .fontWeight(.regular)
                                         
                                         Text("\(historyViewModel.historyProductDetail?.address.city?.name ?? ""), \(historyViewModel.historyProductDetail?.address.city?.province?.name ?? "")")
-                                            .font(AppFont.Nunito.bodyLarge)
-                                            .fontWeight(.semibold)
+                                            .font(AppFont.Raleway.bodyLarge)
+                                            .fontWeight(.regular)
                                     }
                                 }
                                 
                                 Text("Rincian Pembayaran")
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .bold()
                                     .padding(.bottom, 8)
                                 
                                 HStack {
                                     Text("Total Harga")
                                         .frame(width: 200, alignment: .leading)
-                                        .font(AppFont.Nunito.bodyLarge)
+                                        .font(AppFont.Raleway.bodyLarge)
                                         .fontWeight(.light)
                                     
                                     Text("\(historyViewModel.historyProductDetail?.price.formatPrice() ?? "")")
                                         .font(AppFont.Nunito.bodyLarge)
-                                        .fontWeight(.semibold)
+                                        .fontWeight(.regular)
                                 }
                                 
                                 HStack {
                                     Text("Total Ongkos Kirim")
                                         .frame(width: 200, alignment: .leading)
-                                        .font(AppFont.Nunito.bodyLarge)
+                                        .font(AppFont.Raleway.bodyLarge)
                                         .fontWeight(.light)
                                     
                                     Text("\(historyViewModel.historyProductDetail?.ongkir.formatPrice() ?? "")")
                                         .font(AppFont.Nunito.bodyLarge)
-                                        .fontWeight(.semibold)
+                                        .fontWeight(.regular)
                                 }
                                 
                                 HStack {
                                     Text("Total Biaya Layanan")
                                         .frame(width: 200, alignment: .leading)
-                                        .font(AppFont.Nunito.bodyLarge)
+                                        .font(AppFont.Raleway.bodyLarge)
                                         .fontWeight(.light)
                                     
                                     Text("Rp5.000")
                                         .font(AppFont.Nunito.bodyLarge)
-                                        .fontWeight(.semibold)
+                                        .fontWeight(.regular)
                                 }
                                 
                                 HStack {
                                     Text("Total Pembayaran")
                                         .frame(width: 200, alignment: .leading)
-                                        .font(AppFont.Nunito.bodyLarge)
+                                        .font(AppFont.Raleway.bodyLarge)
                                         .fontWeight(.light)
                                     
                                     Text("\(historyViewModel.historyProductDetail?.total_price.formatPrice() ?? "")")
                                         .font(AppFont.Nunito.bodyLarge)
-                                        .fontWeight(.semibold)
+                                        .fontWeight(.regular)
                                 }
                                 
-                                if historyViewModel.historyProductDetail?.computedStatus == "pending" {
+                                if let historyDetail = historyViewModel.historyProductDetail,
+                                   historyDetail.computedStatus == "pending",
+                                   let createdDate = historyDetail.created_at.toDate(),
+                                   let daysPassed = Calendar.current.dateComponents([.day], from: createdDate, to: Date()).day,
+                                   daysPassed <= 2 {
+                                    
                                     Button(action: {
-                                        if let url = URL(string: historyViewModel.historyProductDetail?.invoice_url ?? "") {
+                                        if let url = URL(string: historyDetail.invoice_url ?? "") {
                                             UIApplication.shared.open(url)
                                         }
                                     }) {
                                         Text("Bayar")
-                                            .font(AppFont.Nunito.bodyLarge)
+                                            .font(AppFont.Raleway.bodyLarge)
                                             .foregroundColor(.white)
                                             .frame(maxWidth: .infinity)
                                             .padding()

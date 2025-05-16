@@ -33,11 +33,11 @@ struct SupportStep: View {
             
             VStack(alignment: .leading) {
                 Text(step.title)
-                    .font(AppFont.Nunito.subtitle)
+                    .font(AppFont.Crimson.subtitle)
                     .foregroundColor(Color("primary"))
 
                 Text(step.description)
-                    .font(AppFont.Nunito.bodyMedium)
+                    .font(AppFont.Raleway.bodyMedium)
                     .foregroundColor(Color("secondary"))
             }
         }

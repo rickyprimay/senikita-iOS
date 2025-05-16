@@ -19,7 +19,7 @@ struct TabButton: View {
                 }
             }) {
                 Text(title)
-                    .font(AppFont.Nunito.bodyLarge)
+                    .font(AppFont.Crimson.bodyLarge)
                     .foregroundColor(selectedTab == title ? Color("primary") : .gray)
                     .padding(.bottom, 4)
             }

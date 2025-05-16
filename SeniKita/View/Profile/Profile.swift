@@ -46,7 +46,7 @@ struct Profile: View {
                     
                     Text(profileViewModel.profile?.name ?? "Guest")
                         .font(AppFont.Crimson.bodyMedium)
-                        .fontWeight(.bold)
+                        .fontWeight(.regular)
                     
                     NavigationLink(destination: EditProfile(profileViewModel: profileViewModel)) {
                         Text("Edit Profile")

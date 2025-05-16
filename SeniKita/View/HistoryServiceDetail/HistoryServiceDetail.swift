@@ -33,7 +33,7 @@ struct HistoryServiceDetail: View {
                                 Image(systemName: statusInfo.icon)
                                 Text(statusInfo.text)
                             }
-                            .font(AppFont.Nunito.footnoteSmall)
+                            .font(AppFont.Raleway.footnoteSmall)
                             .bold()
                             .padding(8)
                             .background(statusInfo.bgColor)
@@ -43,22 +43,22 @@ struct HistoryServiceDetail: View {
                         
                         HStack {
                             Text("No. Invoice")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .fontWeight(.light)
                             Spacer()
                             Text(historyViewModel.historyServiceDetail?.no_transaction ?? "")
                                 .font(AppFont.Nunito.bodyLarge)
-                                .fontWeight(.bold)
+                                .fontWeight(.regular)
                         }
                         
                         HStack {
                             Text("Tanggal Pembelian")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .fontWeight(.light)
                             Spacer()
                             Text(historyViewModel.historyServiceDetail?.created_at.formattedDateWithTime() ?? "")
                                 .font(AppFont.Nunito.bodyLarge)
-                                .fontWeight(.bold)
+                                .fontWeight(.regular)
                         }
                         
                         HStack(spacing: 12) {
@@ -76,11 +76,11 @@ struct HistoryServiceDetail: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 
                                 Text(historyViewModel.historyServiceDetail?.service.shop?.name ?? "")
-                                    .font(AppFont.Nunito.footnoteLarge)
+                                    .font(AppFont.Raleway.footnoteLarge)
                                     .foregroundStyle(Color("tertiary"))
                                 
                                 Text(historyViewModel.historyServiceDetail?.service.name ?? "")
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .foregroundColor(.black)
                                 
                                 Text("\(historyViewModel.historyServiceDetail?.price.formatPrice() ?? "")")
@@ -101,78 +101,78 @@ struct HistoryServiceDetail: View {
                         
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Detail Acara")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .bold()
                                 .padding(.bottom, 4)
                             
                             HStack {
                                 Text("Nama Acara")
                                     .frame(width: 140, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text(historyViewModel.historyServiceDetail?.activity_name ?? "")
-                                    .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .font(AppFont.Raleway.bodyLarge)
+                                    .fontWeight(.regular)
                             }
                             
                             HStack {
                                 Text("Tanggal Acara")
                                     .frame(width: 140, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text(historyViewModel.historyServiceDetail?.activity_date ?? "")
                                     .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .fontWeight(.regular)
                             }
                             
                             HStack {
                                 Text("Waktu Acara")
                                     .frame(width: 140, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text(historyViewModel.historyServiceDetail?.activity_time ?? "")
                                     .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .fontWeight(.regular)
                             }
                             
                             HStack(alignment: .top) {
                                 Text("Lokasi")
                                     .frame(width: 140, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text("\(historyViewModel.historyServiceDetail?.address ?? "")")
                                     .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .fontWeight(.regular)
                             }
                             
                             HStack(alignment: .top) {
                                 Text("Peserta")
                                     .frame(width: 140, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text("\(historyViewModel.historyServiceDetail?.attendee ?? 0)")
                                     .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .fontWeight(.regular)
                             }
                             
                             HStack(alignment: .top) {
                                 Text("Catatan")
                                     .frame(width: 140, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text("\(historyViewModel.historyServiceDetail?.description ?? "")")
-                                    .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .font(AppFont.Raleway.bodyLarge)
+                                    .fontWeight(.regular)
                             }
                             
                             Text("Info Penanggung Jawab")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .bold()
                                 .padding(.vertical, 4)
                                 .padding(.top, 7)
@@ -180,38 +180,38 @@ struct HistoryServiceDetail: View {
                             HStack(alignment: .top) {
                                 Text("Nama")
                                     .frame(width: 70, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text(historyViewModel.historyServiceDetail?.name ?? "")
-                                    .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .font(AppFont.Raleway.bodyLarge)
+                                    .fontWeight(.regular)
                             }
                             
                             HStack(alignment: .top) {
                                 Text("Telepon")
                                     .frame(width: 70, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text(historyViewModel.historyServiceDetail?.phone ?? "")
-                                    .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .font(AppFont.Raleway.bodyLarge)
+                                    .fontWeight(.regular)
                             }
                             
                             HStack(alignment: .top) {
                                 Text("Address")
                                     .frame(width: 70, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text(historyViewModel.historyServiceDetail?.address ?? "")
-                                    .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .font(AppFont.Raleway.bodyLarge)
+                                    .fontWeight(.regular)
                             }
                             
                             Text("Rincian Pembayaran")
-                                .font(AppFont.Nunito.bodyLarge)
+                                .font(AppFont.Raleway.bodyLarge)
                                 .bold()
                                 .padding(.vertical, 4)
                                 .padding(.top, 7)
@@ -219,35 +219,35 @@ struct HistoryServiceDetail: View {
                             HStack {
                                 Text("Total Harga")
                                     .frame(width: 200, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text("\(historyViewModel.historyServiceDetail?.price.formatPrice() ?? "")")
                                     .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .fontWeight(.regular)
                             }
                             
                             HStack {
                                 Text("Total Biaya Layanan")
                                     .frame(width: 200, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 Text("Rp5.000")
                                     .font(AppFont.Nunito.bodyLarge)
-                                    .fontWeight(.semibold)
+                                    .fontWeight(.regular)
                             }
                             
                             HStack {
                                 Text("Total Pembayaran")
                                     .frame(width: 200, alignment: .leading)
-                                    .font(AppFont.Nunito.bodyLarge)
+                                    .font(AppFont.Raleway.bodyLarge)
                                     .fontWeight(.light)
                                 
                                 if let price = historyViewModel.historyServiceDetail?.price {
                                     Text("\((price + 5000).formatPrice())")
                                         .font(AppFont.Nunito.bodyLarge)
-                                        .fontWeight(.semibold)
+                                        .fontWeight(.regular)
                                 } else {
                                     Text("")
                                 }
@@ -261,7 +261,7 @@ struct HistoryServiceDetail: View {
                                     }
                                 }) {
                                     Text("Bayar")
-                                        .font(AppFont.Nunito.bodyLarge)
+                                        .font(AppFont.Raleway.bodyLarge)
                                         .foregroundColor(.white)
                                         .frame(maxWidth: .infinity)
                                         .padding()

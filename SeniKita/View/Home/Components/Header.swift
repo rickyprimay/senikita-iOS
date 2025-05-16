@@ -44,9 +44,9 @@ struct Header: View {
                             .clipShape(Circle())
                     }
                     
-                    Text("Halo, \(profileViewModel.profile?.username ?? "Guest")👋")
+                    Text("Halo, \(profileViewModel.profile?.name ?? "Guest")👋")
                         .font(AppFont.Raleway.bodyMedium)
-                        .fontWeight(.bold)
+                        .fontWeight(.regular)
                         .foregroundColor(.black)
                         .padding(.leading, 8)
                     
@@ -75,13 +75,13 @@ struct Header: View {
                                 Text("Cari Produk atau Service")
                                     .foregroundColor(.black.opacity(0.7))
                                     .font(AppFont.Raleway.footnoteLarge)
-                                    .fontWeight(.bold)
+                                    .fontWeight(.regular)
                             }
                             
                             TextField("", text: $search)
                                 .foregroundColor(.black)
                                 .font(AppFont.Raleway.footnoteLarge)
-                                .fontWeight(.bold)
+                                .fontWeight(.regular)
                         }
                     }
                     .padding(10)

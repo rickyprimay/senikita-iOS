@@ -24,22 +24,41 @@ struct HistoryCardProduct: View {
             if let firstProduct = historyItem.product.first {
                 
                 if let statusInfo = statusMap[historyItem.computedStatus] {
-                    HStack {
-                        Image(systemName: statusInfo.icon)
-                        Text(statusInfo.text)
+                    if historyItem.computedStatus == "pending",
+                       let createdDate = historyItem.created_at.toDate(),
+                       let daysPassed = Calendar.current.dateComponents([.day], from: createdDate, to: Date()).day,
+                       daysPassed > 2 {
+                        
+                        if let failedStatusInfo = statusMap["gagal"] {
+                            HStack {
+                                Image(systemName: failedStatusInfo.icon)
+                                Text(failedStatusInfo.text)
+                            }
+                            .font(AppFont.Raleway.footnoteSmall)
+                            .bold()
+                            .padding(8)
+                            .background(failedStatusInfo.bgColor)
+                            .foregroundColor(failedStatusInfo.textColor)
+                            .cornerRadius(10)
+                        }
+                    } else {
+                        HStack {
+                            Image(systemName: statusInfo.icon)
+                            Text(statusInfo.text)
+                        }
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .bold()
+                        .padding(8)
+                        .background(statusInfo.bgColor)
+                        .foregroundColor(statusInfo.textColor)
+                        .cornerRadius(10)
                     }
-                    .font(AppFont.Nunito.footnoteSmall)
-                    .bold()
-                    .padding(8)
-                    .background(statusInfo.bgColor)
-                    .foregroundColor(statusInfo.textColor)
-                    .cornerRadius(10)
                 }
                 
                 Divider()
                 
                 Text("Produk Kesenian | \(historyItem.no_transaction) | \(firstProduct.created_at?.formattedDate() ?? "")")
-                    .font(AppFont.Nunito.footnoteSmall)
+                    .font(AppFont.Raleway.footnoteSmall)
                     .foregroundColor(.gray)
                 
                 Divider()
@@ -56,11 +75,11 @@ struct HistoryCardProduct: View {
                     
                     VStack(alignment: .leading){
                         Text(firstProduct.shop?.name ?? "")
-                            .font(AppFont.Nunito.footnoteLarge)
+                            .font(AppFont.Raleway.footnoteLarge)
                             .foregroundStyle(Color("tertiary"))
                         
                         Text(firstProduct.name ?? "Nama tidak tersedia")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                         
                         Text("\(firstProduct.pivot?.qty ?? 0) item x \((firstProduct.price ?? 0).toDouble().formatPrice())")
                             .font(AppFont.Nunito.footnoteSmall)
@@ -76,7 +95,7 @@ struct HistoryCardProduct: View {
                     
                     NavigationLink(destination: HistoryProductDetail(historyViewModel: historyViewModel, idHistory: historyItem.id)){
                         Text("Lihat Detail Transaksi >")
-                            .font(AppFont.Nunito.footnoteLarge)
+                            .font(AppFont.Raleway.footnoteLarge)
                             .bold()
                             .foregroundStyle(Color("primary"))
                     }

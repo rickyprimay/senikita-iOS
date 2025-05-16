@@ -32,17 +32,17 @@ struct Login: View {
                         Spacer()
                         
                         Text("Masuk ke Senikita")
-                            .font(AppFont.Nunito.titleMedium)
+                            .font(AppFont.Crimson.titleMedium)
                             .bold()
                         
                         HStack {
                             Text("Belum punya akun?")
-                                .font(AppFont.Nunito.footnoteLarge)
+                                .font(AppFont.Raleway.footnoteLarge)
                             
                             NavigationLink(destination: Register()) {
                                 Text("Daftar disini")
                                     .foregroundColor(Color("brick"))
-                                    .font(AppFont.Nunito.footnoteLarge)
+                                    .font(AppFont.Raleway.footnoteLarge)
                             }
                         }
                         
@@ -69,7 +69,7 @@ struct Login: View {
                             if !isEmailValid {
                                 Text("Format email tidak valid")
                                     .foregroundColor(.red)
-                                    .font(AppFont.Nunito.footnoteSmall)
+                                    .font(AppFont.Raleway.footnoteSmall)
                             }
                             
                             PasswordField(
@@ -94,7 +94,7 @@ struct Login: View {
                             }
                         } label: {
                             Text("Masuk")
-                                .font(AppFont.Nunito.footnoteLarge)
+                                .font(AppFont.Raleway.footnoteLarge)
                                 .bold()
                                 .frame(maxWidth: .infinity, minHeight: 50)
                                 .background(email.isEmpty || password.isEmpty ? Color.gray.opacity(0.5) : Color("brick"))

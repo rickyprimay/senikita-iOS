@@ -25,7 +25,7 @@ struct CardProduct: View {
         }
         .frame(width: 230)
         .background(Color.white)
-        .cornerRadius(20)
+        .cornerRadius(15)
         .shadow(radius: 4)
         .padding(.horizontal, 8)
     }
@@ -51,13 +51,13 @@ struct CardProduct: View {
             
             Text(product.name ?? "")
                 .font(AppFont.Raleway.bodyMedium)
-                .fontWeight(.bold)
+                .fontWeight(.regular)
                 .lineLimit(1)
                 .padding(.bottom, 2)
             
             Text("Rp\(product.price ?? 0)")
                 .font(AppFont.Nunito.titleMedium)
-                .fontWeight(.bold)
+                .fontWeight(.regular)
                 .foregroundColor(.orange)
             
             Text(product.shop?.region ?? "")
@@ -78,7 +78,7 @@ struct CardProduct: View {
             
             Text(String(format: "%.1f", product.average_rating ?? 0))
                 .font(AppFont.Raleway.bodyMedium)
-                .fontWeight(.bold)
+                .fontWeight(.regular)
                 .foregroundColor(.gray)
             
             Text("| Terjual \(product.sold ?? 0)")

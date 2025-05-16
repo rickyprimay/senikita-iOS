@@ -7,7 +7,7 @@
 
 import SwiftUI
 import GoogleSignIn
-
+import UserNotifications
 
 @main
 struct SeniKitaApp: App {
@@ -15,6 +15,12 @@ struct SeniKitaApp: App {
     @StateObject var authViewModel = AuthViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
+    init() {
+        if !UserDefaults.standard.bool(forKey: "notificationPermissionGranted") {
+            NotificationManager.instance.requestPermissionNotification()
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             Splash()
@@ -22,9 +28,40 @@ struct SeniKitaApp: App {
     }
 }
 
-
-class AppDelegate: NSObject, UIApplicationDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         return GIDSignIn.sharedInstance.handle(url)
+    }
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .badge, .sound])
+    }
+}
+
+class NotificationManager {
+    
+    static let instance = NotificationManager()
+    
+    func requestPermissionNotification() {
+        let options: UNAuthorizationOptions = [.alert, .badge, .sound]
+        
+        UNUserNotificationCenter.current().requestAuthorization(options: options) { success, error in
+            if let error = error {
+                print("Error requesting notification permission: \(error.localizedDescription)")
+            } else {
+                if success {
+                    print("Notification permission granted")
+                    UserDefaults.standard.set(true, forKey: "notificationPermissionGranted")
+                } else {
+                    print("Notification permission denied")
+                }
+            }
+        }
     }
 }

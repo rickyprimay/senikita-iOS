@@ -13,7 +13,7 @@ struct AddressPaymentCard: View {
     
     var body: some View {
         Text(address?.label_address ?? "")
-            .font(AppFont.Nunito.bodyMedium)
+            .font(AppFont.Crimson.bodyMedium)
             .bold()
             .foregroundStyle(Color("primary"))
             .padding(4)
@@ -21,17 +21,17 @@ struct AddressPaymentCard: View {
             .cornerRadius(12)
         
         Text(address?.name ?? "")
-            .font(AppFont.Nunito.bodyMedium)
+            .font(AppFont.Raleway.bodyMedium)
             .bold()
         
         Text(address?.phone ?? "")
             .font(AppFont.Nunito.bodyMedium)
         
         Text(address?.address_detail ?? "")
-            .font(AppFont.Nunito.bodyMedium)
+            .font(AppFont.Raleway.bodyMedium)
         
         Text(address?.note ?? "")
-            .font(AppFont.Nunito.bodyMedium)
+            .font(AppFont.Raleway.bodyMedium)
             .foregroundColor(.gray)
         
         HStack {
@@ -41,7 +41,7 @@ struct AddressPaymentCard: View {
                     Image(systemName: "square.and.pencil")
                     Text("Ubah Alamat")
                 }
-                .font(AppFont.Nunito.bodyMedium)
+                .font(AppFont.Raleway.bodyMedium)
                 .bold()
                 .foregroundColor(.black)
                 .padding(.vertical, 8)
@@ -61,7 +61,7 @@ struct AddressPaymentCard: View {
                     Image(systemName: "trash")
                     Text("Hapus")
                 }
-                .font(AppFont.Nunito.bodyMedium)
+                .font(AppFont.Raleway.bodyMedium)
                 .bold()
                 .foregroundColor(.red)
                 .padding(.vertical, 8)

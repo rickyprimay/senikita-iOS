@@ -25,25 +25,25 @@ struct Banner: View {
                     
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Selamat datang")
-                            .font(AppFont.Nunito.footnoteLarge)
-                            .fontWeight(.bold)
+                            .font(AppFont.Crimson.footnoteLarge)
+                            .fontWeight(.regular)
                             .foregroundColor(.white)
                         
                         Text("Jelajahi")
-                            .font(AppFont.Nunito.bodyMedium)
-                            .fontWeight(.medium)
+                            .font(AppFont.Raleway.bodyMedium)
+                            .fontWeight(.regular)
                             .foregroundColor(.white)
                         
                         Text("Seni Kebudayaan Daerah")
-                            .font(AppFont.Nunito.titleMedium)
-                            .fontWeight(.bold)
+                            .font(AppFont.Raleway.titleMedium)
+                            .fontWeight(.regular)
                             .foregroundColor(.white)
                             .padding(8)
                             .background(Color("brick"))
                             .cornerRadius(10)
                         
                         Text("Temukan karya seni dan layanan dari seniman lokal dengan Senikita. Marketplace pertama produk dan jasa kesenian di Indonesia")
-                            .font(AppFont.Nunito.footnoteSmall)
+                            .font(AppFont.Raleway.footnoteSmall)
                             .foregroundColor(.white)
                             .lineLimit(3)
                             .multilineTextAlignment(.leading)

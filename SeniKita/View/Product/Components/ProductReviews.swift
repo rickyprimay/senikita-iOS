@@ -15,7 +15,7 @@ struct ProductReviews: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text("Ulasan Pembeli")
-                .font(AppFont.Nunito.bodyMedium)
+                .font(AppFont.Raleway.bodyMedium)
                 .foregroundColor(.black)
                 .bold()
                 .padding(.top)
@@ -44,7 +44,7 @@ struct ProductReviews: View {
                             }
 
                             Text(rating.user?.name ?? "Unknown User")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .bold()
 
@@ -56,14 +56,14 @@ struct ProductReviews: View {
                                     .font(.system(size: 12))
 
                                 Text(String(rating.rating))
-                                    .font(AppFont.Nunito.bodyMedium)
-                                    .fontWeight(.bold)
+                                    .font(AppFont.Raleway.bodyMedium)
+                                    .fontWeight(.regular)
                                     .foregroundColor(.black)
                             }
                         }
 
                         Text(rating.comment ?? "No comment")
-                            .font(AppFont.Nunito.bodyMedium)
+                            .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.black)
                             .lineLimit(nil)
 
@@ -98,7 +98,7 @@ struct ProductReviews: View {
                     }) {
                         HStack(spacing: 8) {
                             Text(showAllReviews ? "View Less" : "View More")
-                                .font(AppFont.Nunito.bodyMedium)
+                                .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(Color("primary"))
                             
                             Image(systemName: showAllReviews ? "chevron.up" : "chevron.down")
@@ -119,7 +119,7 @@ struct ProductReviews: View {
                 }
             } else {
                 Text("Tidak ada ulasan")
-                    .font(AppFont.Nunito.bodyMedium)
+                    .font(AppFont.Raleway.bodyMedium)
                     .foregroundColor(.black)
                     .padding()
                     .background(Color.white)

@@ -28,7 +28,7 @@ struct HistoryCardService: View {
                     Image(systemName: statusInfo.icon)
                     Text(statusInfo.text)
                 }
-                .font(AppFont.Nunito.footnoteSmall)
+                .font(AppFont.Raleway.footnoteSmall)
                 .bold()
                 .padding(8)
                 .background(statusInfo.bgColor)
@@ -39,7 +39,7 @@ struct HistoryCardService: View {
             Divider()
             
             Text("Jasa Kesenian | \(historyItemService.no_transaction) | \(historyItemService.created_at.formattedDate())")
-                .font(AppFont.Nunito.footnoteSmall)
+                .font(AppFont.Raleway.footnoteSmall)
                 .foregroundColor(.gray)
             
             Divider()
@@ -56,14 +56,14 @@ struct HistoryCardService: View {
                 
                 VStack(alignment: .leading){
                     Text(historyItemService.service.shop?.name ?? "")
-                        .font(AppFont.Nunito.footnoteLarge)
+                        .font(AppFont.Raleway.footnoteLarge)
                         .foregroundStyle(Color("tertiary"))
                     
                     Text(historyItemService.service.name ?? "Nama tidak tersedia")
-                        .font(AppFont.Nunito.bodyLarge)
+                        .font(AppFont.Raleway.bodyLarge)
                     
                     Text("\(historyItemService.price.formatPrice())")
-                        .font(AppFont.Nunito.bodyMedium)
+                        .font(AppFont.Raleway.bodyMedium)
                 }
                 
             }
@@ -73,7 +73,7 @@ struct HistoryCardService: View {
                 
                 NavigationLink(destination: HistoryServiceDetail(historyViewModel: historyViewModel, idHistory: historyItemService.id)) {
                     Text("Lihat Detail Transaksi >")
-                        .font(AppFont.Nunito.footnoteLarge)
+                        .font(AppFont.Raleway.footnoteLarge)
                         .bold()
                         .foregroundStyle(Color("primary"))
                 }

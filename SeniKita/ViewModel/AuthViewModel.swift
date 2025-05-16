@@ -49,6 +49,7 @@ class AuthViewModel: ObservableObject {
                 return
             }
             
+            print("google token: \(idToken)")
             self.verifyGoogleToken(idToken)
         }
     }
@@ -59,6 +60,7 @@ class AuthViewModel: ObservableObject {
         }
         let url = "\(baseUrl)/verify-google"
         let parameters: [String: String] = ["id_token": idToken]
+        print(idToken)
 
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
             .responseData { response in

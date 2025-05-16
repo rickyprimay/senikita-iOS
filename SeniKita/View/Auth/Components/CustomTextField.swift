@@ -25,7 +25,7 @@ struct CustomTextField: View {
     private var selectedFont: Font {
         switch fontType {
         case .nunito:
-            return AppFont.Nunito.footnoteLarge
+            return AppFont.Raleway.footnoteLarge
         case .crimson:
             return AppFont.Crimson.footnoteLarge
         }

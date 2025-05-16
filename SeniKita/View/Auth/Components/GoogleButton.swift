@@ -19,7 +19,7 @@ struct GoogleButton: View {
                     .resizable()
                     .frame(width: 20, height: 20)
                 Text("Masuk dengan Google")
-                    .font(AppFont.Nunito.footnoteLarge)
+                    .font(AppFont.Raleway.footnoteLarge)
                     .bold()
             }
             .foregroundColor(.black)
