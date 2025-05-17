@@ -21,6 +21,9 @@ struct PaymentService: View {
     var nameService: String?
     var price: Double?
     @State private var currentStep = 1
+    @State private var showPopup = false
+    @State private var popupMessage = ""
+    @State private var navigateToHistory = false
     
     var body: some View {
         ZStack{
@@ -59,11 +62,34 @@ struct PaymentService: View {
                 }
                 .padding(.horizontal)
             }
+            
             if paymentServiceViewModel.isLoading {
                 Loading(opacity: 0.5)
             }
+            
+            if showPopup {
+                BasePopup(
+                    isShowing: $showPopup,
+                    message: popupMessage,
+                    onConfirm: {
+                        showPopup = false
+                        navigateToHistory = true
+                    },
+                    isSuccess: true
+                )
+            }
+            
+            NavigationLink(destination: History(isFromPayment: true), isActive: $navigateToHistory) {
+                EmptyView()
+            }
         }
         .navigationBarBackButtonHidden(true)
+        .onReceive(paymentServiceViewModel.$isCheckoutSuccess) { success in
+            if success {
+                popupMessage = "Pemesanan Berhasil, Lanjut ke Pembayaran?"
+                showPopup = true
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {

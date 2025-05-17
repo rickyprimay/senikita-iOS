@@ -240,14 +240,6 @@ struct Payment: View {
                             let addressId = paymentViewModel.firstAddress?.id ?? 0
                             let addressNote = paymentViewModel.firstAddress?.note ?? ""
                             
-                            print("== Checkout Params ==")
-                            print("Product IDs: [\(productId)]")
-                            print("Qtys: [\(productQty)]")
-                            print("Courier: JNE")
-                            print("Service: REG")
-                            print("Address ID: \(addressId)")
-                            print("Note: \(addressNote)")
-                            
                             paymentViewModel.makeCheckout(
                                 productIDs: [productId],
                                 qtys: [productQty],
@@ -342,11 +334,3 @@ struct Payment: View {
     }
     
 }
-
-
-
-//#Preview {
-//    NavigationView{
-//        Payment()
-//    }
-//}
