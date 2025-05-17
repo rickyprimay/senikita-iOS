@@ -9,6 +9,8 @@ import SwiftUI
 
 struct TermAndConditionsService: View {
     
+    @State private var isAgreed: Bool = false
+    
     @Binding var currentStep: Int
     @Binding var isStepTwo: Bool
     @Binding var isStepThree: Bool
@@ -60,7 +62,7 @@ struct TermAndConditionsService: View {
                 .font(AppFont.Raleway.bodyMedium)
                 .foregroundColor(.gray)
                 
-                Toggle(isOn: .constant(false)) {
+                Toggle(isOn: $isAgreed) {
                     Text("Saya menyetujui syarat dan ketentuan yang berlaku.")
                         .font(AppFont.Raleway.bodyMedium)
                         .foregroundColor(.primary)
@@ -95,7 +97,7 @@ struct TermAndConditionsService: View {
                     .background(Color("secondary"))
                     .cornerRadius(10)
             }
-            Button{
+            Button {
                 paymentServiceViewModel.payment(
                     name: name,
                     serviceId: serviceId,
@@ -115,9 +117,10 @@ struct TermAndConditionsService: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color("primary"))
+                    .background(isAgreed ? Color("primary") : Color.gray)
                     .cornerRadius(10)
             }
+            .disabled(!isAgreed)
         }
     }
     
