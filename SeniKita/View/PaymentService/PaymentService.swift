@@ -18,6 +18,7 @@ struct PaymentService: View {
     var nameShop: String?
     var nameService: String?
     var price: Double?
+    @State private var currentStep = 1
     
     var body: some View {
         ScrollView {
@@ -32,64 +33,21 @@ struct PaymentService: View {
                     .foregroundColor(.secondary)
                     .padding(.horizontal)
                 
-                HStack {
-                    Text("Nama Layanan Kesenian")
-                        .font(AppFont.Raleway.bodyLarge)
-                        .foregroundColor(.black)
-                        .bold()
-                    Spacer()
+                HStack(spacing: 0) {
+                    StepView(stepNumber: "1", title: "Informasi\nKegiatan/Acara", isActive: currentStep >= 1)
+                    LineView()
+                    StepView(stepNumber: "2", title: "Permintaan Khusus", isActive: currentStep >= 2)
+                    LineView()
+                    StepView(stepNumber: "3", title: "Persetujuan dan\nKonfirmasi", isActive: currentStep >= 3)
                 }
-                .padding(.horizontal)
-                
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text("Informasi")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.black)
-                        
-                        Rectangle()
-                            .frame(height: 2)
-                            .foregroundColor(Color("tertiary"))
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        Text("Kegiatan/Acara")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.gray)
-                        
-                        Rectangle()
-                            .frame(height: 2)
-                            .foregroundColor(.clear)
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        Text("Permintaan Khusus")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.gray)
-                        
-                        Rectangle()
-                            .frame(height: 2)
-                            .foregroundColor(.clear)
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        Text("Persetujuan dan Konfirmasi")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.gray)
-                        
-                        Rectangle()
-                            .frame(height: 2)
-                            .foregroundColor(.clear)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.top, 8)
+                .padding(.vertical, 8)
                 
                 InformationEvent(
                     imageService: imageService,
                     nameShop: nameShop,
                     nameService: nameService,
-                    price: price
+                    price: price,
+                    currentStep: $currentStep
                 )
                 
             }

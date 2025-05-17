@@ -38,6 +38,7 @@ struct Home: View {
                                 Text("Produk Kesenian")
                                     .font(AppFont.Raleway.titleMedium)
                                     .foregroundStyle(.black)
+                                    .fontWeight(.semibold)
                                     .padding(.horizontal, 15)
                                 
                                 Spacer()
@@ -63,6 +64,7 @@ struct Home: View {
                                 Text("Jasa Kesenian")
                                     .font(AppFont.Raleway.titleMedium)
                                     .foregroundStyle(.black)
+                                    .fontWeight(.semibold)
                                     .padding(.horizontal, 15)
                                 
                                 Spacer()
