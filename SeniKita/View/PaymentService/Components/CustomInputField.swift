@@ -37,5 +37,9 @@ struct CustomInputField: View {
                 .focused($isFocused)
                 .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         }
+        .background(Color.white.opacity(0.001)) 
+        .onTapGesture {
+            isFocused = false
+        }
     }
 }

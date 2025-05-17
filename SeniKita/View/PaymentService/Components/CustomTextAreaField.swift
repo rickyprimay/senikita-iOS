@@ -31,6 +31,7 @@ struct CustomTextAreaField: View {
                         .foregroundColor(Color.gray.opacity(0.6))
                         .padding(12)
                         .font(AppFont.Raleway.bodyMedium)
+                        .fontWeight(.regular)
                 }
                 
                 TextEditor(text: $text)
@@ -41,10 +42,14 @@ struct CustomTextAreaField: View {
                     .frame(minHeight: 120, maxHeight: 200)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(isFocused ? Color("brick") : Color.gray.opacity(0.5), lineWidth: 1)
+                            .stroke(isFocused ? Color("tertiary") : Color.gray.opacity(0.5), lineWidth: 1)
                     )
                     .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
             }
+        }
+        .background(Color.white.opacity(0.001))
+        .onTapGesture {
+            isFocused = false
         }
     }
 }
