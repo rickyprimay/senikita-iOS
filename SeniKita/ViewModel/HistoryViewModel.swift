@@ -155,7 +155,10 @@ class HistoryViewModel: ObservableObject {
                             }
                         } catch {
                             DispatchQueue.main.async {
-                                print("Failed to parse history product data: \(error.localizedDescription)")
+                                print("Failed to parse history service data: \(error.localizedDescription)")
+                                if let data = response.data, let jsonString = String(data: data, encoding: .utf8) {
+                                    print("Server Error JSON: \(jsonString)")
+                                }
                             }
                         }
                         
@@ -207,6 +210,9 @@ class HistoryViewModel: ObservableObject {
                         } catch {
                             DispatchQueue.main.async {
                                 print("Failed to parse history product data: \(error.localizedDescription)")
+                                if let data = response.data, let jsonString = String(data: data, encoding: .utf8) {
+                                    print("Server Error JSON: \(jsonString)")
+                                }
                             }
                         }
                     case .failure(let error):

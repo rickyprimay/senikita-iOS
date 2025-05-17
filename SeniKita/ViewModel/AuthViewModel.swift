@@ -284,6 +284,7 @@ class AuthViewModel: ObservableObject {
         if let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty {
             DispatchQueue.main.async {
                 self.isAuthenticated = true
+                print("token: \(token)")
             }
         }
     }

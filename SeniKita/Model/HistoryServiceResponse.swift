@@ -30,7 +30,7 @@ struct OrderServiceHistory: Codable, Identifiable {
     let no_transaction: String
     let price: Double
     let address: String
-    let description: String
+    let description: String?
     let invoice_url: String
     let status: String
     let status_order: String
