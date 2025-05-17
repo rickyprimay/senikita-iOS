@@ -266,21 +266,24 @@ struct ServiceDetail: View {
                 Spacer()
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        NavigationLink(destination: PaymentService(
-                            imageService: serviceViewModel.service?.thumbnail ?? "",
-                            nameShop: serviceViewModel.service?.shop?.name ?? "",
-                            nameService: serviceViewModel.service?.name ?? "",
-                            price: serviceViewModel.service?.price?.toDouble() ?? 0
-                        )){
-                            Text("Pesan Sekarang")
-                                .font(AppFont.Nunito.bodyMedium)
-                                .bold()
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .multilineTextAlignment(.center)
-                                .padding()
-                                .background(Color("primary"))
-                                .cornerRadius(10)
+                        if let service = serviceViewModel.service {
+                            NavigationLink(destination: PaymentService(
+                                imageService: service.thumbnail ?? "",
+                                serviceId: service.id,
+                                nameShop: service.shop?.name ?? "",
+                                nameService: service.name ?? "",
+                                price: service.price?.toDouble() ?? 0
+                            )) {
+                                Text("Pesan Sekarang")
+                                    .font(AppFont.Nunito.bodyMedium)
+                                    .bold()
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .multilineTextAlignment(.center)
+                                    .padding()
+                                    .background(Color("primary"))
+                                    .cornerRadius(10)
+                            }
                         }
                     }
                     .padding(.horizontal)

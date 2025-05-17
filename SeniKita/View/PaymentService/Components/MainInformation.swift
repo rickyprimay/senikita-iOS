@@ -19,6 +19,8 @@ struct MainInformation: View {
     @Binding var eventName: String
     @Binding var eventDate: Date
     @Binding var eventTime: Date
+    @Binding var provinceId: Int
+    @Binding var cityId: Int
     
     @State private var showDatePicker = false
     @State private var showTimePicker = false
@@ -28,7 +30,8 @@ struct MainInformation: View {
     @State private var selectedProvince: Province?
     @State private var selectedCity: City?
 
-    @StateObject private var addressViewModel = AddressViewModel()
+    @ObservedObject var addressViewModel: AddressViewModel
+    @ObservedObject var paymentServiceViewModel: PaymentServiceViewModel
 
     @Binding var eventLocation: String
     @Binding var attendee: String
@@ -237,7 +240,9 @@ struct MainInformation: View {
                             ForEach(addressViewModel.province, id: \.id) { province in
                                 Button(action: {
                                     selectedProvince = province
+                                    provinceId = province.id
                                     selectedCity = nil
+                                    cityId = 0
                                     showProvinceDropdown = false
                                     addressViewModel.getCitiesByIdProvinces(idProvinces: province.id) {
                                     }
@@ -292,6 +297,7 @@ struct MainInformation: View {
                                 ForEach(addressViewModel.cityByProvince, id: \.id) { city in
                                     Button(action: {
                                         selectedCity = city
+                                        cityId = city.id
                                         showCityDropdown = false
                                     }) {
                                         Text(city.name)

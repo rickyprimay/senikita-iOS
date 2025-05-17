@@ -13,6 +13,21 @@ struct TermAndConditionsService: View {
     @Binding var isStepTwo: Bool
     @Binding var isStepThree: Bool
     
+    var name: String
+    var serviceId: Int
+    var activityName: String
+    var phone: Int
+    var activityDate: Date
+    var activityTime: Date
+    var provinceId: Int
+    var cityId: Int
+    var address: String
+    var attendee: Int
+    var description: String
+    
+    
+    @ObservedObject var paymentServiceViewModel: PaymentServiceViewModel
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -81,7 +96,19 @@ struct TermAndConditionsService: View {
                     .cornerRadius(10)
             }
             Button{
-                
+                paymentServiceViewModel.payment(
+                    name: name,
+                    serviceId: serviceId,
+                    activityName: activityName,
+                    phone: phone,
+                    activityDate: activityDate,
+                    activityTime: activityTime,
+                    province_id: provinceId,
+                    city_id: cityId,
+                    address: address,
+                    attendee: attendee,
+                    description: description
+                )
             } label: {
                 Text("Selesai")
                     .font(AppFont.Raleway.bodyMedium)

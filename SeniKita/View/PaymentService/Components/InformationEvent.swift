@@ -33,8 +33,14 @@ struct InformationEvent: View {
     @State private var isStepTwo = false
     @State private var isStepThree = false
     @State private var additionalNote = ""
+    @State private var provinceId: Int = 0
+    @State private var cityId: Int = 0
+    @State private var description = ""
     
-    @StateObject private var addressViewModel = AddressViewModel()
+    @ObservedObject var addressViewModel = AddressViewModel()
+    @ObservedObject var paymentServiceViewModel: PaymentServiceViewModel
+    
+    var serviceId: Int
     
     var body: some View {
         
@@ -50,15 +56,31 @@ struct InformationEvent: View {
                 eventName: $eventName,
                 eventDate: $eventDate,
                 eventTime: $eventTime,
+                provinceId: $provinceId,
+                cityId: $cityId,
+                addressViewModel: addressViewModel,
+                paymentServiceViewModel: paymentServiceViewModel,
                 eventLocation: $eventLocation,
                 attendee: $attendee,
-                isStepTwo: $isStepTwo
+                isStepTwo: $isStepTwo,
             )
         } else if !isStepTwo && isStepThree {
             TermAndConditionsService(
                 currentStep: $currentStep,
                 isStepTwo: $isStepTwo,
-                isStepThree: $isStepThree
+                isStepThree: $isStepThree,
+                name: namePIC,
+                serviceId: serviceId,
+                activityName: eventName,
+                phone: Int(callNumber) ?? 0,
+                activityDate: eventDate,
+                activityTime: eventTime,
+                provinceId: provinceId,
+                cityId: cityId,
+                address: eventLocation,
+                attendee: Int(attendee) ?? 0,
+                description: additionalNote,
+                paymentServiceViewModel: paymentServiceViewModel,
             )
         }
         else {
