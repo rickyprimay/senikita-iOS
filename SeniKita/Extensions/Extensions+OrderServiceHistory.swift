@@ -7,16 +7,16 @@
 
 extension OrderServiceHistory {
     var computedStatus: String {
-        switch (status, status_order) {
-        case ("DONE", "DONE"):
+        switch (status.lowercased(), status_order.lowercased()) {
+        case ("done", "done"):
             return "selesai"
-        case ("Success", "process"):
+        case ("success", "process"):
             return "diproses"
-        case ("Success", "delivered"):
+        case ("success", "delivered"):
             return "dikirim"
         case ("rejected", _), (_, "rejected"):
             return "dibatalkan"
-        case ("pending", "waiting"):
+        case ("pending", _), (_, "pending"), ("pending", "waiting"):
             return "pending"
         default:
             return "unknown"

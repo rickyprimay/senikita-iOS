@@ -24,27 +24,34 @@ struct CardProduct: View {
             productDetails
         }
         .frame(width: 230)
-        .background(Color.white)
-        .cornerRadius(15)
-        .shadow(radius: 4)
+        .background(.ultraThinMaterial)
+        .cornerRadius(20)
+        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
         .padding(.horizontal, 8)
     }
     
     private var productImage: some View {
         ZStack(alignment: .topTrailing) {
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.white.opacity(0.1))
+                .frame(width: 220, height: 150)
+            
             WebImage(url: URL(string: product.thumbnail ?? ""))
                 .resizable()
                 .scaledToFill()
                 .frame(width: 220, height: 150)
                 .clipped()
-                .cornerRadius(15)
+                .cornerRadius(20)
                 .padding(.top, 10)
-            
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.white.opacity(0.05))
+                )
         }
     }
     
     private var productDetails: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(product.category?.name ?? "")
                 .font(AppFont.Raleway.footnoteSmall)
                 .foregroundColor(.orange)
@@ -68,13 +75,14 @@ struct CardProduct: View {
         }
         .padding(.horizontal, 12)
         .padding(.bottom, 12)
+        .padding(.top, 4)
     }
     
     private var ratingAndCartButton: some View {
         HStack(spacing: 6) {
             Image(systemName: "star.fill")
                 .foregroundColor(.yellow)
-                .font(.system(size: 12))
+                .font(.system(size: 14, weight: .semibold))
             
             Text(String(format: "%.1f", product.average_rating ?? 0))
                 .font(AppFont.Raleway.bodyMedium)
@@ -99,10 +107,10 @@ struct CardProduct: View {
         }) {
             Image(systemName: "cart.fill")
                 .foregroundColor(.white)
-                .padding(8)
+                .padding(10)
                 .background(LinearGradient(gradient: Gradient(colors: [Color("primary"), Color("tertiary")]), startPoint: .leading, endPoint: .trailing))
-                .clipShape(Circle())
-                .shadow(radius: 3)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
         }
     }
 }

@@ -45,7 +45,7 @@ struct ArtMapDetail: View {
                             .font(AppFont.Raleway.footnoteSmall)
                             .foregroundColor(.white)
                             .padding()
-                            .background(Color.gray)
+                            .background(Color("primary"))
                             .clipShape(RoundedCorner(radius: 12, corners: [.topRight, .topLeft, .bottomLeft]))
                         
                         HStack {
@@ -191,10 +191,10 @@ struct ArtMapDetail: View {
             
             .onChange(of: artMapViewModel.isLoading) {
                 if !artMapViewModel.isLoading {
-                    artMapViewModel.startTextAnimation(textUsing: artMapViewModel.content ?? "")
                     Task {
-                        await artMapViewModel.speakText(textUsing: artMapViewModel.content ?? "")
+                        await artMapViewModel.startTextAnimation(textUsing: artMapViewModel.content ?? "")
                     }
+
                 }
             }
             .background(Color.white.ignoresSafeArea())

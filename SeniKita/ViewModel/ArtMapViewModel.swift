@@ -82,47 +82,45 @@ class ArtMapViewModel: ObservableObject {
     func sendPromptToGemini(prompt: String, statue: String) {
         Task {
             do {
-                let systemMessage = "Anda adalah sistem yang memberikan pengetahuan tentang budaya dan kesenian. Jawablah setiap pertanyaan dengan ramah menggunakan bahasa Indonesia. Hindari sapaan dan jawaban yang terlalu panjang. Fokuslah pada jawaban yang informatif dan mudah dipahami. Jangan jawab pertanyaan jika tidak berkaitan dan berhubungan dengan seni dan budaya di indonesia terutama di wilayah \(statue). Jawab dengan jawaban yang friendly dan ramah bagi anak anak. Hindari sapaan dan jawaban panjang. Jawab hanya jika pertanyaan berkaitan dengan seni dan budaya Indonesia. maksimal 20 text"
+                let systemMessage = "Anda adalah sistem yang memberikan pengetahuan tentang budaya dan kesenian. Jawablah setiap pertanyaan dengan ramah menggunakan bahasa Indonesia. Hindari sapaan dan jawaban yang terlalu panjang. Fokuslah pada jawaban yang informatif dan mudah dipahami. Jangan jawab pertanyaan jika tidak berkaitan dan berhubungan dengan seni dan budaya di indonesia terutama di wilayah \(statue). Jawab dengan jawaban yang friendly dan ramah bagi anak anak. Hindari sapaan dan jawaban panjang. Jawab hanya jika pertanyaan berkaitan dengan seni dan budaya Indonesia. maksimal 20 word"
                 let response = try await model.generateContent(systemMessage + prompt)
                 if let text = response.text {
-                    await MainActor.run {
-                        self.startTextAnimation(textUsing: text)
-                        self.speakText(textUsing: text)
+                    Task {
+                        await self.speakText(textUsing: text)
+                        await self.startTextAnimation(textUsing: text)
                     }
                 }
             } catch {
                 print("Error sending prompt to Gemini: \(error.localizedDescription)")
-            }   
+            }
         }
     }
     
     @MainActor
-    func startTextAnimation(textUsing: String) {
+    func startTextAnimation(textUsing: String) async {
         guard !isAnimatingText else { return }
         animatedText = ""
         isAnimatingText = true
-
+        
         let characters = Array(textUsing)
-        Task {
-            for char in characters {
-                await MainActor.run { self.animatedText.append(char) }
-                try? await Task.sleep(nanoseconds: 30_000_000)
-            }
-            isAnimatingText = false
+        for char in characters {
+            animatedText.append(char)
+            try? await Task.sleep(nanoseconds: 30_000_000)
         }
+        isAnimatingText = false
     }
     
     @MainActor
-    func speakText(textUsing: String) {
-        let apiKey = "sk_9b43b29cb378cb3978d3d1c5b7abb0fb25d4f7038054bc3b"
+    func speakText(textUsing: String) async {
+        let apiKey = "sk_c81f9943d11b410c4c548ae64805daecd4ef85701192fb8c"
         let voiceID = "gmnazjXOFoOcWA59sd5m"
         let url = "https://api.elevenlabs.io/v1/text-to-speech/\(voiceID)/stream"
-
+        
         let headers: HTTPHeaders = [
             "xi-api-key": apiKey,
             "Content-Type": "application/json"
         ]
-
+        
         let parameters: [String: Any] = [
             "text": textUsing,
             "model_id": "eleven_multilingual_v2",
@@ -130,28 +128,32 @@ class ArtMapViewModel: ObservableObject {
                 "stability": 0.5,
                 "similarity_boost": 0.7
             ]
+            
         ]
-
-        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
-            .validate()
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-                    let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("tts.mp3")
-                    do {
-                        try data.write(to: tempURL)
-                        self.audioPlayer = try AVAudioPlayer(contentsOf: tempURL)
-                        self.audioPlayer?.prepareToPlay()
-                        self.audioPlayer?.play()
-                        print("terplay")
-                    } catch {
-                        print("Gagal memutar audio: \(error)")
+        
+        await withCheckedContinuation { continuation in
+            AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
+                .validate()
+                .responseData { response in
+                    switch response.result {
+                    case .success(let data):
+                        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("tts.mp3")
+                        do {
+                            try data.write(to: tempURL)
+                            self.audioPlayer = try AVAudioPlayer(contentsOf: tempURL)
+                            self.audioPlayer?.prepareToPlay()
+                            self.audioPlayer?.play()
+                            print("Audio started playing")
+                            continuation.resume()
+                        } catch {
+                            print("Gagal memutar audio: \(error)")
+                            continuation.resume()
+                        }
+                    case .failure(let error):
+                        print("Streaming gagal: \(error.localizedDescription)")
+                        continuation.resume()
                     }
-
-                case .failure(let error):
-                    print("Streaming gagal: \(error.localizedDescription)")
                 }
-            }
+        }
     }
-
 }

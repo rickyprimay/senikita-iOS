@@ -245,8 +245,7 @@ struct Payment: View {
                                 qtys: [productQty],
                                 courier: "jne",
                                 service: selectedService,
-                                addressID: addressId,
-                                note: paymentViewModel.firstAddress?.note ?? ""
+                                addressID: addressId
                             )
                             
                         } label: {
@@ -271,13 +270,17 @@ struct Payment: View {
             }
             .onReceive(paymentViewModel.$isAddressLoaded) { loaded in
                 if loaded {
-                    self.cityId = paymentViewModel.firstAddress!.city_id
-                    paymentViewModel.getOngkirCost(originId: originId, destination: cityId) { success, message in
-                        if success {
-                            print("Berhasil mengambil data ongkir dan cost")
-                        } else {
-                            print("Gagal mengambil data ongkir dan cost: \(message)")
+                    if let address = paymentViewModel.firstAddress {
+                        self.cityId = address.city_id
+                        paymentViewModel.getOngkirCost(originId: originId, destination: cityId) { success, message in
+                            if success {
+                                print("Berhasil mengambil data ongkir dan cost")
+                            } else {
+                                print("Gagal mengambil data ongkir dan cost: \(message)")
+                            }
                         }
+                    } else {
+                        print("firstAddress masih nil, tidak bisa mengambil ongkir")
                     }
                 }
             }

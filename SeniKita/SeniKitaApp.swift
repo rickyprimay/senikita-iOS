@@ -11,19 +11,20 @@ import UserNotifications
 
 @main
 struct SeniKitaApp: App {
-    
     @StateObject var authViewModel = AuthViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
-    init() {
-        if !UserDefaults.standard.bool(forKey: "notificationPermissionGranted") {
-            NotificationManager.instance.requestPermissionNotification()
-        }
-    }
 
     var body: some Scene {
         WindowGroup {
-            Splash()
+            NavigationStack {
+                if authViewModel.isAuthenticated {
+                    RootView()
+                        .environmentObject(authViewModel)
+                } else {
+                    Login()
+                        .environmentObject(authViewModel)
+                }
+            }
         }
     }
 }

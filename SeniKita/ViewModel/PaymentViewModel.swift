@@ -122,7 +122,7 @@ class PaymentViewModel: ObservableObject {
             }
     }
     
-    func makeCheckout(productIDs: [Int], qtys: [Int], courier: String, service: String, addressID: Int, note: String) {
+    func makeCheckout(productIDs: [Int], qtys: [Int], courier: String, service: String, addressID: Int) {
         DispatchQueue.main.async { self.isLoading = true }
         
         guard let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty else {
@@ -140,12 +140,22 @@ class PaymentViewModel: ObservableObject {
         let parameters: [String: Any] = [
             "product_ids": productIDs,
             "qtys": qtys,
-            "courier": "JNE",
+            "courier": courier.lowercased(), // pastikan lowercase
             "service": service,
-            "address_id": addressID,
-            "note": note
+            "address_id": addressID
         ]
         
+        // Debug: Print body JSON
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                print("📦 Request Body JSON:")
+                print(jsonString)
+            }
+        } catch {
+            print("❌ Failed to serialize parameters: \(error.localizedDescription)")
+        }
+
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
             .validate(statusCode: 200..<300)
             .responseData { [weak self] response in
@@ -154,15 +164,15 @@ class PaymentViewModel: ObservableObject {
                 
                 switch response.result {
                 case .success(let data):
-                    print("Order success: \(String(data: data, encoding: .utf8) ?? "")")
+                    print("✅ Order success: \(String(data: data, encoding: .utf8) ?? "")")
                     DispatchQueue.main.async {
                         self.isCheckoutSuccess = true
                         self.sendCheckoutSuccessNotification()
                     }
                 case .failure(let error):
-                    print("Order failed: \(error.localizedDescription)")
+                    print("❌ Order failed: \(error.localizedDescription)")
                     if let data = response.data {
-                        print("Server response: \(String(data: data, encoding: .utf8) ?? "")")
+                        print("📨 Server response: \(String(data: data, encoding: .utf8) ?? "")")
                     }
                 }
             }

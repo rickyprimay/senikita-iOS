@@ -85,7 +85,7 @@ struct History: View {
                     }
                     ToolbarItem(placement: .principal) {
                         Text("Daftar Transaksi")
-                            .font(AppFont.Raleway.bodyLarge)
+                            .font(AppFont.Crimson.bodyLarge)
                             .bold()
                             .foregroundColor(Color("tertiary"))
                     }

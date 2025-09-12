@@ -60,7 +60,7 @@ class AuthViewModel: ObservableObject {
         }
         let url = "\(baseUrl)/verify-google"
         let parameters: [String: String] = ["id_token": idToken]
-        print(idToken)
+        print(idToken)	
 
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
             .responseData { response in
@@ -76,7 +76,6 @@ class AuthViewModel: ObservableObject {
                                 self.saveToken(token)
                                 DispatchQueue.main.async {
                                     self.isAuthenticated = true
-                                    self.navigateAfterAuth(toRedirect: RootView())
                                 }
                             }
                         } catch {
@@ -114,7 +113,6 @@ class AuthViewModel: ObservableObject {
                                 if authResponse.code == 200, let token = authResponse.data.token {
                                     self.saveToken(token)
                                     self.isAuthenticated = true
-                                    self.navigateAfterAuth(toRedirect: RootView())
                                     completion(true, "Login successful")
                                 } else {
                                     let errorMessage = authResponse.message
@@ -200,7 +198,6 @@ class AuthViewModel: ObservableObject {
                                 self.saveToken(token)
                                 DispatchQueue.main.async {
                                     self.isAuthenticated = true
-                                    self.navigateAfterAuth(toRedirect: RootView())
                                 }
                                 completion(true, "Verification successful")
                             } else {
@@ -269,22 +266,21 @@ class AuthViewModel: ObservableObject {
         UserDefaults.standard.set(token, forKey: "authToken")
     }
     
-    private func navigateAfterAuth(toRedirect: some View) {
-        DispatchQueue.main.async {
-            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                if let window = scene.windows.first {
-                    window.rootViewController = UIHostingController(rootView: toRedirect)
-                    window.makeKeyAndVisible()
-                }
-            }
-        }
-    }
+//    private func navigateAfterAuth(toRedirect: some View) {
+//        DispatchQueue.main.async {
+//            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+//                if let window = scene.windows.first {
+//                    window.rootViewController = UIHostingController(rootView: toRedirect)
+//                    window.makeKeyAndVisible()
+//                }
+//            }
+//        }
+//    }
     
     func checkAuthentication() {
         if let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty {
             DispatchQueue.main.async {
                 self.isAuthenticated = true
-                print("token: \(token)")
             }
         }
     }
@@ -293,7 +289,6 @@ class AuthViewModel: ObservableObject {
         UserDefaults.standard.removeObject(forKey: "authToken")
         DispatchQueue.main.async {
             self.isAuthenticated = false
-            self.navigateAfterAuth(toRedirect: Login())
         }
     }
 }

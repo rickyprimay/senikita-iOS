@@ -8,30 +8,28 @@
 import SwiftUI
 
 struct RootView: View {
-    
     @State private var selectedTab = 0
     @StateObject var homeViewModel = HomeViewModel()
     @StateObject var profileViewModel = ProfileViewModel()
-    @StateObject var authViewModel = AuthViewModel()
     @StateObject var artMapViewModel = ArtMapViewModel()
-    
+    @EnvironmentObject var authViewModel: AuthViewModel
+
     var body: some View {
         ZStack(alignment: .bottom) {
-            
-            
-            
-            TabView(selection: $selectedTab) {
-                Home(profileViewModel: profileViewModel, homeViewModel: homeViewModel)
-                    .tag(0)
-                
-                ArtMap(artMapViewModel: artMapViewModel)
-                    .tag(1)
-                
-                Profile(authViewModel: authViewModel, profileViewModel: profileViewModel)
-                    .tag(2)
+            NavigationStack {
+                TabView(selection: $selectedTab) {
+                    Home(profileViewModel: profileViewModel, homeViewModel: homeViewModel)
+                        .tag(0)
+                    
+                    ArtMap(artMapViewModel: artMapViewModel)
+                        .tag(1)
+                    
+                    Profile(authViewModel: authViewModel, profileViewModel: profileViewModel)
+                        .tag(2)
+                }
+                .disabled(homeViewModel.isLoading)
             }
-            .disabled(homeViewModel.isLoading)
-            
+
             ZStack {
                 HStack {
                     ForEach(TabbedItems.allCases, id: \.self) { item in
@@ -40,7 +38,9 @@ struct RootView: View {
                                 selectedTab = item.rawValue
                             }
                         } label: {
-                            CustomTabItem(imageName: item.iconName, title: item.title, isActive: (selectedTab == item.rawValue))
+                            CustomTabItem(imageName: item.iconName,
+                                          title: item.title,
+                                          isActive: (selectedTab == item.rawValue))
                         }
                         .disabled(homeViewModel.isLoading)
                     }

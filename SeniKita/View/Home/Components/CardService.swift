@@ -14,30 +14,36 @@ struct CardService: View {
     var body: some View {
         VStack(spacing: 12) {
             ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.white.opacity(0.1))
+                    .frame(width: 220, height: 150)
+                
                 WebImage(url: URL(string: service.thumbnail ?? ""))
                     .resizable()
                     .scaledToFill()
                     .frame(width: 220, height: 150)
                     .clipped()
-                    .cornerRadius(15)
+                    .cornerRadius(20)
+                    .overlay(RoundedRectangle(cornerRadius: 20).fill(Color.white.opacity(0.05)))
                     .padding(.top, 10)
                 
             }
             
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 categoryText
                 nameText
                 priceInfo
                 regionText
                 ratingAndCartButton
             }
+            .padding(.top, 4)
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
         }
         .frame(width: 230)
-        .background(Color.white)
-        .cornerRadius(15)
-        .shadow(radius: 4)
+        .background(.ultraThinMaterial)
+        .cornerRadius(20)
+        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
         .padding(.horizontal, 8)
     }
     
@@ -78,7 +84,7 @@ struct CardService: View {
         HStack(spacing: 6) {
             Image(systemName: "star.fill")
                 .foregroundColor(.yellow)
-                .font(.system(size: 12))
+                .font(.system(size: 14, weight: .semibold))
             
             Text(String(format: "%.1f", service.average_rating ?? 0))
                 .font(AppFont.Raleway.bodyMedium)
