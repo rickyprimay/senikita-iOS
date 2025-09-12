@@ -36,10 +36,11 @@ struct CartView: View {
                     Text("\(viewModel.cart.count) item di keranjang Anda")
                         .font(AppFont.Crimson.titleMedium)
                         .padding(.horizontal)
+                        .padding(.top)
                     
                     ForEach(groupedProducts.keys.sorted(), id: \.self) { shopName in
                         if let products = groupedProducts[shopName], let firstProduct = products.first {
-                            VStack(alignment: .leading, spacing: 10) {
+                            VStack(alignment: .leading, spacing: 15) {
                                 HStack {
                                     Button(action: {
                                         selectedShops[shopName]?.toggle()
@@ -48,32 +49,47 @@ struct CartView: View {
                                             selectedProducts[product.cart_item_id] = isSelected
                                         }
                                     }) {
-                                        Image(systemName: selectedShops[shopName] == true ? "checkmark.square.fill" : "square")
-                                            .font(.system(size: 20))
+                                        Image(systemName: selectedShops[shopName] == true ? "checkmark.circle.fill" : "circle")
+                                            .font(.system(size: 22))
                                             .foregroundColor(selectedShops[shopName] == true ? Color("tertiary") : .gray)
+                                            .padding(6)
+                                            .background(Color.gray.opacity(0.1))
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
                                     }
                                     
-                                    VStack(alignment: .leading) {
+                                    VStack(alignment: .leading, spacing: 2) {
                                         Text(shopName)
                                             .font(AppFont.Raleway.bodyMedium)
+                                            .bold()
                                         
                                         Text(firstProduct.storeLocation)
                                             .font(AppFont.Raleway.footnoteLarge)
+                                            .foregroundColor(.secondary)
                                     }
+                                    Spacer()
                                 }
                                 .padding(.horizontal)
-                                
                                 ForEach(products, id: \.cart_item_id) { product in
                                     CartProductView(product: product, isSelected: Binding(
                                         get: { selectedProducts[product.cart_item_id] ?? false },
                                         set: { selectedProducts[product.cart_item_id] = $0 }
                                     ), viewModel: viewModel)
+                                    .padding(.bottom, 8)
                                 }
                             }
+                            .padding(.vertical, 12)
+                            .background(Color(.systemGroupedBackground))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 15)
+                                    .stroke(Color.black, lineWidth: 1)
+                            )
+                            .cornerRadius(15)
+                            .padding(.horizontal)
+                            .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
                         }
                     }
                 }
-                .padding(.bottom, 120)
+                .padding(.bottom, 160)
             }
             .refreshable{
                 viewModel.getCartProduct(isLoad: true)
@@ -105,8 +121,7 @@ struct CartView: View {
                 Loading(opacity: 0.5)
             }
             
-            VStack {
-                Spacer()
+            VStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Text("Total Belanja")
@@ -121,10 +136,7 @@ struct CartView: View {
                             .foregroundColor(Color("tertiary"))
                     }
                     .padding(.horizontal)
-                    .padding(.vertical, 10)
-                    .background(Color.white)
-                    .cornerRadius(10)
-                    .shadow(radius: 2)
+                    .padding(.vertical, 12)
                     
                     Button(action: {
                        
@@ -135,17 +147,26 @@ struct CartView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color("primary"))
-                            .cornerRadius(10)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color("primary"), Color("tertiary")]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .cornerRadius(12)
+                            .shadow(color: Color("tertiary").opacity(0.4), radius: 8, x: 0, y: 4)
                     }
                     .padding(.horizontal)
                 }
+                .padding(.top, 12)
                 .padding(.bottom, 25)
                 .background(Color.white)
-                .cornerRadius(10)
-                .shadow(radius: 5)
             }
+            .frame(maxWidth: .infinity)
+            .background(Color.white)
             .ignoresSafeArea(edges: .bottom)
+            .shadow(color: Color.black.opacity(0.05), radius: 0, x: 0, y: 0)
         }
         .onAppear {
             viewModel.getCartProduct(isLoad: true)
@@ -164,112 +185,117 @@ struct CartProductView: View {
     @Binding var isSelected: Bool
     @ObservedObject var viewModel: HomeViewModel
     
-    @State private var quantity: Int
-    
-    init(product: Cart, isSelected: Binding<Bool>, viewModel: HomeViewModel) {
-        self.product = product
-        self._isSelected = isSelected
-        self._quantity = State(initialValue: product.qty)
-        self.viewModel = viewModel
-    }
-    
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
+        VStack(spacing: 8) {
+            HStack(alignment: .top, spacing: 12) {
                 Button(action: {
                     isSelected.toggle()
                 }) {
-                    Image(systemName: isSelected ? "checkmark.square.fill" : "square")
-                        .font(.system(size: 20))
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: 22))
                         .foregroundColor(isSelected ? Color("tertiary") : .gray)
+                        .padding(6)
+                        .background(Color.gray.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
+                .padding(.top, 4)
                 
-                WebImage(url: URL(string: product.productThumbnail))
-                    .scaledToFit()
-                    .frame(width: 80, height: 80)
-                    .cornerRadius(10)
-                    .allowsHitTesting(false)
-                
-//                Color.gray
-//                    .frame(width: 80, height: 80)
-//                    .cornerRadius(10)
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(product.storeName)
-                        .font(AppFont.Raleway.footnoteSmall)
-                        .foregroundColor(.gray)
+                HStack(alignment: .top, spacing: 12) {
+                    WebImage(url: URL(string: product.productThumbnail))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .clipped()
                     
-                    Text(product.productName)
-                        .font(AppFont.Raleway.bodyMedium)
-                        .bold()
-                    
-                    Text(product.storeLocation)
-                        .font(AppFont.Raleway.footnoteSmall)
-                        .foregroundColor(.gray)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(product.productName)
+                            .font(AppFont.Raleway.bodyMedium)
+                            .bold()
+                            .lineLimit(2)
+                            .foregroundColor(.primary)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(product.storeName)
+                                .font(AppFont.Raleway.footnoteSmall)
+                                .foregroundColor(.secondary)
+                            Text(product.storeLocation)
+                                .font(AppFont.Raleway.footnoteSmall)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                
-                Spacer()
-            }
-            
-            HStack {
-                Text("Rp\(product.productPrice, specifier: "%.2f")")
-                    .font(AppFont.Crimson.titleMedium)
-                    .bold()
-                    .foregroundColor(Color("tertiary"))
                 
                 Spacer()
                 
                 Button(action: {
                     viewModel.deleteCartByIdItem(cartItemId: product.cart_item_id)
                 }) {
-                    Text("Hapus")
-                        .font(AppFont.Raleway.footnoteSmall)
+                    Image(systemName: "trash")
+                        .font(.system(size: 20))
                         .foregroundColor(.red)
+                        .padding(8)
                 }
+                .buttonStyle(PlainButtonStyle())
             }
             
-            HStack {
-                Button(action: {
-                    if quantity > 1 {
-                        quantity -= 1
-                        viewModel.decrementQuantity(cartItemId: product.cart_item_id)
+            Divider()
+            
+            HStack(spacing: 20) {
+
+                HStack(spacing: 12) {
+                    Button(action: {
+                        if product.qty > 1 {
+                            if let index = viewModel.cart.firstIndex(where: { $0.cart_item_id == product.cart_item_id }) {
+                                viewModel.cart[index].qty -= 1
+                            }
+                            viewModel.decrementQuantity(cartItemId: product.cart_item_id)
+                        } else if product.qty == 1 {
+                            viewModel.deleteCartByIdItem(cartItemId: product.cart_item_id)
+                        }
+                    }) {
+                        Image(systemName: "minus")
+                            .font(.system(size: 18, weight: .bold))
+                            .frame(width: 36, height: 36)
+                            .foregroundColor(product.qty > 1 ? .primary : .gray)
+                            .background(Color.gray.opacity(0.2))
+                            .clipShape(Circle())
                     }
-                }) {
-                    Image(systemName: "minus")
-                        .font(.system(size: 12, weight: .bold))
-                        .frame(width: 20, height: 20)
-                        .background(Color.gray.opacity(0.2))
-                        .clipShape(Circle())
-                }
-                
-                Text("\(quantity)")
-                    .font(AppFont.Nunito.footnoteSmall)
-                    .foregroundColor(.gray)
-                    .frame(minWidth: 20, alignment: .center)
-                
-                Button(action: {
-                    quantity += 1
-                    viewModel.incrementQuantity(cartItemId: product.cart_item_id)
-                }) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 12, weight: .bold))
-                        .frame(width: 20, height: 20)
-                        .background(Color.gray.opacity(0.2))
-                        .clipShape(Circle())
+                    
+                    Text("\(product.qty)")
+                        .font(AppFont.Nunito.bodyMedium)
+                        .foregroundColor(.gray)
+                        .frame(minWidth: 30)
+                    
+                    Button(action: {
+                        if let index = viewModel.cart.firstIndex(where: { $0.cart_item_id == product.cart_item_id }) {
+                            viewModel.cart[index].qty += 1
+                        }
+                        viewModel.incrementQuantity(cartItemId: product.cart_item_id)
+                    }) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 18, weight: .bold))
+                            .frame(width: 36, height: 36)
+                            .foregroundColor(.primary)
+                            .background(Color.gray.opacity(0.2))
+                            .clipShape(Circle())
+                    }
                 }
                 
                 Spacer()
                 
-                Text("Rp\(product.productPrice * Double(quantity), specifier: "%.2f")")
+
+                Text("Rp\(product.productPrice * Double(product.qty), specifier: "%.2f")")
                     .font(AppFont.Nunito.bodyMedium)
                     .bold()
+                    .foregroundColor(Color("tertiary"))
             }
-            .background(Color.clear)
         }
         .padding()
         .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 2)
+        .cornerRadius(15)
+        .shadow(color: Color.black.opacity(0.03), radius: 3, x: 0, y: 2)
         .padding(.horizontal)
     }
 }
