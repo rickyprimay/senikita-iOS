@@ -60,7 +60,7 @@ struct ServiceDetail: View {
                             .lineLimit(1)
                         
                         HStack(spacing: 4) {
-                            Text("Sudah menerima \(serviceViewModel.service?.sold ?? 0) pesanan")
+                            Text("Sudah menerima \(serviceViewModel.service?.sold ?? "0") pesanan")
                                 .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .lineLimit(1)
@@ -81,7 +81,7 @@ struct ServiceDetail: View {
                                 .foregroundColor(.black)
                         }
                         
-                        Text("Jumlah orang: \(serviceViewModel.service?.person_amount ?? 0)")
+                        Text("Jumlah orang: \(serviceViewModel.service?.person_amount ?? "0")")
                             .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.black)
                             .lineLimit(1)
