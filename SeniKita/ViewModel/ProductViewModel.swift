@@ -10,7 +10,7 @@ import Alamofire
 
 class ProductViewModel: ObservableObject {
     
-    let baseUrl = "https://api.senikita.my.id/api/"
+    let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api/"
     
     @Published var product: ProductData? = nil
     @Published var categories: [Category] = []
@@ -39,8 +39,17 @@ class ProductViewModel: ObservableObject {
             AF.request(url)
                 .validate()
                 .responseDecodable(of: ProductDetailResponse.self) { [weak self] response in
+                    
+                    
+                    if let data = response.data,
+                       let json = String(data: data, encoding: .utf8) {
+                        print("🔥 RAW API RESPONSE:")
+                        print(json)
+                    }
+                    
                     DispatchQueue.main.async {
                         self?.isLoading = false
+                        
                         switch response.result {
                         case .success(let productResponse):
                             let product = productResponse.product
@@ -49,6 +58,7 @@ class ProductViewModel: ObservableObject {
                             self?.shops = [product.shop].compactMap { $0 }
                             self?.cities = product.shop?.city != nil ? [product.shop!.city!] : []
                             self?.provinces = product.shop?.city?.province != nil ? [product.shop!.city!.province!] : []
+                            
                         case .failure(let error):
                             self?.errorMessage = "Error fetching product \(error.localizedDescription)"
                         }
