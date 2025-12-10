@@ -81,3 +81,23 @@ struct ArtProvinceDetail: Codable, Identifiable {
         case artProvinceID = "art_province_id"
     }
 }
+
+extension ArtProvinceDetail {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(Int.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        image = try container.decode(String.self, forKey: .image)
+        type = try container.decode(String.self, forKey: .type)
+        description = try container.decode(String.self, forKey: .description)
+        
+        if let strValue = try? container.decode(String.self, forKey: .artProvinceID) {
+            artProvinceID = Int(strValue) ?? 0
+        } else if let intValue = try? container.decode(Int.self, forKey: .artProvinceID) {
+            artProvinceID = intValue
+        } else {
+            artProvinceID = 0
+        }
+    }
+}
