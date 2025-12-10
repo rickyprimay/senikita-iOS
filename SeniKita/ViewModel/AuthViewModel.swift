@@ -13,7 +13,7 @@ import GoogleSignInSwift
 
 class AuthViewModel: ObservableObject {
     
-    let baseUrl = "https://api.senikita.my.id/api/auth"
+    let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api/auth"
     
     @Published var loginAlert = false
     @Published var isAuthenticated: Bool = false
@@ -55,37 +55,87 @@ class AuthViewModel: ObservableObject {
     }
     
     func verifyGoogleToken(_ idToken: String) {
+        print("==========================================")
+        print("🔵 STEP 1: verifyGoogleToken CALLED")
+        print("🔵 Received idToken:", idToken)
+        print("==========================================")
+
         DispatchQueue.main.async {
+            print("🔵 STEP 2: Setting isLoading = true")
             self.isLoading = true
         }
+
         let url = "\(baseUrl)/verify-google"
         let parameters: [String: String] = ["id_token": idToken]
-        print(idToken)	
+
+        print("🔵 STEP 3: Sending POST request to:", url)
+        print("🔵 Parameters:", parameters)
 
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
             .responseData { response in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+
+                print("==========================================")
+                print("🟠 STEP 4: Response RECEIVED from server")
+                print("🟠 Status Code:", response.response?.statusCode ?? 0)
+
+                DispatchQueue.main.async {
+                    print("🟠 Setting isLoading = false")
                     self.isLoading = false
                 }
+
                 switch response.result {
+
                 case .success(let data):
-                    DispatchQueue.global(qos: .userInitiated).async {
-                        do {
-                            let decodedResponse = try JSONDecoder().decode(Auth.self, from: data)
-                            if let token = decodedResponse.data.token {
-                                self.saveToken(token)
-                                DispatchQueue.main.async {
-                                    self.isAuthenticated = true
+                    print("🟢 STEP 5: SUCCESS - Raw Data received")
+
+                    let jsonString = String(data: data, encoding: .utf8) ?? "no data"
+                    print("🟢 STEP 6: RAW RESPONSE:", jsonString)
+
+                    print("🟢 STEP 7: Trying to parse JSON")
+
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+                        print("🟢 Parsed JSON:", json ?? [:])
+
+                        let token =
+                            json?["token"] as? String ??
+                            (json?["data"] as? [String: Any])?["token"] as? String ??
+                            (json?["user"] as? [String: Any])?["token"] as? String
+
+                        print("🟢 STEP 8: Extracted token:", token ?? "nil")
+
+                        if let token = token {
+                            print("🟢 STEP 9: Saving token to UserDefaults")
+                            self.saveToken(token)
+
+                            print("🟢 STEP 10: Setting isAuthenticated = true")
+                            DispatchQueue.main.async {
+                                self.isAuthenticated = true
+                                print("🔥 isAuthenticated changed to:", self.isAuthenticated)
+                                
+                                // Tunggu sebentar agar state ter-update
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    // Dismiss semua navigation stack untuk kembali ke root
+                                    UIApplication.shared.windows.first?.rootViewController?.dismiss(animated: true, completion: nil)
                                 }
                             }
-                        } catch {
-                            print("❌ JSON Decoding Error: \(error.localizedDescription)")
+
+                            print("🟢 DONE: Google login success and state updated")
+
+                        } else {
+                            print("❌ ERROR: Token not found in response JSON")
+                            self.errorMessage = "Token not found"
                         }
+
+                    } catch {
+                        print("❌ JSON PARSE ERROR:", error.localizedDescription)
                     }
 
                 case .failure(let error):
-                    print("❌ Request failed: \(error.localizedDescription)")
+                    print("❌ STEP 5: Request FAILED:", error.localizedDescription)
                 }
+
+                print("==========================================")
             }
     }
     
@@ -110,9 +160,10 @@ class AuthViewModel: ObservableObject {
                         do {
                             let authResponse = try JSONDecoder().decode(Auth.self, from: data)
                             DispatchQueue.main.async {
-                                if authResponse.code == 200, let token = authResponse.data.token {
+                                if authResponse.code == 200, let token = authResponse.data?.token {
                                     self.saveToken(token)
                                     self.isAuthenticated = true
+                                    print("🔥 isAuthenticated changed to:", self.isAuthenticated)
                                     completion(true, "Login successful")
                                 } else {
                                     let errorMessage = authResponse.message
@@ -176,6 +227,12 @@ class AuthViewModel: ObservableObject {
     }
     
     func verifyOTP(email: String, otp: String, completion: @escaping (Bool, String?) -> Void) {
+        print("=======================================")
+        print("🔵 VERIFY OTP CALLED")
+        print("🔵 Email:", email)
+        print("🔵 OTP:", otp)
+        print("=======================================")
+
         DispatchQueue.main.async { self.isLoading = true }
         errorMessage = nil
 
@@ -185,53 +242,76 @@ class AuthViewModel: ObservableObject {
             "otp": otp
         ]
 
-        DispatchQueue.global(qos: .userInitiated).async {
-            AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
-                .responseDecodable(of: Auth.self) { response in
-                    defer { DispatchQueue.main.async { self.isLoading = false } }
-                    let statusCode = response.response?.statusCode ?? 0
+        print("🔵 Sending request to:", url)
+        print("🔵 Parameters:", parameters)
 
-                    switch response.result {
-                    case .success(let result):
-                        if (200..<300).contains(statusCode) {
-                            if let token = result.data.token {
-                                self.saveToken(token)
-                                DispatchQueue.main.async {
-                                    self.isAuthenticated = true
-                                }
-                                completion(true, "Verification successful")
-                            } else {
-                                completion(false, "No token received")
-                            }
-                        } else {
-                            DispatchQueue.main.async {
-                                self.errorMessage = result.message
-                            }
-                            completion(false, result.message)
+        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default)
+            .responseData { response in
+                print("=======================================")
+                print("🟠 RESPONSE RECEIVED")
+                print("🟠 Status Code:", response.response?.statusCode ?? 0)
+
+                DispatchQueue.main.async { self.isLoading = false }
+
+                if let rawString = String(data: response.data ?? Data(), encoding: .utf8) {
+                    print("🟠 RAW RESPONSE STRING:", rawString)
+                }
+
+                switch response.result {
+                case .success(let data):
+                    print("🟢 SUCCESS DATA RECEIVED")
+
+                    do {
+                        let decoded = try JSONDecoder().decode(Auth.self, from: data)
+                        print("🟢 DECODE SUCCESS")
+                        print("🟢 Message:", decoded.message)
+                        print("🟢 Code:", decoded.code)
+                        print("🟢 User Token:", decoded.data?.token ?? "nil")
+
+                        if decoded.code != 200 {
+                            print("❌ Server returned NON-200 code:", decoded.code)
+                            completion(false, decoded.message)
+                            return
                         }
 
-                    case .failure(_):
-                        if let data = response.data,
-                           let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                           var message = jsonObject["message"] as? String {
-                            
-                            if message == "Invalid OTP" {
-                                message = "OTP salah, silahkan cek kembali"
-                            }
+                        let userData = decoded.data ?? decoded.user
 
-                            DispatchQueue.main.async {
-                                self.errorMessage = message
-                            }
-                            completion(false, message)
-                        } else {
-                            DispatchQueue.main.async {
-                                self.errorMessage = "An error occurred, please check your internet connection."
-                            }
-                            completion(false, "An error occurred, please try again.")
+                        guard let token = userData?.token else {
+                            print("❌ Token missing in response")
+                            completion(false, "Token not found")
+                            return
                         }
+
+                        print("🟢 SAVING TOKEN:", token)
+                        self.saveToken(token)
+
+                        DispatchQueue.main.async {
+                            self.isAuthenticated = true
+                            print("🔥 isAuthenticated changed to:", self.isAuthenticated)
+                        }
+
+                        print("🟢 OTP VERIFIED SUCCESS")
+                        completion(true, decoded.message)
+
+                    } catch {
+                        print("❌ DECODE ERROR:", error.localizedDescription)
+                        completion(false, "JSON Decode Error")
+                    }
+
+                case .failure(let error):
+                    print("❌ REQUEST FAILED:", error.localizedDescription)
+
+                    if let data = response.data,
+                       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                        print("❌ ERROR JSON:", json)
+                        completion(false, json["message"] as? String ?? "Unknown error")
+                    } else {
+                        completion(false, "Network error")
                     }
                 }
-        }
+
+                print("=======================================")
+            }
     }
     
     func resendOTP(email: String, completion: @escaping (String?) -> Void) {
@@ -281,6 +361,7 @@ class AuthViewModel: ObservableObject {
         if let token = UserDefaults.standard.string(forKey: "authToken"), !token.isEmpty {
             DispatchQueue.main.async {
                 self.isAuthenticated = true
+                print("🔥 isAuthenticated changed to:", self.isAuthenticated)
             }
         }
     }
