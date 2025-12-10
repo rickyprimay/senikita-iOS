@@ -91,7 +91,7 @@ struct CardService: View {
                 .fontWeight(.regular)
                 .foregroundColor(.gray)
             
-            Text("| Terjual \(service.sold ?? 0)")
+            Text("| Terjual \(service.sold ?? "0")")
                 .font(AppFont.Raleway.bodyMedium)
                 .foregroundColor(.gray)
             
