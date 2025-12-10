@@ -9,7 +9,7 @@ import SwiftUI
 
 struct Splash: View {
     
-    @StateObject var authViewModel = AuthViewModel()
+    @EnvironmentObject var authViewModel: AuthViewModel
     @State private var isActive = false
     
     @State private var rotation: Double = 0
