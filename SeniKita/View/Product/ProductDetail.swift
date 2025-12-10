@@ -55,7 +55,7 @@ struct ProductDetail: View {
                             .lineLimit(1)
                         
                         HStack(spacing: 4) {
-                            Text("Terjual \(productViewModel.product?.sold ?? 0)")
+                            Text("Terjual \(productViewModel.product?.sold ?? "0")")
                                 .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(.black)
                                 .lineLimit(1)
