@@ -11,7 +11,7 @@ import SwiftUI
 
 class PaymentServiceViewModel: ObservableObject {
     
-    let baseUrl = "https://api.senikita.my.id/api/"
+    let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api/"
     
     @Published var isLoading: Bool = false
     @Published var isCheckoutSuccess: Bool = false
