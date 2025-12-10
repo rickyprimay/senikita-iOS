@@ -12,7 +12,7 @@ import UserNotifications
 @MainActor
 class PaymentViewModel: ObservableObject {
     
-    let baseUrl = "https://api.senikita.my.id/api/"
+    let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api/"
     @Published var isLoading: Bool = false
     @Published var ongkir: [Ongkir] = []
     @Published var firstAddress: Address?
@@ -140,7 +140,7 @@ class PaymentViewModel: ObservableObject {
         let parameters: [String: Any] = [
             "product_ids": productIDs,
             "qtys": qtys,
-            "courier": courier.lowercased(), // pastikan lowercase
+            "courier": courier.lowercased(),
             "service": service,
             "address_id": addressID
         ]
