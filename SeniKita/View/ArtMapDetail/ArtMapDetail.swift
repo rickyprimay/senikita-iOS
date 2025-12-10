@@ -41,12 +41,20 @@ struct ArtMapDetail: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(artMapViewModel.animatedText)
-                            .font(AppFont.Raleway.footnoteSmall)
-                            .foregroundColor(.white)
-                            .padding()
-                            .background(Color("primary"))
-                            .clipShape(RoundedCorner(radius: 12, corners: [.topRight, .topLeft, .bottomLeft]))
+                        if artMapViewModel.isSendingPrompt && artMapViewModel.animatedText.isEmpty {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .padding()
+                                .background(Color("primary"))
+                                .clipShape(RoundedCorner(radius: 12, corners: [.topRight, .topLeft, .bottomLeft]))
+                        } else {
+                            Text(artMapViewModel.animatedText)
+                                .font(AppFont.Raleway.footnoteSmall)
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color("primary"))
+                                .clipShape(RoundedCorner(radius: 12, corners: [.topRight, .topLeft, .bottomLeft]))
+                        }
                         
                         HStack {
                             VStack(alignment: .leading, spacing: 8) {
@@ -93,6 +101,7 @@ struct ArtMapDetail: View {
                                 )
                             
                             Button(action: {
+                                print("Button clicked, promptText: \(promptText), name: \(name)")
                                 artMapViewModel.animatedText = ""
                                 artMapViewModel.sendPromptToGemini(prompt: promptText, statue: name)
                             }) {
