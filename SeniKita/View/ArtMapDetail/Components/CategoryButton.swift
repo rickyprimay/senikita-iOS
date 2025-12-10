@@ -19,21 +19,17 @@ struct CategoryButton: View {
             HStack {
                 Text("\(icon) \(text)")
                     .font(AppFont.Crimson.footnoteSmall)
-                    .foregroundColor(.black)
+                    .foregroundColor(Color("primary"))
                     .padding(.vertical, 12)
-                    .frame(maxWidth: .infinity)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-                    .truncationMode(.tail)
-                    .background(
-                        RoundedRectangle(cornerRadius: 25)
-                            .fill(Color.gray.opacity(0.2))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 25)
-                                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-                            )
-                    )
+                    .padding(.horizontal)
             }
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(Color.gray.opacity(0.1))
+                    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 25))
         }
     }
 }
