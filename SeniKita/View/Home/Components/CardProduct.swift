@@ -89,7 +89,7 @@ struct CardProduct: View {
                 .fontWeight(.regular)
                 .foregroundColor(.gray)
             
-            Text("| Terjual \(product.sold ?? 0)")
+            Text("| Terjual \(product.sold ?? "0")")
                 .font(AppFont.Raleway.bodyMedium)
                 .foregroundColor(.gray)
             
