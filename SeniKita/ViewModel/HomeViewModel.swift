@@ -11,7 +11,7 @@ import SwiftUI
 
 class HomeViewModel: ObservableObject {
     
-    let baseUrl = "https://api.senikita.my.id/api/"
+    let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api/"
     
     @Published var products: [ProductData] = []
     @Published var services: [ServiceData] = []
@@ -45,19 +45,43 @@ class HomeViewModel: ObservableObject {
             AF.request(url)
                 .validate()
                 .responseDecodable(of: Product.self) { [weak self] response in
+                    if let data = response.data, let raw = String(data: data, encoding: .utf8) {
+                        print("RAW PRODUCTS RESPONSE: \(raw)")
+                    }
                     DispatchQueue.main.async {
                         self?.isLoading = false
                         switch response.result {
                         case .success(let productResponse):
+                            print("✅ Products fetched successfully: \(productResponse.data.data.count) items")
                             self?.products = productResponse.data.data
-                            self?.categories = productResponse.data.data.compactMap { $0.category }
-                            self?.shops = productResponse.data.data.compactMap { $0.shop }
-                            self?.cities = self?.shops.compactMap { $0.city } ?? []
-                            self?.provinces = self?.cities.compactMap { $0.province } ?? []
+                            
+                            let uniqueCategories = productResponse.data.data.compactMap { $0.category }
+                            self?.categories = Array(Set(uniqueCategories.map { $0.id })).compactMap { id in
+                                uniqueCategories.first(where: { $0.id == id })
+                            }
+                            
+                            let uniqueShops = productResponse.data.data.compactMap { $0.shop }
+                            self?.shops = Array(Set(uniqueShops.compactMap { $0.id })).compactMap { id in
+                                uniqueShops.first(where: { $0.id == id })
+                            }
+                            
+                            let uniqueCities = self?.shops.compactMap { $0.city } ?? []
+                            self?.cities = Array(Set(uniqueCities.map { $0.id })).compactMap { id in
+                                uniqueCities.first(where: { $0.id == id })
+                            }
+                            
+                            let uniqueProvinces = self?.cities.compactMap { $0.province } ?? []
+                            self?.provinces = Array(Set(uniqueProvinces.map { $0.id })).compactMap { id in
+                                uniqueProvinces.first(where: { $0.id == id })
+                            }
+                            
                             self?.fetchServices(isLoad: false)
                         case .failure(let error):
                             self?.errorMessage = "Error fetching products: \(error.localizedDescription)"
-                            print("Error fetching products: \(error.localizedDescription)")
+                            print("❌ Error fetching products: \(error.localizedDescription)")
+                            if let data = response.data, let errorString = String(data: data, encoding: .utf8) {
+                                print("Error response: \(errorString)")
+                            }
                         }
                     }
                 }
@@ -81,14 +105,21 @@ class HomeViewModel: ObservableObject {
             AF.request(url)
                 .validate()
                 .responseDecodable(of: ServiceResponse.self) { [weak self] response in
+                    if let data = response.data, let raw = String(data: data, encoding: .utf8) {
+                        print("RAW SERVICES RESPONSE: \(raw)")
+                    }
                     DispatchQueue.main.async {
                         self?.isLoading = false
                         switch response.result {
                         case .success(let serviceResponse):
+                            print("✅ Services fetched successfully: \(serviceResponse.data.data.count) items")
                             self?.services = serviceResponse.data.data
                         case .failure(let error):
                             self?.errorMessage = "Error fetching services: \(error.localizedDescription)"
-                            print("Error fetching services: \(error.localizedDescription)")
+                            print("❌ Error fetching services: \(error.localizedDescription)")
+                            if let data = response.data, let errorString = String(data: data, encoding: .utf8) {
+                                print("Error response: \(errorString)")
+                            }
                         }
                     }
                 }
@@ -117,6 +148,9 @@ class HomeViewModel: ObservableObject {
         AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
             .validate(statusCode: 200..<300)
             .responseData { [weak self] response in
+                if let data = response.data, let raw = String(data: data, encoding: .utf8) {
+                    print("RAW ADD CART RESPONSE: \(raw)")
+                }
                 guard let self = self else { return }
                 DispatchQueue.main.async { self.isLoading = false }
                 
@@ -168,6 +202,9 @@ class HomeViewModel: ObservableObject {
             AF.request(url, headers: headers)
                 .validate()
                 .responseDecodable(of: CartResponse.self) { [weak self] response in
+                    if let data = response.data, let raw = String(data: data, encoding: .utf8) {
+                        print("RAW CART LIST RESPONSE: \(raw)")
+                    }
                     DispatchQueue.main.async {
                         self?.isLoading = false
                         switch response.result {
@@ -198,6 +235,9 @@ class HomeViewModel: ObservableObject {
         AF.request(url, method: .put, encoding: JSONEncoding.default, headers: headers)
             .validate(statusCode: 200..<300)
             .response { response in
+                if let data = response.data, let raw = String(data: data, encoding: .utf8) {
+                    print("RAW INCREMENT RESPONSE: \(raw)")
+                }
                 switch response.result {
                 case .success:
                     print("increment success")
@@ -222,6 +262,9 @@ class HomeViewModel: ObservableObject {
         AF.request(url, method: .put, encoding: JSONEncoding.default, headers: headers)
             .validate(statusCode: 200..<300)
             .response { response in
+                if let data = response.data, let raw = String(data: data, encoding: .utf8) {
+                    print("RAW DECREMENT RESPONSE: \(raw)")
+                }
                 switch response.result {
                 case .success:
                     DispatchQueue.main.async {
@@ -245,6 +288,9 @@ class HomeViewModel: ObservableObject {
         AF.request(url, method: .delete, encoding: JSONEncoding.default, headers: headers)
             .validate(statusCode: 200..<300)
             .response { response in
+                if let data = response.data, let raw = String(data: data, encoding: .utf8) {
+                    print("RAW DELETE CART RESPONSE: \(raw)")
+                }
                 switch response.result {
                 case .success:
                     DispatchQueue.main.async {
