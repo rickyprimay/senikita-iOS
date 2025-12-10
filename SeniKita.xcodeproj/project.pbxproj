@@ -323,6 +323,7 @@
 				INFOPLIST_FILE = SeniKita/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Tindakan ini memerlukan akses ke kamera Anda untuk mengambil foto secara langsung. Mohon izinkan akses kamera pada perangkat Anda untuk melanjutkan.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -355,6 +356,7 @@
 				INFOPLIST_FILE = SeniKita/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Tindakan ini memerlukan akses ke kamera Anda untuk mengambil foto secara langsung. Mohon izinkan akses kamera pada perangkat Anda untuk melanjutkan.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
