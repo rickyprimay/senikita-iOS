@@ -10,7 +10,7 @@ import Alamofire
 
 class AddressViewModel: ObservableObject {
     
-    let baseUrl = "https://api.senikita.my.id/api/"
+    let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api/"
     
     @Published var isLoading: Bool = false
     @Published var address: [Address] = []
@@ -47,6 +47,9 @@ class AddressViewModel: ObservableObject {
                         
                         switch response.result {
                         case .success(let data):
+                            if let jsonString = String(data: data, encoding: .utf8) {
+                                print("Received JSON for getAddress: \(jsonString)")
+                            }
                             do {
                                 let addressResponse = try JSONDecoder().decode(AddressResponse.self, from: data)
                                 DispatchQueue.main.async {
@@ -94,6 +97,9 @@ class AddressViewModel: ObservableObject {
                         
                         switch response.result {
                         case .success(let data):
+                            if let jsonString = String(data: data, encoding: .utf8) {
+                                print("Received JSON for getAddressById: \(jsonString)")
+                            }
                             do {
                                 let addressResponse = try JSONDecoder().decode(SingleAddressResponse.self, from: data)
                                 DispatchQueue.main.async {
