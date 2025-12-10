@@ -11,7 +11,7 @@ import Foundation
 @MainActor
 class HistoryViewModel: ObservableObject {
     
-    private let baseUrl = "https://api.senikita.my.id/api"
+    private let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api"
     
     @Published var history: [OrderHistory] = []
     @Published var historyProductDetail: OrderHistory?
@@ -47,6 +47,9 @@ class HistoryViewModel: ObservableObject {
                     
                     switch response.result {
                     case .success(let data):
+                        if let jsonString = String(data: data, encoding: .utf8) {
+                            print("RAW HISTORY PRODUCT RESPONSE: \(jsonString)")
+                        }
                         
                         do {
                             let historyProductResponse = try JSONDecoder().decode(HistoryResponse.self, from: data)
@@ -146,6 +149,9 @@ class HistoryViewModel: ObservableObject {
                     
                     switch response.result {
                     case .success(let data):
+                        if let jsonString = String(data: data, encoding: .utf8) {
+                            print("RAW HISTORY SERVICE RESPONSE: \(jsonString)")
+                        }
                         
                         do {
                             let historyServiceResponse = try JSONDecoder().decode(HistoryServiceResponse.self, from: data)
