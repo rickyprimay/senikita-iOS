@@ -9,7 +9,7 @@ import SwiftUI
 
 struct Register: View {
     
-    @StateObject var authViewModel = AuthViewModel()
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     @State private var name = ""
     @State private var email = ""
@@ -58,7 +58,7 @@ struct Register: View {
                         }
                     }
                     
-                    GoogleButton()
+                    GoogleButton().environmentObject(authViewModel)
                     
                     DividerLabel(label: "atau").padding(.vertical, 4)
                     
@@ -87,7 +87,7 @@ struct Register: View {
                 }
                 .padding(30)
                 
-                NavigationLink("", destination: OTPInput(email: email), isActive: $isNavigatingToOTP)
+                NavigationLink("", destination: OTPInput(email: email).environmentObject(authViewModel), isActive: $isNavigatingToOTP)
                     .hidden()
             }
             
