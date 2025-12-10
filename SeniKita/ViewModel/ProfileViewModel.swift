@@ -12,7 +12,7 @@ import Alamofire
 @MainActor
 class ProfileViewModel: ObservableObject {
     
-    private let baseUrl = "https://api.senikita.my.id/api"
+    private let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api"
     
     @Published var profile: User?
     @Published var isLoading: Bool = false
