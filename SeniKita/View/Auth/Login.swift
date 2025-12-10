@@ -40,14 +40,14 @@ struct Login: View {
                         Text("Belum punya akun?")
                             .font(AppFont.Raleway.footnoteLarge)
 
-                        NavigationLink(destination: Register()) {
+                        NavigationLink(destination: Register().environmentObject(authViewModel)) {
                             Text("Daftar disini")
                                 .foregroundColor(Color("brick"))
                                 .font(AppFont.Raleway.footnoteLarge)
                         }
                     }
 
-                    GoogleButton()
+                    GoogleButton().environmentObject(authViewModel)
 
                     DividerLabel(label: "atau")
 
@@ -91,6 +91,11 @@ struct Login: View {
                             message in
                             if success {
                                 showErrorPopup = false
+                                // Tunggu sebentar agar state isAuthenticated ter-update
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    // Dismiss semua navigation stack untuk kembali ke root
+                                    UIApplication.shared.windows.first?.rootViewController?.dismiss(animated: true, completion: nil)
+                                }
                             } else {
                                 showErrorPopup = true
                             }
