@@ -10,6 +10,7 @@ import SwiftUI
 
 struct OTPInput: View {
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     @State private var otp: [String] = Array(repeating: "", count: 6)
     @FocusState private var focusedIndex: Int?
     
@@ -18,8 +19,9 @@ struct OTPInput: View {
     private let maxCountdown = 60
     @State private var timer: Timer?
     @State private var showErrorPopup = false
+    @State private var shouldDismissToRoot = false
     
-    @StateObject var authViewModel = AuthViewModel()
+    @EnvironmentObject var authViewModel: AuthViewModel
     var email: String
     
     var body: some View {
@@ -170,6 +172,9 @@ struct OTPInput: View {
             DispatchQueue.main.async {
                 if success {
                     print("✅ OTP berhasil diverifikasi!")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        UIApplication.shared.windows.first?.rootViewController?.dismiss(animated: true, completion: nil)
+                    }
                 } else {
                     showErrorPopup = true
                     print("❌ OTP gagal diverifikasi: \(message ?? "Unknown error")")
