@@ -9,36 +9,39 @@ struct Auth: Codable {
     let status: String
     let message: String
     let code: Int
-    let data: User
+    let user: User?
+    let data: User?
+    let expiresIn: Int?
 
     enum CodingKeys: String, CodingKey {
         case status, message, code, data, user
+        case expiresIn = "expires_in"
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+
         status = try container.decode(String.self, forKey: .status)
         message = try container.decode(String.self, forKey: .message)
         code = try container.decode(Int.self, forKey: .code)
 
-        if let userData = try? container.decode(User.self, forKey: .data) {
-            data = userData
-        } else if let userData = try? container.decode(User.self, forKey: .user) {
-            data = userData
-        } else {
+        let decodedData = try? container.decode(User.self, forKey: .data)
+        let decodedUser = try? container.decode(User.self, forKey: .user)
+
+        data = decodedData ?? decodedUser
+        user = decodedUser ?? decodedData
+
+        expiresIn = try? container.decode(Int.self, forKey: .expiresIn)
+
+        if data == nil && user == nil {
             throw DecodingError.keyNotFound(
                 CodingKeys.data,
-                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Neither 'data' nor 'user' found in response")
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Neither 'data' nor 'user' found in response"
+                )
             )
         }
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(status, forKey: .status)
-        try container.encode(message, forKey: .message)
-        try container.encode(code, forKey: .code)
-        try container.encode(data, forKey: .data)
     }
 }
 
@@ -68,20 +71,30 @@ struct User: Codable, Identifiable, Equatable {
         case isHaveStore = "isHaveStore"
     }
 
-    static func == (lhs: User, rhs: User) -> Bool {
-        return lhs.id == rhs.id &&
-               lhs.name == rhs.name &&
-               lhs.username == rhs.username &&
-               lhs.email == rhs.email &&
-               lhs.callNumber == rhs.callNumber &&
-               lhs.birthDate == rhs.birthDate &&
-               lhs.birthLocation == rhs.birthLocation &&
-               lhs.gender == rhs.gender &&
-               lhs.emailVerifiedAt == rhs.emailVerifiedAt &&
-               lhs.profilePicture == rhs.profilePicture &&
-               lhs.isHaveStore == rhs.isHaveStore &&
-               lhs.role == rhs.role &&
-               lhs.token == rhs.token
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(Int.self, forKey: .id)
+        name = try? container.decode(String.self, forKey: .name)
+        username = try? container.decode(String.self, forKey: .username)
+        email = try? container.decode(String.self, forKey: .email)
+        callNumber = try? container.decode(String.self, forKey: .callNumber)
+        birthDate = try? container.decode(String.self, forKey: .birthDate)
+        birthLocation = try? container.decode(String.self, forKey: .birthLocation)
+        gender = try? container.decode(String.self, forKey: .gender)
+        emailVerifiedAt = try? container.decode(String.self, forKey: .emailVerifiedAt)
+        profilePicture = try? container.decode(String.self, forKey: .profilePicture)
+        role = try? container.decode(Int.self, forKey: .role)
+        token = try? container.decode(String.self, forKey: .token)
+
+        if let intValue = try? container.decode(Int.self, forKey: .isHaveStore) {
+            isHaveStore = intValue
+        } else if let stringValue = try? container.decode(String.self, forKey: .isHaveStore),
+                  let intFromString = Int(stringValue) {
+            isHaveStore = intFromString
+        } else {
+            isHaveStore = nil
+        }
     }
 }
 
