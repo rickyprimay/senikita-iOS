@@ -8,12 +8,11 @@
 import Foundation
 import Alamofire
 import AVFoundation
-import GoogleGenerativeAI
 
 class ArtMapViewModel: ObservableObject {
     
-    let baseUrl = "https://api.senikita.my.id/api/"
-    let model = GenerativeModel(name: "gemini-1.5-flash-latest", apiKey: "AIzaSyCMZoLNkDoL6Gc-1Ae1gt8sIeBoqYkZBqM")
+    let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api/"
+    let geminiApiKey = "AIzaSyCvo93D12Dj9NbrNmW1doiEz6hydKTxMYM"
     
     @Published var artMap: [ArtMapResult] = []
     @Published var selectedArtMap: ArtMapResult?
@@ -22,6 +21,7 @@ class ArtMapViewModel: ObservableObject {
     @Published var animatedText = ""
     @Published var content: String? = nil
     @Published var isAnimatingText = false
+    @Published var isSendingPrompt: Bool = false
     
     var errorMessage: String = ""
     private var audioPlayer: AVAudioPlayer?
@@ -64,36 +64,102 @@ class ArtMapViewModel: ObservableObject {
         }
         
         AF.request(url)
+            .validate()
+            .responseData { raw in
+                if let data = raw.data,
+                   let jsonString = String(data: data, encoding: .utf8) {
+                }
+            }
             .responseDecodable(of: SingleArtMapResponse.self) { response in
                 DispatchQueue.main.async {
                     switch response.result {
                     case .success(let result):
                         self.selectedArtMap = result.data.artProvince
-                        self.content = result.data.content
+                        self.content = result.data.artProvince.subtitle
+                        
                     case .failure(let error):
                         self.errorMessage = error.localizedDescription
-                        print(error)
+                        print("❌ Decoding error:", error)
                     }
+                    
                     self.isLoading = false
                 }
             }
     }
     
     func sendPromptToGemini(prompt: String, statue: String) {
-        Task {
-            do {
-                let systemMessage = "Anda adalah sistem yang memberikan pengetahuan tentang budaya dan kesenian. Jawablah setiap pertanyaan dengan ramah menggunakan bahasa Indonesia. Hindari sapaan dan jawaban yang terlalu panjang. Fokuslah pada jawaban yang informatif dan mudah dipahami. Jangan jawab pertanyaan jika tidak berkaitan dan berhubungan dengan seni dan budaya di indonesia terutama di wilayah \(statue). Jawab dengan jawaban yang friendly dan ramah bagi anak anak. Hindari sapaan dan jawaban panjang. Jawab hanya jika pertanyaan berkaitan dengan seni dan budaya Indonesia. maksimal 20 word"
-                let response = try await model.generateContent(systemMessage + prompt)
-                if let text = response.text {
-                    Task {
-                        await self.speakText(textUsing: text)
-                        await self.startTextAnimation(textUsing: text)
+        DispatchQueue.main.async {
+            self.isSendingPrompt = true
+        }
+        print("Starting sendPromptToGemini with prompt: \(prompt), statue: \(statue)")
+        let systemMessage = "Anda adalah sistem yang memberikan pengetahuan tentang budaya dan kesenian. Jawablah setiap pertanyaan dengan ramah menggunakan bahasa Indonesia. Hindari sapaan dan jawaban yang terlalu panjang. Fokuslah pada jawaban yang informatif dan mudah dipahami. Jangan jawab pertanyaan jika tidak berkaitan dan berhubungan dengan seni dan budaya di indonesia terutama di wilayah \(statue). Jawab dengan jawaban yang friendly dan ramah bagi anak anak. Hindari sapaan dan jawaban panjang. Jawab hanya jika pertanyaan berkaitan dengan seni dan budaya Indonesia. maksimal 20 word"
+        let fullPrompt = systemMessage + prompt
+        
+        let endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=\(geminiApiKey)"
+        print("Endpoint: \(endpoint)")
+        
+        let parameters: [String: Any] = [
+            "contents": [
+                [
+                    "parts": [
+                        ["text": fullPrompt]
+                    ]
+                ]
+            ]
+        ]
+        print("Parameters: \(parameters)")
+        
+        AF.request(endpoint, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: ["Content-Type": "application/json"])
+            .responseJSON { response in
+                print("Response received: status \(response.response?.statusCode ?? 0)")
+                if let statusCode = response.response?.statusCode, statusCode != 200 {
+                    print("Non-200 status code: \(statusCode)")
+                    if let data = response.data {
+                        print("Response data: \(String(data: data, encoding: .utf8) ?? "No data")")
+                    }
+                    DispatchQueue.main.async {
+                        Task {
+                            await self.startTextAnimation(textUsing: "Gagal menghasilkan konten. Coba lagi.")
+                        }
+                    }
+                    return
+                }
+                DispatchQueue.main.async {
+                    switch response.result {
+                    case .success(let data):
+                        print("Gemini API Response: \(data)")
+                        if let json = data as? [String: Any],
+                           let candidates = json["candidates"] as? [[String: Any]],
+                           let firstCandidate = candidates.first,
+                           let content = firstCandidate["content"] as? [String: Any],
+                           let parts = content["parts"] as? [[String: Any]],
+                           let firstPart = parts.first,
+                           let text = firstPart["text"] as? String {
+                            Task {
+                                await self.speakText(textUsing: text)
+                                await self.startTextAnimation(textUsing: text)
+                            }
+                            print("COKKKKK: \(text)")
+                        } else {
+                            print("Failed to parse response: \(data)")
+                            Task {
+                                await self.startTextAnimation(textUsing: "Gagal menghasilkan konten. Coba lagi.")
+                            }
+                        }
+                    case .failure(let error):
+                        print("Error sending prompt to Gemini: \(error.localizedDescription)")
+                        if let data = response.data {
+                            print("Response data: \(String(data: data, encoding: .utf8) ?? "No data")")
+                        }
+                        Task {
+                            await self.startTextAnimation(textUsing: "Gagal menghasilkan konten. Coba lagi.")
+                        }
                     }
                 }
-            } catch {
-                print("Error sending prompt to Gemini: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.isSendingPrompt = false
+                }
             }
-        }
     }
     
     @MainActor
@@ -112,7 +178,7 @@ class ArtMapViewModel: ObservableObject {
     
     @MainActor
     func speakText(textUsing: String) async {
-        let apiKey = "sk_c81f9943d11b410c4c548ae64805daecd4ef85701192fb8c"
+        let apiKey = "sk_abbcc97ec9c3453e9eea3c595644f51634799caa3f4ab600"
         let voiceID = "gmnazjXOFoOcWA59sd5m"
         let url = "https://api.elevenlabs.io/v1/text-to-speech/\(voiceID)/stream"
         
