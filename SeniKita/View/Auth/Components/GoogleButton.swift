@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GoogleButton: View {
-    @ObservedObject var authViewModel = AuthViewModel()
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     var body: some View {
         Button {
