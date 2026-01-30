@@ -256,7 +256,7 @@ struct HistoryServiceDetail: View {
                             
                             if historyViewModel.historyServiceDetail?.computedStatus == "pending" {
                                 Button(action: {
-                                    if let url = URL(string: historyViewModel.historyProductDetail?.invoice_url ?? "") {
+                                    if let url = URL(string: historyViewModel.historyServiceDetail?.invoice_url ?? "") {
                                         UIApplication.shared.open(url)
                                     }
                                 }) {

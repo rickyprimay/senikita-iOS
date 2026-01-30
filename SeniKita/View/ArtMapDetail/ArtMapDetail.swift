@@ -139,7 +139,7 @@ struct ArtMapDetail: View {
                                             WebImage(url: imageUrl)
                                                 .resizable()
                                                 .scaledToFill()
-                                                .frame(maxWidth: .infinity, maxHeight: selectedDetail?.id == detail.id ? 200 : 100)
+                                                .frame(width: UIScreen.main.bounds.width - 48, height: selectedDetail?.id == detail.id ? 200 : 100)
                                                 .clipped()
                                                 .cornerRadius(12)
                                                 .opacity(0.6)
@@ -149,17 +149,15 @@ struct ArtMapDetail: View {
                                                 )
                                         } else {
                                             Color.gray
-                                                .frame(maxWidth: .infinity, maxHeight: 200)
+                                                .frame(width: UIScreen.main.bounds.width - 48, height: 200)
                                                 .cornerRadius(12)
                                         }
-                                        
                                         VStack(spacing: 8) {
                                             Text(detail.name)
                                                 .font(AppFont.Crimson.bodyMedium)
                                                 .foregroundColor(.white)
                                                 .multilineTextAlignment(.center)
                                                 .frame(maxWidth: .infinity)
-                                            
                                             if selectedDetail?.id == detail.id {
                                                 Text(detail.description)
                                                     .font(AppFont.Raleway.footnoteSmall)
@@ -171,12 +169,11 @@ struct ArtMapDetail: View {
                                         }
                                         .padding()
                                     }
-                                    .frame(maxWidth: .infinity)
                                     .padding(.vertical, 8)
                                 }
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 16)
                     }
 
                     

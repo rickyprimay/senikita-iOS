@@ -12,7 +12,6 @@ struct Header: View {
     
     @ObservedObject var profileViewModel: ProfileViewModel
     @ObservedObject var homeViewModel: HomeViewModel
-    @State var search: String = ""
     
     init(profileViewModel: ProfileViewModel, homeViewModel: HomeViewModel) {
         self.profileViewModel = profileViewModel
@@ -63,46 +62,8 @@ struct Header: View {
                 }
                 .padding(.horizontal, 15)
                 .frame(height: 50, alignment: .center)
-                
-                HStack {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .font(AppFont.Raleway.footnoteLarge)
-                            .foregroundColor(.black)
-                        
-                        ZStack(alignment: .leading) {
-                            if search.isEmpty {
-                                Text("Cari Produk atau Service")
-                                    .foregroundColor(.black.opacity(0.7))
-                                    .font(AppFont.Raleway.footnoteLarge)
-                                    .fontWeight(.regular)
-                            }
-                            
-                            TextField("", text: $search)
-                                .foregroundColor(.black)
-                                .font(AppFont.Raleway.footnoteLarge)
-                                .fontWeight(.regular)
-                        }
-                    }
-                    .padding(10)
-                    .background(Color.brown.opacity(0.3))
-                    .cornerRadius(20)
-                    
-                    Button {
-                        
-                    } label: {
-                        Image(systemName: "slider.horizontal.3")
-                            .font(AppFont.Crimson.bodyMedium)
-                            .foregroundColor(.black)
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                }
-                .padding(.horizontal, 15)
             }
-            .padding(.bottom, 15)
         }
-        .frame(height: 120)
+        .frame(height: 60)
     }
 }

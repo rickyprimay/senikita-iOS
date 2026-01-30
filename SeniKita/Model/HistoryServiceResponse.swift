@@ -32,7 +32,6 @@ struct OrderServiceHistory: Codable, Identifiable {
     let address: String
     let description: String?
     let invoice_url: String
-    let optional_document: String?
     let status: String
     let status_order: String
     let created_at: String
@@ -110,20 +109,10 @@ extension OrderServiceHistory {
         }
         
         no_transaction = try container.decode(String.self, forKey: .no_transaction)
-        
-        // Handle price as String or Double
-        if let strValue = try? container.decode(String.self, forKey: .price) {
-            price = Double(strValue) ?? 0.0
-        } else if let doubleValue = try? container.decode(Double.self, forKey: .price) {
-            price = doubleValue
-        } else {
-            price = 0.0
-        }
-        
+        price = try container.decode(Double.self, forKey: .price)
         address = try container.decode(String.self, forKey: .address)
         description = try? container.decode(String.self, forKey: .description)
         invoice_url = try container.decode(String.self, forKey: .invoice_url)
-        optional_document = try? container.decode(String.self, forKey: .optional_document)
         status = try container.decode(String.self, forKey: .status)
         status_order = try container.decode(String.self, forKey: .status_order)
         created_at = try container.decode(String.self, forKey: .created_at)

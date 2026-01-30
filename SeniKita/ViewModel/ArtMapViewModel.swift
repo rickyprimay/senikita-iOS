@@ -12,7 +12,7 @@ import AVFoundation
 class ArtMapViewModel: ObservableObject {
     
     let baseUrl = "https://senikita.sirekampolkesyogya.my.id/api/"
-    let geminiApiKey = "AIzaSyCvo93D12Dj9NbrNmW1doiEz6hydKTxMYM"
+    let geminiApiKey = "AIzaSyBAzl_Ecc4T_7IHEdlz2rOuNNUj60OZLK8"
     
     @Published var artMap: [ArtMapResult] = []
     @Published var selectedArtMap: ArtMapResult?
@@ -57,6 +57,7 @@ class ArtMapViewModel: ObservableObject {
     
     func fetchArtMapBySlug(slug: String) {
         isLoading = true
+        
         guard let url = URL(string: baseUrl + "art-provinces/\(slug)") else {
             self.errorMessage = "Invalid URL"
             self.isLoading = false
@@ -68,6 +69,10 @@ class ArtMapViewModel: ObservableObject {
             .responseData { raw in
                 if let data = raw.data,
                    let jsonString = String(data: data, encoding: .utf8) {
+                    print("🔵 RAW RESPONSE:")
+                    print(jsonString)
+                } else {
+                    print("⚠️ RAW RESPONSE: Empty or unreadable")
                 }
             }
             .responseDecodable(of: SingleArtMapResponse.self) { response in
@@ -76,7 +81,7 @@ class ArtMapViewModel: ObservableObject {
                     case .success(let result):
                         self.selectedArtMap = result.data.artProvince
                         self.content = result.data.artProvince.subtitle
-                        
+                        print("image from response \(result.data.artProvince.artProvinceDetails?.first?.image)")
                     case .failure(let error):
                         self.errorMessage = error.localizedDescription
                         print("❌ Decoding error:", error)
@@ -139,7 +144,6 @@ class ArtMapViewModel: ObservableObject {
                                 await self.speakText(textUsing: text)
                                 await self.startTextAnimation(textUsing: text)
                             }
-                            print("COKKKKK: \(text)")
                         } else {
                             print("Failed to parse response: \(data)")
                             Task {
