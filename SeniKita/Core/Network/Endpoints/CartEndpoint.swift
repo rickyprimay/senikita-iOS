@@ -33,8 +33,10 @@ enum CartEndpoint: Endpoint {
         switch self {
         case .list, .items:
             return .get
-        case .addItem, .increment, .decrement:
+        case .addItem:
             return .post
+        case .increment, .decrement:
+            return .put
         case .removeItem:
             return .delete
         }

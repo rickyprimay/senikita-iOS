@@ -19,51 +19,79 @@ struct Header: View {
     }
     
     var body: some View {
-        ZStack {
-            Color("tertiary")
-                .clipShape(RoundedShape(corners: [.bottomLeft, .bottomRight], radius: 20))
-                .edgesIgnoringSafeArea(.top)
+        HStack(alignment: .center, spacing: 12) {
+            // Profile image
+            if let profilePicture = profileViewModel.profile?.profilePicture,
+               let url = URL(string: profilePicture) {
+                WebImage(url: url)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 44, height: 44)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(Color.white, lineWidth: 2)
+                    )
+                    .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+            } else {
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color("primary").opacity(0.3), Color("tertiary").opacity(0.3)]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: "person.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(Color("primary"))
+                }
+            }
             
-            VStack(spacing: 10) {
-                HStack(alignment: .center) {
+            // Greeting text
+            Text("Halo, \(profileViewModel.profile?.name ?? "Guest")👋")
+                .font(AppFont.Nunito.bodyMedium)
+                .foregroundColor(.primary)
+            
+            Spacer()
+            
+            // Cart button with badge
+            NavigationLink(destination: CartView(viewModel: homeViewModel)) {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: "cart")
+                        .font(.system(size: 18))
+                        .foregroundColor(Color("primary"))
+                        .frame(width: 44, height: 44)
+                        .background(Color.white)
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
                     
-                    if let profilePicture = profileViewModel.profile?.profilePicture,
-                       let url = URL(string: profilePicture) {
-                        WebImage(url: url)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 40)
+                    if homeViewModel.totalCart > 0 {
+                        Text("\(homeViewModel.totalCart)")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(width: 18, height: 18)
+                            .background(Color("brick"))
                             .clipShape(Circle())
-                    } else {
-                        Image(systemName: "person.fill")
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                    
-                    Text("Halo, \(profileViewModel.profile?.name ?? "Guest")👋")
-                        .font(AppFont.Raleway.bodyMedium)
-                        .fontWeight(.regular)
-                        .foregroundColor(.black)
-                        .padding(.leading, 8)
-                    
-                    Spacer()
-                    
-                    NavigationLink(destination: CartView(viewModel: homeViewModel)){
-                        Image(systemName: "cart")
-                            .font(AppFont.Crimson.bodyMedium)
-                            .foregroundColor(.black)
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
+                            .offset(x: 4, y: -4)
                     }
                 }
-                .padding(.horizontal, 15)
-                .frame(height: 50, alignment: .center)
             }
         }
-        .frame(height: 60)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color("tertiary"), Color("primary")]),
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .clipShape(RoundedShape(corners: [.bottomLeft, .bottomRight], radius: 24))
+            .shadow(color: Color("primary").opacity(0.2), radius: 8, y: 4)
+            .ignoresSafeArea(edges: .top)
+        )
     }
 }

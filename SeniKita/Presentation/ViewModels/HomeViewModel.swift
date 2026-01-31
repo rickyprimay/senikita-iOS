@@ -131,12 +131,22 @@ class HomeViewModel: ObservableObject {
     func incrementCart(cartItemId: Int) {
         guard DIContainer.shared.isAuthenticated else { return }
         
-        Task {
-            do {
-                try await cartRepository.incrementItem(cartItemId: cartItemId)
-                fetchCart()
-            } catch {
-                print("Error incrementing cart: \(error)")
+        // Optimistic UI update - find item and increment locally first
+        if let index = cart.firstIndex(where: { $0.cart_item_id == cartItemId }) {
+            let originalQty = cart[index].qty
+            cart[index].qty += 1
+            
+            // Network call in background
+            Task {
+                do {
+                    try await cartRepository.incrementItem(cartItemId: cartItemId)
+                } catch {
+                    // Rollback on failure
+                    if let idx = self.cart.firstIndex(where: { $0.cart_item_id == cartItemId }) {
+                        self.cart[idx].qty = originalQty
+                    }
+                    print("Error incrementing cart: \(error)")
+                }
             }
         }
     }
@@ -144,12 +154,25 @@ class HomeViewModel: ObservableObject {
     func decrementCart(cartItemId: Int) {
         guard DIContainer.shared.isAuthenticated else { return }
         
-        Task {
-            do {
-                try await cartRepository.decrementItem(cartItemId: cartItemId)
-                fetchCart()
-            } catch {
-                print("Error decrementing cart: \(error)")
+        // Optimistic UI update - find item and decrement locally first
+        if let index = cart.firstIndex(where: { $0.cart_item_id == cartItemId }) {
+            let originalQty = cart[index].qty
+            
+            if originalQty > 1 {
+                cart[index].qty -= 1
+                
+                // Network call in background
+                Task {
+                    do {
+                        try await cartRepository.decrementItem(cartItemId: cartItemId)
+                    } catch {
+                        // Rollback on failure
+                        if let idx = self.cart.firstIndex(where: { $0.cart_item_id == cartItemId }) {
+                            self.cart[idx].qty = originalQty
+                        }
+                        print("Error decrementing cart: \(error)")
+                    }
+                }
             }
         }
     }
@@ -160,12 +183,20 @@ class HomeViewModel: ObservableObject {
             return
         }
         
+        // Optimistic UI update - remove item locally first
+        let originalCart = cart
+        cart.removeAll { $0.cart_item_id == cartItemId }
+        totalCart = cart.count
+        
+        // Network call in background
         Task {
             do {
                 try await cartRepository.removeItem(cartItemId: cartItemId)
-                fetchCart()
                 completion(true, "Berhasil menghapus dari keranjang")
             } catch {
+                // Rollback on failure
+                self.cart = originalCart
+                self.totalCart = originalCart.count
                 completion(false, error.localizedDescription)
             }
         }
