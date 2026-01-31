@@ -10,6 +10,7 @@ import MapKit
 
 struct ArtMap: View {
     @ObservedObject var artMapViewModel: ArtMapViewModel
+    @Environment(\.tabBarManager) var tabBarManager
     
     @State private var cameraPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
@@ -108,6 +109,7 @@ struct ArtMap: View {
     }
     
     private func selectArt(_ art: ArtMapResult) {
+        tabBarManager.hide()
         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
             selectedArt = art
             showDetail = false
@@ -135,6 +137,7 @@ struct ArtMap: View {
     }
     
     private func resetMap() {
+        tabBarManager.show()
         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
             showDetail = false
             selectedArt = nil
