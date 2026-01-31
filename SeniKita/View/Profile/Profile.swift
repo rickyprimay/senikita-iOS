@@ -98,7 +98,7 @@ struct Profile: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 12)
-                .background(Color("brick"))
+                .background(Color("primary"))
                 .cornerRadius(25)
             }
         }
