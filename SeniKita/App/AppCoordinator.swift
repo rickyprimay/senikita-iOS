@@ -2,11 +2,11 @@
 //  AppCoordinator.swift
 //  SeniKita
 //
-
+//  Created by Ricky Primayuda Putra on 31/01/26.
+//
 import SwiftUI
 
 // MARK: - App Coordinator
-// Manages app-wide navigation and state
 @MainActor
 final class AppCoordinator: ObservableObject {
     // MARK: - Published Properties
@@ -30,9 +30,8 @@ final class AppCoordinator: ObservableObject {
     private func checkAuthenticationStatus() {
         isAuthenticated = sessionManager.isLoggedIn
         
-        // Simulate splash delay
         Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
             showSplash = false
             isLoading = false
         }
@@ -54,7 +53,6 @@ final class AppCoordinator: ObservableObject {
 }
 
 // MARK: - App State
-// Observable app-wide state
 @MainActor
 final class AppState: ObservableObject {
     // MARK: - Singleton
