@@ -29,7 +29,6 @@ final class HTTPClient {
         self.session = Session(interceptor: interceptor, eventMonitors: monitors)
     }
     
-    /// Main Request Method
     func request<T: Decodable>(endpoint: Endpoint) async throws -> T {
         let request = try buildRequest(from: endpoint)
         
@@ -56,7 +55,6 @@ final class HTTPClient {
         }
     }
     
-    /// Request returning Raw Data
     func requestRaw(endpoint: Endpoint) async throws -> Data {
         let request = try buildRequest(from: endpoint)
         
@@ -73,7 +71,6 @@ final class HTTPClient {
         return data
     }
     
-    /// Request without return value (Void)
     func request(endpoint: Endpoint) async throws {
         let request = try buildRequest(from: endpoint)
         
@@ -84,7 +81,6 @@ final class HTTPClient {
         try validateResponse(response)
     }
     
-    /// Request with Multipart Upload
     func upload<T: Decodable>(endpoint: Endpoint) async throws -> T {
         let baseURL = endpoint.baseURL ?? AppConfig.baseURL
         guard let url = URL(string: baseURL + endpoint.path) else {
@@ -119,8 +115,6 @@ final class HTTPClient {
             throw NetworkError.decodingError(error)
         }
     }
-    
-    // MARK: - Private Helpers
     
     private func buildRequest(from endpoint: Endpoint) throws -> URLRequest {
         let baseURL = endpoint.baseURL ?? AppConfig.baseURL
@@ -240,8 +234,6 @@ final class HTTPClient {
         return (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] ?? [:]
     }
 }
-
-// MARK: - SeniKita Logger (3 Separate Log Blocks)
 
 class SeniKitaLogger: EventMonitor, @unchecked Sendable {
     
