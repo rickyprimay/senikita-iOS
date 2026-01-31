@@ -30,6 +30,7 @@ class ServiceViewModel: ObservableObject {
             do {
                 let service = try await serviceRepository.getServiceDetail(id: idService)
                 self.service = service
+                print("[ServiceViewModel] Service loaded: \(service.name ?? "no name"), price: \(String(describing: service.price))")
                 
                 if let category = service.category {
                     self.categories = [category]

@@ -33,11 +33,14 @@ struct Home: View {
                     VStack(alignment: .leading, spacing: 24) {
                         
                         Banner()
-                            .padding(.top, 65)
+                            .padding(.top, 16)
                         
-                        productSection
-                        
-                        serviceSection
+                        if !homeViewModel.searchText.isEmpty && homeViewModel.displayProducts.isEmpty && homeViewModel.displayServices.isEmpty && !homeViewModel.isLoading && !homeViewModel.isSearching {
+                            searchEmptyState
+                        } else {
+                            productSection
+                            serviceSection
+                        }
                     }
                     .padding(.bottom, 100)
                 }
@@ -66,6 +69,39 @@ struct Home: View {
         }
     }
     
+    private var searchEmptyState: some View {
+        VStack(spacing: 16) {
+            Spacer()
+                .frame(height: 40)
+            
+            ZStack {
+                Circle()
+                    .fill(Color("primary").opacity(0.1))
+                    .frame(width: 80, height: 80)
+                
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 32))
+                    .foregroundColor(Color("primary"))
+            }
+            
+            VStack(spacing: 4) {
+                Text("Tidak Ditemukan")
+                    .font(AppFont.Nunito.bodyLarge)
+                    .foregroundColor(.primary)
+                
+                Text("Coba kata kunci lain untuk \"\(homeViewModel.searchText)\"")
+                    .font(AppFont.Raleway.bodyMedium)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            Spacer()
+                .frame(height: 40)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
+    }
+    
     private var productSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -82,7 +118,7 @@ struct Home: View {
                 Spacer()
                 
                 if !homeViewModel.isLoading {
-                    Text("\(homeViewModel.products.count)")
+                    Text("\(homeViewModel.displayProducts.count)")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 10)
@@ -93,14 +129,21 @@ struct Home: View {
             }
             .padding(.horizontal, 20)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 16) {
-                    if homeViewModel.isLoading {
+            if homeViewModel.isLoading || homeViewModel.isSearching {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 16) {
                         ForEach(0..<3, id: \.self) { _ in
                             ProductCardSkeleton()
                         }
-                    } else {
-                        ForEach(homeViewModel.products) { product in
+                    }
+                    .padding(.horizontal, 20)
+                }
+            } else if homeViewModel.displayProducts.isEmpty {
+                sectionEmptyState(icon: "cube.box", text: "Tidak ada produk ditemukan")
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 16) {
+                        ForEach(homeViewModel.displayProducts) { product in
                             NavigationLink(
                                 destination: ProductDetail(idProduct: product.id, homeViewModel: homeViewModel),
                                 label: {
@@ -109,8 +152,8 @@ struct Home: View {
                             )
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
             }
         }
     }
@@ -131,7 +174,7 @@ struct Home: View {
                 Spacer()
                 
                 if !homeViewModel.isLoading {
-                    Text("\(homeViewModel.services.count)")
+                    Text("\(homeViewModel.displayServices.count)")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.white)
                         .padding(.horizontal, 10)
@@ -142,14 +185,21 @@ struct Home: View {
             }
             .padding(.horizontal, 20)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 16) {
-                    if homeViewModel.isLoading {
+            if homeViewModel.isLoading || homeViewModel.isSearching {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 16) {
                         ForEach(0..<3, id: \.self) { _ in
                             ServiceCardSkeleton()
                         }
-                    } else {
-                        ForEach(homeViewModel.services) { service in
+                    }
+                    .padding(.horizontal, 20)
+                }
+            } else if homeViewModel.displayServices.isEmpty {
+                sectionEmptyState(icon: "paintbrush.pointed", text: "Tidak ada jasa ditemukan")
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 16) {
+                        ForEach(homeViewModel.displayServices) { service in
                             NavigationLink(
                                 destination: ServiceDetail(idService: service.id, homeViewModel: homeViewModel),
                                 label: {
@@ -158,9 +208,26 @@ struct Home: View {
                             )
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
             }
         }
+    }
+    
+    private func sectionEmptyState(icon: String, text: String) -> some View {
+        HStack {
+            Spacer()
+            VStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.system(size: 24))
+                    .foregroundColor(Color(UIColor.systemGray3))
+                Text(text)
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.vertical, 32)
+            Spacer()
+        }
+        .padding(.horizontal, 20)
     }
 }

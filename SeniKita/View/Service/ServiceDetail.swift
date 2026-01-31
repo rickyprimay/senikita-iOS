@@ -11,7 +11,6 @@ import SDWebImageSwiftUI
 struct ServiceDetail: View {
     
     @Environment(\.presentationMode) var presentationMode
-
     
     @StateObject var serviceViewModel = ServiceViewModel()
     @ObservedObject var homeViewModel: HomeViewModel
@@ -26,279 +25,437 @@ struct ServiceDetail: View {
     }
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
+            Color(UIColor.systemGroupedBackground)
+                .ignoresSafeArea()
             
-            ScrollView {
-                VStack() {
-                    
-                    ZStack(alignment: .topTrailing) {
-                        WebImage(url: URL(string: serviceViewModel.service?.thumbnail ?? ""))
-                            .resizable()
-                            .indicator(.activity)
-                            .scaledToFill()
-                            .frame(width: UIScreen.main.bounds.width - 40, height: 250)
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
+            VStack(spacing: 0) {
+                navigationHeader
+                
+                if serviceViewModel.isLoading {
+                    serviceDetailSkeleton
+                } else {
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 20) {
+                            serviceImageCard
+                            serviceInfoCard
+                            locationCard
+                            sellerCard
+                            otherServicesSection
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+                        .padding(.bottom, 120)
                     }
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        
-                        HStack{
-                            
-                            Text("Rp\(serviceViewModel.service?.price ?? 0)")
-                                .font(AppFont.Raleway.titleMedium)
-                                .foregroundColor(Color("primary"))
-                                .lineLimit(1)
-                            
-                            Text("per \(serviceViewModel.service?.type ?? "")")
-                                .font(AppFont.Raleway.footnoteSmall)
-                                .foregroundColor(.black)
-                            
-                        }
-                        
-                        Text(serviceViewModel.service?.name ?? "")
-                            .font(AppFont.Raleway.titleMedium)
-                            .foregroundColor(.black)
-                            .lineLimit(1)
-                        
-                        HStack(spacing: 4) {
-                            Text("Sudah menerima \(serviceViewModel.service?.sold ?? "0") pesanan")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundColor(.black)
-                                .lineLimit(1)
-                            
-                            Text("•")
-                            
-                            Image(systemName: "star.fill")
-                                .foregroundColor(.yellow)
-                                .font(.system(size: 12))
-                            
-                            Text(String(format: "%.1f", serviceViewModel.service?.average_rating ?? 0.0))
-                                .font(AppFont.Raleway.bodyMedium)
-                                .fontWeight(.regular)
-                                .foregroundColor(.black)
-                            
-                            Text("(\(serviceViewModel.service?.rating_count ?? 0) Rating)")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundColor(.black)
-                        }
-                        
-                        Text("Jumlah orang: \(serviceViewModel.service?.person_amount ?? "0")")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.black)
-                            .lineLimit(1)
-                        
-                        HStack {
-                            Text("Kategori:")
-                            Text(serviceViewModel.service?.category?.name ?? "")
-                                .foregroundStyle(Color("primary"))
-                                .fontWeight(.regular)
-                        }
-                        .font(AppFont.Raleway.bodyMedium)
-                        .foregroundColor(.black)
-                        .lineLimit(1)
-                        
-                        Text(serviceViewModel.service?.desc?.stripHTML ?? "")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.black)
-                            .lineLimit(nil)
-                        
-                        Text("Alamat Layanan Kesenian")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.black)
-                            .bold()
-                        
-                        HStack {
-                            
-                            Image(systemName: "mappin.and.ellipse")
-                                .font(AppFont.Raleway.bodyMedium)
-                            
-                            Text("Jasa dari")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundColor(.black)
-                            
-                            Text(serviceViewModel.service?.shop?.region ?? "")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundColor(.black)
-                                .bold()
-                            
-                        }
-                        
-                        HStack{
-                            Image(systemName: "dollarsign.circle.fill")
-                                .font(AppFont.Raleway.bodyMedium)
-                            
-                            Text("Pembayaran per")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundColor(.black)
-                            
-                            Text(serviceViewModel.service?.type ?? "")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundColor(.black)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Profil Seniman")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundColor(.black)
-                                .bold()
-                            
-                            HStack(alignment: .center, spacing: 12) {
-                                if let profilePicture = serviceViewModel.service?.shop?.profile_picture, !profilePicture.isEmpty {
-                                    WebImage(url: URL(string: profilePicture))
-                                        .resizable()
-                                        .indicator(.activity)
-                                        .scaledToFill()
-                                        .frame(width: 50, height: 50)
-                                        .clipShape(Circle())
-                                } else {
-                                    Image(systemName: "person")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 50, height: 50)
-                                        .foregroundColor(.gray)
-                                        .background(Color.gray.opacity(0.2))
-                                        .clipShape(Circle())
-                                }
-                                
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(serviceViewModel.service?.shop?.name ?? "")
-                                        .font(AppFont.Raleway.bodyMedium)
-                                        .foregroundColor(.black)
-                                        .bold()
-                                    
-                                    Text(serviceViewModel.service?.shop?.region ?? "")
-                                        .font(AppFont.Raleway.bodyMedium)
-                                        .foregroundColor(.black)
-                                }
-                            }
-                            
-                            Text(serviceViewModel.service?.shop?.desc ?? "")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundColor(.black)
-                                .fixedSize(horizontal: false, vertical: false)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.white)
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
-                        .padding(.top)
-                        
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text("Jasa Kesenian Lainnya")
-                                    .font(AppFont.Raleway.titleMedium)
-                                    .foregroundColor(.black)
-                                
-                                Spacer()
-                            }
-                            .padding(.vertical)
-                            
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHStack(spacing: 15) {
-                                    ForEach(homeViewModel.services) { service in
-                                        NavigationLink(
-                                            destination: ServiceDetail(idService: service.id, homeViewModel: homeViewModel),
-                                            label: {
-                                                CardService(service: service)
-                                            }
-                                        )
-                                    }
-                                }
-                                .padding(.horizontal, 15)
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top)
-                    
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 80)
-            }
-            .onAppear{
-                serviceViewModel.fetchServiceById(idService: idService, isLoad: true)
-            }
-            .background(Color.white.ignoresSafeArea())
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        presentationMode.wrappedValue.dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(AppFont.Crimson.bodyLarge)
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                    .tint(Color("tertiary"))
-                }
-                ToolbarItem(placement: .principal) {
-                    Text("Detail Jasa")
-                        .font(AppFont.Crimson.bodyLarge)
-                        .bold()
-                        .foregroundColor(Color("tertiary"))
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button{
-                        showShareSheet.toggle()
-                    } label: {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(AppFont.Crimson.bodyLarge)
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                    .tint(Color("tertiary"))
-                }
-            }
-            .sheet(isPresented: $showShareSheet) {
-                ShareSheet(activityItems: [serviceViewModel.service?.thumbnail ?? "Service ini menarik!"])
-            }
-            if serviceViewModel.isLoading {
-                Loading(opacity: 0.5)
             }
             
-            VStack {
-                Spacer()
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        if let service = serviceViewModel.service {
-                            NavigationLink(destination: PaymentService(
-                                imageService: service.thumbnail ?? "",
-                                serviceId: service.id,
-                                nameShop: service.shop?.name ?? "",
-                                nameService: service.name ?? "",
-                                price: service.price?.toDouble() ?? 0
-                            )) {
-                                Text("Pesan Sekarang")
-                                    .font(AppFont.Nunito.bodyMedium)
-                                    .bold()
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .multilineTextAlignment(.center)
-                                    .padding()
-                                    .background(Color("primary"))
-                                    .cornerRadius(10)
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 10)
-                    .background(Color.white)
-                    .cornerRadius(10)
-                    .shadow(radius: 2)
-                }
-                .padding(.bottom, 25)
-                .background(Color.clear)
+            if !serviceViewModel.isLoading {
+                actionBar
             }
-            .ignoresSafeArea(edges: .bottom)
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .onAppear {
+            serviceViewModel.fetchServiceById(idService: idService, isLoad: true)
+        }
+        .sheet(isPresented: $showShareSheet) {
+            ShareSheet(activityItems: [serviceViewModel.service?.thumbnail ?? "Service ini menarik!"])
         }
         .hideTabBar()
     }
     
+    // MARK: - Navigation Header
+    private var navigationHeader: some View {
+        HStack {
+            Button(action: {
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(Color("primary"))
+                    .frame(width: 40, height: 40)
+                    .background(Color.white)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+            }
+            
+            Spacer()
+            
+            Text("Detail Jasa")
+                .font(AppFont.Nunito.subtitle)
+                .foregroundColor(.primary)
+            
+            Spacer()
+            
+            Button(action: {
+                showShareSheet.toggle()
+            }) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 14))
+                    .foregroundColor(Color("primary"))
+                    .frame(width: 36, height: 36)
+                    .background(Color.white)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color(UIColor.systemGroupedBackground))
+    }
+    
+    // MARK: - Service Image
+    private var serviceImageCard: some View {
+        GeometryReader { geometry in
+            WebImage(url: URL(string: serviceViewModel.service?.thumbnail ?? ""))
+                .resizable()
+                .indicator(.activity)
+                .scaledToFill()
+                .frame(width: geometry.size.width, height: 240)
+                .clipped()
+        }
+        .frame(height: 240)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
+    }
+    
+    // MARK: - Service Info Card
+    private var serviceInfoCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Price with type
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("Rp\(formatPrice(serviceViewModel.service?.price ?? 0))")
+                    .font(AppFont.Nunito.headerLarge)
+                    .foregroundColor(Color("primary"))
+                
+                Text("per \(serviceViewModel.service?.type ?? "")")
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color(UIColor.systemGray6))
+                    .cornerRadius(6)
+            }
+            
+            // Name
+            Text(serviceViewModel.service?.name ?? "")
+                .font(AppFont.Nunito.subtitle)
+                .foregroundColor(.primary)
+            
+            // Stats row
+            HStack(spacing: 12) {
+                Text("Sudah menerima \(serviceViewModel.service?.sold ?? "0") pesanan")
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.secondary)
+                
+                Text("•")
+                    .foregroundColor(.secondary)
+                
+                HStack(spacing: 4) {
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 12))
+                    
+                    Text(String(format: "%.1f", serviceViewModel.service?.average_rating ?? 0))
+                        .font(AppFont.Nunito.bodyMedium)
+                        .foregroundColor(.primary)
+                    
+                    Text("(\(serviceViewModel.service?.rating_count ?? 0))")
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Divider()
+            
+            // Person amount & Category
+            HStack(spacing: 16) {
+                Label {
+                    Text("\(serviceViewModel.service?.person_amount ?? "0") orang")
+                        .font(AppFont.Raleway.bodyMedium)
+                        .foregroundColor(.primary)
+                } icon: {
+                    Image(systemName: "person.2.fill")
+                        .foregroundColor(Color("primary"))
+                }
+                
+                Spacer()
+                
+                Text(serviceViewModel.service?.category?.name ?? "")
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(Color("tertiary"))
+                    .cornerRadius(8)
+            }
+            
+            Divider()
+            
+            // Description
+            Text(serviceViewModel.service?.desc?.stripHTML ?? "")
+                .font(AppFont.Raleway.bodyMedium)
+                .foregroundColor(.secondary)
+                .lineLimit(nil)
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+    }
+    
+    // MARK: - Location Card
+    private var locationCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Alamat Layanan")
+                .font(AppFont.Nunito.bodyLarge)
+                .foregroundColor(.primary)
+            
+            HStack(spacing: 12) {
+                Image(systemName: "mappin.circle.fill")
+                    .font(.system(size: 20))
+                    .foregroundColor(Color("primary"))
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Jasa dari")
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(.secondary)
+                    Text(serviceViewModel.service?.shop?.region ?? "")
+                        .font(AppFont.Nunito.bodyMedium)
+                        .foregroundColor(.primary)
+                }
+                
+                Spacer()
+            }
+            
+            Divider()
+            
+            HStack(spacing: 12) {
+                Image(systemName: "dollarsign.circle.fill")
+                    .font(.system(size: 20))
+                    .foregroundColor(Color("tertiary"))
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Pembayaran per")
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(.secondary)
+                    Text(serviceViewModel.service?.type ?? "")
+                        .font(AppFont.Nunito.bodyMedium)
+                        .foregroundColor(.primary)
+                }
+                
+                Spacer()
+            }
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+    }
+    
+    // MARK: - Seller Card
+    private var sellerCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Profil Seniman")
+                .font(AppFont.Nunito.bodyLarge)
+                .foregroundColor(.primary)
+            
+            HStack(spacing: 12) {
+                if let profilePicture = serviceViewModel.service?.shop?.profile_picture,
+                   !profilePicture.isEmpty {
+                    WebImage(url: URL(string: profilePicture))
+                        .resizable()
+                        .indicator(.activity)
+                        .scaledToFill()
+                        .frame(width: 56, height: 56)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(Color("primary").opacity(0.2), lineWidth: 2)
+                        )
+                } else {
+                    ZStack {
+                        Circle()
+                            .fill(Color(UIColor.systemGray5))
+                            .frame(width: 56, height: 56)
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 24))
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(serviceViewModel.service?.shop?.name ?? "")
+                        .font(AppFont.Nunito.bodyLarge)
+                        .foregroundColor(.primary)
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: "mappin.circle.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(Color("primary"))
+                        Text(serviceViewModel.service?.shop?.region ?? "")
+                            .font(AppFont.Raleway.footnoteSmall)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                Spacer()
+            }
+            
+            Text(serviceViewModel.service?.shop?.desc ?? "Deskripsi toko belum tersedia.")
+                .font(AppFont.Raleway.bodyMedium)
+                .foregroundColor(.secondary)
+                .lineLimit(3)
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+    }
+    
+    // MARK: - Other Services
+    private var otherServicesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Jasa Kesenian Lainnya")
+                .font(AppFont.Nunito.headerMedium)
+                .foregroundColor(.primary)
+                .padding(.horizontal, 4)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 16) {
+                    ForEach(homeViewModel.services.filter { $0.id != idService }.prefix(10)) { service in
+                        NavigationLink(
+                            destination: ServiceDetail(idService: service.id, homeViewModel: homeViewModel),
+                            label: {
+                                CardService(service: service)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Action Bar
+    private var actionBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+            
+            if let service = serviceViewModel.service {
+                NavigationLink(destination: PaymentService(
+                    imageService: service.thumbnail ?? "",
+                    serviceId: service.id,
+                    nameShop: service.shop?.name ?? "",
+                    nameService: service.name ?? "",
+                    price: service.price?.toDouble() ?? 0
+                )) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "calendar.badge.plus")
+                            .font(.system(size: 16))
+                        Text("Pesan Sekarang")
+                            .font(AppFont.Nunito.bodyLarge)
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color("primary"), Color("tertiary")]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(12)
+                    .shadow(color: Color("primary").opacity(0.3), radius: 8, y: 4)
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.bottom, 30)
+                .background(Color.white)
+            }
+        }
+    }
+    
+    // MARK: - Skeleton
+    private var serviceDetailSkeleton: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 20) {
+                // Image skeleton
+                SkeletonLoading(width: .infinity, height: 240, cornerRadius: 20)
+                
+                // Info card skeleton
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        SkeletonLoading(width: 120, height: 28)
+                        SkeletonLoading(width: 60, height: 20, cornerRadius: 6)
+                    }
+                    SkeletonLoading(width: 200, height: 20)
+                    SkeletonLoading(width: 180, height: 14)
+                    Divider()
+                    HStack {
+                        SkeletonLoading(width: 90, height: 16)
+                        Spacer()
+                        SkeletonLoading(width: 80, height: 24, cornerRadius: 8)
+                    }
+                    Divider()
+                    SkeletonLoading(width: .infinity, height: 60)
+                }
+                .padding(20)
+                .background(Color.white)
+                .cornerRadius(16)
+                
+                // Location skeleton
+                VStack(alignment: .leading, spacing: 12) {
+                    SkeletonLoading(width: 120, height: 18)
+                    HStack(spacing: 12) {
+                        SkeletonLoading(width: 20, height: 20, isCircle: true)
+                        VStack(alignment: .leading, spacing: 4) {
+                            SkeletonLoading(width: 60, height: 12)
+                            SkeletonLoading(width: 120, height: 16)
+                        }
+                    }
+                    Divider()
+                    HStack(spacing: 12) {
+                        SkeletonLoading(width: 20, height: 20, isCircle: true)
+                        VStack(alignment: .leading, spacing: 4) {
+                            SkeletonLoading(width: 100, height: 12)
+                            SkeletonLoading(width: 60, height: 16)
+                        }
+                    }
+                }
+                .padding(20)
+                .background(Color.white)
+                .cornerRadius(16)
+                
+                // Seller skeleton
+                VStack(alignment: .leading, spacing: 12) {
+                    SkeletonLoading(width: 120, height: 18)
+                    HStack(spacing: 12) {
+                        SkeletonLoading(width: 56, height: 56, isCircle: true)
+                        VStack(alignment: .leading, spacing: 6) {
+                            SkeletonLoading(width: 140, height: 18)
+                            SkeletonLoading(width: 100, height: 14)
+                        }
+                    }
+                    SkeletonLoading(width: .infinity, height: 40)
+                }
+                .padding(20)
+                .background(Color.white)
+                .cornerRadius(16)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 120)
+        }
+    }
+    
+    // MARK: - Helper
+    private func formatPrice(_ price: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = "."
+        formatter.decimalSeparator = ","
+        return formatter.string(from: NSNumber(value: price)) ?? "\(price)"
+    }
 }

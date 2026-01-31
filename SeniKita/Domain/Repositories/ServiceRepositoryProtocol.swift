@@ -9,4 +9,5 @@ import Foundation
 protocol ServiceRepositoryProtocol {
     func getServices() async throws -> [ServiceData]
     func getServiceDetail(id: Int) async throws -> ServiceData
+    func searchServices(query: String) async throws -> [ServiceData]
 }

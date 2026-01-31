@@ -38,7 +38,6 @@ struct RootView: View {
                 .toolbar(.hidden, for: .tabBar)
             }
             .environment(\.tabBarManager, tabBarManager)
-            .disabled(homeViewModel.isLoading)
 
             if !tabBarManager.isHidden {
                 customTabBar
@@ -62,7 +61,6 @@ struct RootView: View {
                         }
                     }
                 )
-                .disabled(homeViewModel.isLoading)
             }
         }
         .padding(.horizontal, 12)

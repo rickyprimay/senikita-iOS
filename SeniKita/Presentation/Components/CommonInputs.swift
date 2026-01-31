@@ -76,53 +76,6 @@ struct SeniTextField: View {
     }
 }
 
-struct SearchBar: View {
-    @Binding var text: String
-    let placeholder: String
-    let onSearch: (() -> Void)?
-    let onClear: (() -> Void)?
-    
-    init(
-        text: Binding<String>,
-        placeholder: String = "Cari...",
-        onSearch: (() -> Void)? = nil,
-        onClear: (() -> Void)? = nil
-    ) {
-        self._text = text
-        self.placeholder = placeholder
-        self.onSearch = onSearch
-        self.onClear = onClear
-    }
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.gray)
-            
-            TextField(placeholder, text: $text)
-                .font(.custom("Nunito-Regular", size: 14))
-                .submitLabel(.search)
-                .onSubmit {
-                    onSearch?()
-                }
-            
-            if !text.isEmpty {
-                Button {
-                    text = ""
-                    onClear?()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.gray)
-                }
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(25)
-    }
-}
-
 struct TextArea: View {
     let title: String
     let placeholder: String

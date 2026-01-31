@@ -32,4 +32,15 @@ final class ServiceRepository: ServiceRepositoryProtocol {
         
         return response.service
     }
+    
+    func searchServices(query: String) async throws -> [ServiceData] {
+        let endpoint = ServiceEndpoint.search(query: query)
+        let response: ServiceResponse = try await client.request(endpoint: endpoint)
+        
+        guard response.status == "success" else {
+            throw NetworkError.serverError(response.message)
+        }
+        
+        return response.data.data
+    }
 }

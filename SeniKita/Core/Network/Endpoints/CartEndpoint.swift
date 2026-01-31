@@ -45,7 +45,7 @@ enum CartEndpoint: Endpoint {
     var parameters: [String: Any]? {
         switch self {
         case .addItem(let productId, let quantity):
-            return ["product_id": productId, "quantity": quantity]
+            return ["product_id": productId, "qty": quantity]
         default:
             return nil
         }

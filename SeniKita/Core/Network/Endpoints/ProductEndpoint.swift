@@ -20,8 +20,8 @@ enum ProductEndpoint: Endpoint {
             return "products/\(id)"
         case .byCategory(let categoryId):
             return "products/category/\(categoryId)"
-        case .search:
-            return "products/search"
+        case .search(let query):
+            return "products?search=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query)"
         }
     }
     
@@ -30,11 +30,6 @@ enum ProductEndpoint: Endpoint {
     }
     
     var queryParameters: [String: String]? {
-        switch self {
-        case .search(let query):
-            return ["q": query]
-        default:
-            return nil
-        }
+        return nil
     }
 }

@@ -13,13 +13,7 @@ struct ProductReviews: View {
     @State private var showAllReviews = false
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Ulasan Pembeli")
-                .font(AppFont.Raleway.bodyMedium)
-                .foregroundColor(.black)
-                .bold()
-                .padding(.top)
-
+        VStack(alignment: .leading, spacing: 12) {
             if let ratings = ratings, !ratings.isEmpty {
                 let displayedReviews = showAllReviews ? ratings : Array(ratings.prefix(3))
 
@@ -34,102 +28,109 @@ struct ProductReviews: View {
                                     .frame(width: 40, height: 40)
                                     .clipShape(Circle())
                             } else {
-                                Image(systemName: "person")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 40, height: 40)
-                                    .foregroundColor(.gray)
-                                    .background(Color.gray.opacity(0.2))
-                                    .clipShape(Circle())
+                                ZStack {
+                                    Circle()
+                                        .fill(Color(UIColor.systemGray5))
+                                        .frame(width: 40, height: 40)
+                                    Image(systemName: "person.fill")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.gray)
+                                }
                             }
 
-                            Text(rating.user?.name ?? "Unknown User")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .foregroundColor(.black)
-                                .bold()
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(rating.user?.name ?? "Unknown User")
+                                    .font(AppFont.Nunito.bodyMedium)
+                                    .foregroundColor(.primary)
+                                
+                                HStack(spacing: 2) {
+                                    ForEach(0..<5) { index in
+                                        Image(systemName: index < rating.rating ? "star.fill" : "star")
+                                            .foregroundColor(.yellow)
+                                            .font(.system(size: 10))
+                                    }
+                                }
+                            }
 
                             Spacer()
-
-                            HStack(spacing: 4) {
-                                Image(systemName: "star.fill")
-                                    .foregroundColor(.yellow)
-                                    .font(.system(size: 12))
-
-                                Text(String(rating.rating))
-                                    .font(AppFont.Raleway.bodyMedium)
-                                    .fontWeight(.regular)
-                                    .foregroundColor(.black)
-                            }
                         }
 
                         Text(rating.comment ?? "No comment")
                             .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.black)
+                            .foregroundColor(.secondary)
                             .lineLimit(nil)
 
                         if let ratingImages = rating.rating_images, !ratingImages.isEmpty {
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack {
+                                HStack(spacing: 8) {
                                     ForEach(ratingImages, id: \.id) { image in
                                         WebImage(url: URL(string: image.picture_rating_product))
                                             .resizable()
                                             .indicator(.activity)
                                             .scaledToFill()
-                                            .frame(width: 100, height: 100)
-                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .frame(width: 80, height: 80)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
                                     }
                                 }
                             }
                         }
                     }
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(20)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                    )
-                    .padding(.bottom, 8)
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color(UIColor.systemGray6))
+                    .cornerRadius(12)
                 }
 
                 if ratings.count > 3 {
                     Button(action: {
                         showAllReviews.toggle()
                     }) {
-                        HStack(spacing: 8) {
-                            Text(showAllReviews ? "View Less" : "View More")
+                        HStack(spacing: 6) {
+                            Text(showAllReviews ? "Tampilkan Lebih Sedikit" : "Lihat Semua Ulasan")
                                 .font(AppFont.Raleway.bodyMedium)
                                 .foregroundColor(Color("primary"))
                             
                             Image(systemName: showAllReviews ? "chevron.up" : "chevron.down")
                                 .foregroundColor(Color("primary"))
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 12, weight: .semibold))
                         }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 20)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
                         .background(Color.white)
-                        .cornerRadius(8)
+                        .cornerRadius(10)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8)
+                            RoundedRectangle(cornerRadius: 10)
                                 .stroke(Color("primary"), lineWidth: 1)
                         )
-                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
                     }
-                    .frame(maxWidth: .infinity, alignment: .center)
                 }
             } else {
-                Text("Tidak ada ulasan")
-                    .font(AppFont.Raleway.bodyMedium)
-                    .foregroundColor(.black)
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(20)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                    )
-                    .padding(.bottom, 8)
+                // Empty state
+                VStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(Color(UIColor.systemGray6))
+                            .frame(width: 64, height: 64)
+                        
+                        Image(systemName: "text.bubble")
+                            .font(.system(size: 28))
+                            .foregroundColor(Color(UIColor.systemGray3))
+                    }
+                    
+                    VStack(spacing: 4) {
+                        Text("Belum Ada Ulasan")
+                            .font(AppFont.Nunito.bodyMedium)
+                            .foregroundColor(.primary)
+                        
+                        Text("Jadilah yang pertama memberikan ulasan")
+                            .font(AppFont.Raleway.footnoteSmall)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 32)
             }
         }
+        .frame(maxWidth: .infinity)
     }
 }

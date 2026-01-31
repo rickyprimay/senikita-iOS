@@ -6,6 +6,7 @@
 //
 import Foundation
 import SwiftUI
+import Combine
 
 @MainActor
 class HomeViewModel: ObservableObject {
@@ -14,8 +15,13 @@ class HomeViewModel: ObservableObject {
     private let serviceRepository: ServiceRepositoryProtocol
     private let cartRepository: CartRepositoryProtocol
     
+    private var searchTask: Task<Void, Never>?
+    private var cancellables = Set<AnyCancellable>()
+    
     @Published var products: [ProductData] = []
     @Published var services: [ServiceData] = []
+    @Published var searchedProducts: [ProductData] = []
+    @Published var searchedServices: [ServiceData] = []
     @Published var categories: [Category] = []
     @Published var cities: [City] = []
     @Published var shops: [Shop] = []
@@ -24,6 +30,20 @@ class HomeViewModel: ObservableObject {
     @Published var totalCart: Int = 0
     @Published var errorMessage: String? = nil
     @Published var isLoading: Bool = false
+    @Published var isSearching: Bool = false
+    @Published var searchText: String = "" {
+        didSet {
+            debounceSearch()
+        }
+    }
+    
+    var displayProducts: [ProductData] {
+        searchText.isEmpty ? products : searchedProducts
+    }
+    
+    var displayServices: [ServiceData] {
+        searchText.isEmpty ? services : searchedServices
+    }
     
     init(
         productRepository: ProductRepositoryProtocol? = nil,
@@ -36,6 +56,46 @@ class HomeViewModel: ObservableObject {
         self.cartRepository = cartRepository ?? container.cartRepository
         
         fetchProducts(isLoad: true)
+    }
+    
+    private func debounceSearch() {
+        searchTask?.cancel()
+        
+        guard !searchText.isEmpty else {
+            searchedProducts = []
+            searchedServices = []
+            isSearching = false
+            return
+        }
+        
+        searchTask = Task {
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            
+            guard !Task.isCancelled else { return }
+            
+            await performSearch(query: searchText)
+        }
+    }
+    
+    private func performSearch(query: String) async {
+        isSearching = true
+        
+        do {
+            async let productsResult = productRepository.searchProducts(query: query)
+            async let servicesResult = serviceRepository.searchServices(query: query)
+            
+            let (products, services) = try await (productsResult, servicesResult)
+            
+            guard !Task.isCancelled else { return }
+            
+            self.searchedProducts = products
+            self.searchedServices = services
+            self.isSearching = false
+        } catch {
+            guard !Task.isCancelled else { return }
+            self.isSearching = false
+            print("Search error: \(error.localizedDescription)")
+        }
     }
     
     func fetchProducts(isLoad: Bool) {
@@ -131,17 +191,14 @@ class HomeViewModel: ObservableObject {
     func incrementCart(cartItemId: Int) {
         guard DIContainer.shared.isAuthenticated else { return }
         
-        // Optimistic UI update - find item and increment locally first
         if let index = cart.firstIndex(where: { $0.cart_item_id == cartItemId }) {
             let originalQty = cart[index].qty
             cart[index].qty += 1
             
-            // Network call in background
             Task {
                 do {
                     try await cartRepository.incrementItem(cartItemId: cartItemId)
                 } catch {
-                    // Rollback on failure
                     if let idx = self.cart.firstIndex(where: { $0.cart_item_id == cartItemId }) {
                         self.cart[idx].qty = originalQty
                     }
@@ -154,19 +211,16 @@ class HomeViewModel: ObservableObject {
     func decrementCart(cartItemId: Int) {
         guard DIContainer.shared.isAuthenticated else { return }
         
-        // Optimistic UI update - find item and decrement locally first
         if let index = cart.firstIndex(where: { $0.cart_item_id == cartItemId }) {
             let originalQty = cart[index].qty
             
             if originalQty > 1 {
                 cart[index].qty -= 1
                 
-                // Network call in background
                 Task {
                     do {
                         try await cartRepository.decrementItem(cartItemId: cartItemId)
                     } catch {
-                        // Rollback on failure
                         if let idx = self.cart.firstIndex(where: { $0.cart_item_id == cartItemId }) {
                             self.cart[idx].qty = originalQty
                         }
@@ -183,18 +237,15 @@ class HomeViewModel: ObservableObject {
             return
         }
         
-        // Optimistic UI update - remove item locally first
         let originalCart = cart
         cart.removeAll { $0.cart_item_id == cartItemId }
         totalCart = cart.count
         
-        // Network call in background
         Task {
             do {
                 try await cartRepository.removeItem(cartItemId: cartItemId)
                 completion(true, "Berhasil menghapus dari keranjang")
             } catch {
-                // Rollback on failure
                 self.cart = originalCart
                 self.totalCart = originalCart.count
                 completion(false, error.localizedDescription)
