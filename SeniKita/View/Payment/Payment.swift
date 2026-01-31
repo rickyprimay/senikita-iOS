@@ -262,7 +262,7 @@ struct Payment: View {
                 .accentColor(Color("primary"))
                 .pickerStyle(MenuPickerStyle())
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
+                .padding(.vertical, 8)
                 .background(Color(UIColor.systemGray6))
                 .cornerRadius(10)
                 .overlay(

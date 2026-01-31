@@ -80,8 +80,6 @@ struct ChangePassword: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(Color("primary"))
                     .frame(width: 40, height: 40)
-                    .background(Color.white)
-                    .clipShape(Circle())
                     .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
             }
             

@@ -33,7 +33,7 @@ struct Home: View {
                     VStack(alignment: .leading, spacing: 24) {
                         
                         Banner()
-                            .padding(.top, 16)
+                            .padding(.top, 60)
                         
                         if !homeViewModel.searchText.isEmpty && homeViewModel.displayProducts.isEmpty && homeViewModel.displayServices.isEmpty && !homeViewModel.isLoading && !homeViewModel.isSearching {
                             searchEmptyState
