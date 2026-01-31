@@ -96,7 +96,8 @@ struct CartView: View {
             }
             .background(Color.white.ignoresSafeArea())
             .navigationBarBackButtonHidden(true)
-            .hideTabBar()
+
+
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
@@ -178,6 +179,7 @@ struct CartView: View {
                 selectedProducts[product.cart_item_id] = false
             }
         }
+        .hideTabBar()
     }
 }
 

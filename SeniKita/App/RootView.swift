@@ -9,7 +9,8 @@ import SwiftUI
 
 struct RootView: View {
     @State private var selectedTab = 0
-    @State private var isShowingTabBar = true
+    @StateObject private var tabBarManager = TabBarVisibilityManager()
+    
     @StateObject var homeViewModel = HomeViewModel()
     @StateObject var profileViewModel = ProfileViewModel()
     @StateObject var artMapViewModel = ArtMapViewModel()
@@ -36,15 +37,15 @@ struct RootView: View {
                 .tag(2)
                 .toolbar(.hidden, for: .tabBar)
             }
+            .environment(\.tabBarManager, tabBarManager)
             .disabled(homeViewModel.isLoading)
-            .environment(\.isShowingTabBar, $isShowingTabBar)
 
-            if isShowingTabBar {
+            if !tabBarManager.isHidden {
                 customTabBar
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isShowingTabBar)
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: tabBarManager.isHidden)
     }
     
     private var customTabBar: some View {
@@ -117,17 +118,6 @@ struct TabBarButtonStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
             .animation(.spring(response: 0.2, dampingFraction: 0.7), value: configuration.isPressed)
-    }
-}
-
-private struct IsShowingTabBarKey: EnvironmentKey {
-    static let defaultValue: Binding<Bool> = .constant(true)
-}
-
-extension EnvironmentValues {
-    var isShowingTabBar: Binding<Bool> {
-        get { self[IsShowingTabBarKey.self] }
-        set { self[IsShowingTabBarKey.self] = newValue }
     }
 }
 

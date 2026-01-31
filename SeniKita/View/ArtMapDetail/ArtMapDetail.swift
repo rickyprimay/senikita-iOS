@@ -11,7 +11,6 @@ import SDWebImageSwiftUI
 struct ArtMapDetail: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.isShowingTabBar) var isShowingTabBar
     @ObservedObject var artMapViewModel: ArtMapViewModel
     
     var name: String
@@ -40,7 +39,6 @@ struct ArtMapDetail: View {
             }
         }
         .onAppear {
-            isShowingTabBar.wrappedValue = false
             artMapViewModel.fetchArtMapBySlug(slug: slug)
             if let firstDetail = artMapViewModel.selectedArtMap?.artProvinceDetails?.first {
                 selectedDetail = firstDetail
@@ -75,6 +73,7 @@ struct ArtMapDetail: View {
                     .foregroundColor(.primary)
             }
         }
+        .hideTabBar()
     }
     
     private var heroSection: some View {

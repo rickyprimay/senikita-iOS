@@ -10,7 +10,6 @@ import MapKit
 
 struct ArtMap: View {
     @ObservedObject var artMapViewModel: ArtMapViewModel
-    @Environment(\.isShowingTabBar) var isShowingTabBar
     
     @State private var cameraPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
@@ -51,11 +50,6 @@ struct ArtMap: View {
             artMapViewModel.fetchArtMap()
         }
         .navigationBarHidden(true)
-        .onChange(of: showDetail) { _, newValue in
-            withAnimation(.easeInOut(duration: 0.3)) {
-                isShowingTabBar.wrappedValue = !newValue
-            }
-        }
         .animation(.easeInOut(duration: 0.3), value: showDetail)
     }
     
