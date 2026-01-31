@@ -25,12 +25,12 @@ struct LogoutAlert: View {
                 VStack(spacing: 12) {
                     ZStack {
                         Circle()
-                            .fill(Color.orange.opacity(0.1))
+                            .fill(Color.red.opacity(0.1))
                             .frame(width: 64, height: 64)
                         
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                             .font(.system(size: 24, weight: .medium))
-                            .foregroundColor(.orange)
+                            .foregroundColor(.red)
                     }
                     
                     Text("Keluar dari Akun?")
@@ -69,7 +69,7 @@ struct LogoutAlert: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
-                            .background(Color.orange)
+                            .background(Color.red)
                             .cornerRadius(12)
                     }
                 }

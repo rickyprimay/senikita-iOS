@@ -33,12 +33,10 @@ struct Home: View {
                     VStack(alignment: .leading, spacing: 24) {
                         
                         Banner()
-                            .padding(.top, 16)
+                            .padding(.top, 65)
                         
-                        // Products Section
                         productSection
                         
-                        // Services Section
                         serviceSection
                     }
                     .padding(.bottom, 100)
@@ -46,6 +44,7 @@ struct Home: View {
                 .refreshable {
                     homeViewModel.fetchProducts(isLoad: false)
                     homeViewModel.fetchServices(isLoad: false)
+                    homeViewModel.fetchCart()
                 }
             }
             
@@ -86,7 +85,6 @@ struct Home: View {
                 
                 Spacer()
                 
-                // Product count badge
                 Text("\(homeViewModel.products.count)")
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(.white)
@@ -128,7 +126,6 @@ struct Home: View {
                 
                 Spacer()
                 
-                // Service count badge
                 Text("\(homeViewModel.services.count)")
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(.white)
