@@ -2,13 +2,13 @@
 //  NotificationManager.swift
 //  SeniKita
 //
-
+//  Created by Ricky Primayuda Putra on 31/01/26.
+//
 import Foundation
 import UserNotifications
 import UIKit
 
 // MARK: - Notification Manager
-// Handles local and push notification management
 final class NotificationManager {
     // MARK: - Singleton
     static let shared = NotificationManager()
