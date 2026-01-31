@@ -16,24 +16,8 @@ struct SeniKitaApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                let _ = print("🏠 [SeniKitaApp] body evaluated - isAuthenticated: \(authViewModel.isAuthenticated)")
-                if authViewModel.isAuthenticated {
-                    let _ = print("🏠 [SeniKitaApp] Showing RootView")
-                    RootView()
-                        .environmentObject(authViewModel)
-                } else {
-                    let _ = print("🏠 [SeniKitaApp] Showing Login")
-                    NavigationStack {
-                        Login()
-                            .environmentObject(authViewModel)
-                    }
-                }
-            }
-            .animation(.easeInOut(duration: 0.3), value: authViewModel.isAuthenticated)
-            .onChange(of: authViewModel.isAuthenticated) { oldValue, newValue in
-                print("🏠 [SeniKitaApp] isAuthenticated CHANGED from \(oldValue) to \(newValue)")
-            }
+            Splash()
+                .environmentObject(authViewModel)
         }
     }
 }
