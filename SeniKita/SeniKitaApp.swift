@@ -16,14 +16,23 @@ struct SeniKitaApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
+            Group {
+                let _ = print("🏠 [SeniKitaApp] body evaluated - isAuthenticated: \(authViewModel.isAuthenticated)")
                 if authViewModel.isAuthenticated {
+                    let _ = print("🏠 [SeniKitaApp] Showing RootView")
                     RootView()
                         .environmentObject(authViewModel)
                 } else {
-                    Login()
-                        .environmentObject(authViewModel)
+                    let _ = print("🏠 [SeniKitaApp] Showing Login")
+                    NavigationStack {
+                        Login()
+                            .environmentObject(authViewModel)
+                    }
                 }
+            }
+            .animation(.easeInOut(duration: 0.3), value: authViewModel.isAuthenticated)
+            .onChange(of: authViewModel.isAuthenticated) { oldValue, newValue in
+                print("🏠 [SeniKitaApp] isAuthenticated CHANGED from \(oldValue) to \(newValue)")
             }
         }
     }
@@ -42,27 +51,5 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.alert, .badge, .sound])
-    }
-}
-
-class NotificationManager {
-    
-    static let instance = NotificationManager()
-    
-    func requestPermissionNotification() {
-        let options: UNAuthorizationOptions = [.alert, .badge, .sound]
-        
-        UNUserNotificationCenter.current().requestAuthorization(options: options) { success, error in
-            if let error = error {
-                print("Error requesting notification permission: \(error.localizedDescription)")
-            } else {
-                if success {
-                    print("Notification permission granted")
-                    UserDefaults.standard.set(true, forKey: "notificationPermissionGranted")
-                } else {
-                    print("Notification permission denied")
-                }
-            }
-        }
     }
 }
