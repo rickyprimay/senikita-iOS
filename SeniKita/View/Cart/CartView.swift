@@ -37,7 +37,19 @@ struct CartView: View {
             VStack(spacing: 0) {
                 navigationHeader
                 
-                if viewModel.cart.isEmpty && !viewModel.isLoading {
+                if viewModel.isLoading && viewModel.cart.isEmpty {
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 16) {
+                            cartSummarySkeleton
+                            
+                            ForEach(0..<2, id: \.self) { _ in
+                                shopCardSkeleton
+                            }
+                        }
+                        .padding(20)
+                        .padding(.bottom, 120)
+                    }
+                } else if viewModel.cart.isEmpty {
                     emptyStateView
                 } else {
                     ScrollView(showsIndicators: false) {
@@ -61,10 +73,6 @@ struct CartView: View {
             
             if !viewModel.cart.isEmpty {
                 checkoutBar
-            }
-            
-            if viewModel.isLoading {
-                Loading(opacity: 0.5)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -311,6 +319,46 @@ struct CartView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(40)
+    }
+    
+    private var cartSummarySkeleton: some View {
+        HStack(spacing: 16) {
+            SkeletonLoading(width: 50, height: 50, isCircle: true)
+            VStack(alignment: .leading, spacing: 8) {
+                SkeletonLoading(width: 140, height: 16)
+                SkeletonLoading(width: 100, height: 12)
+            }
+            Spacer()
+        }
+        .padding(16)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+    }
+    
+    private var shopCardSkeleton: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 12) {
+                SkeletonLoading(width: 24, height: 24, isCircle: true)
+                VStack(alignment: .leading, spacing: 4) {
+                    SkeletonLoading(width: 120, height: 16)
+                    SkeletonLoading(width: 80, height: 12)
+                }
+                Spacer()
+            }
+            .padding(16)
+            .background(Color(UIColor.systemGray6))
+            
+            VStack(spacing: 0) {
+                ForEach(0..<2, id: \.self) { _ in
+                    CartItemSkeleton()
+                    Divider().padding(.leading, 52)
+                }
+            }
+        }
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
     }
 }
 

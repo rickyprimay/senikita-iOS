@@ -34,10 +34,6 @@ struct History: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
             
-            if historyViewModel.isLoading {
-                Loading(opacity: 0.5)
-                    .zIndex(1)
-            }
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -112,7 +108,16 @@ struct History: View {
     
     private var productHistoryList: some View {
         ScrollView(showsIndicators: false) {
-            if historyViewModel.history.isEmpty && !historyViewModel.isLoading {
+            if historyViewModel.isLoading {
+                LazyVStack(spacing: 12) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        HistoryCardSkeleton()
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 40)
+            } else if historyViewModel.history.isEmpty {
                 emptyState(
                     icon: "cube.box",
                     title: "Belum Ada Transaksi",
@@ -133,7 +138,16 @@ struct History: View {
     
     private var serviceHistoryList: some View {
         ScrollView(showsIndicators: false) {
-            if historyViewModel.historyService.isEmpty && !historyViewModel.isLoading {
+            if historyViewModel.isLoading {
+                LazyVStack(spacing: 12) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        HistoryCardSkeleton()
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 40)
+            } else if historyViewModel.historyService.isEmpty {
                 emptyState(
                     icon: "paintbrush.pointed",
                     title: "Belum Ada Transaksi",

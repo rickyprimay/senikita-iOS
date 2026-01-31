@@ -48,10 +48,6 @@ struct Home: View {
                 }
             }
             
-            if homeViewModel.isLoading {
-                Loading(opacity: 0.8)
-            }
-            
             if isPopupVisible {
                 BasePopup(isShowing: $isPopupVisible, message: popupMessage, onConfirm: {
                     isPopupVisible = false
@@ -85,25 +81,33 @@ struct Home: View {
                 
                 Spacer()
                 
-                Text("\(homeViewModel.products.count)")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(Color("primary"))
-                    .cornerRadius(12)
+                if !homeViewModel.isLoading {
+                    Text("\(homeViewModel.products.count)")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Color("primary"))
+                        .cornerRadius(12)
+                }
             }
             .padding(.horizontal, 20)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
-                    ForEach(homeViewModel.products) { product in
-                        NavigationLink(
-                            destination: ProductDetail(idProduct: product.id, homeViewModel: homeViewModel),
-                            label: {
-                                CardProduct(product: product, homeViewModel: homeViewModel)
-                            }
-                        )
+                    if homeViewModel.isLoading {
+                        ForEach(0..<3, id: \.self) { _ in
+                            ProductCardSkeleton()
+                        }
+                    } else {
+                        ForEach(homeViewModel.products) { product in
+                            NavigationLink(
+                                destination: ProductDetail(idProduct: product.id, homeViewModel: homeViewModel),
+                                label: {
+                                    CardProduct(product: product, homeViewModel: homeViewModel)
+                                }
+                            )
+                        }
                     }
                 }
                 .padding(.horizontal, 20)
@@ -126,25 +130,33 @@ struct Home: View {
                 
                 Spacer()
                 
-                Text("\(homeViewModel.services.count)")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(Color("tertiary"))
-                    .cornerRadius(12)
+                if !homeViewModel.isLoading {
+                    Text("\(homeViewModel.services.count)")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Color("tertiary"))
+                        .cornerRadius(12)
+                }
             }
             .padding(.horizontal, 20)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 16) {
-                    ForEach(homeViewModel.services) { service in
-                        NavigationLink(
-                            destination: ServiceDetail(idService: service.id, homeViewModel: homeViewModel),
-                            label: {
-                                CardService(service: service)
-                            }
-                        )
+                    if homeViewModel.isLoading {
+                        ForEach(0..<3, id: \.self) { _ in
+                            ServiceCardSkeleton()
+                        }
+                    } else {
+                        ForEach(homeViewModel.services) { service in
+                            NavigationLink(
+                                destination: ServiceDetail(idService: service.id, homeViewModel: homeViewModel),
+                                label: {
+                                    CardService(service: service)
+                                }
+                            )
+                        }
                     }
                 }
                 .padding(.horizontal, 20)
