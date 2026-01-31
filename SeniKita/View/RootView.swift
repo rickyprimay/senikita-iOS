@@ -40,34 +40,85 @@ struct RootView: View {
             .environment(\.isShowingTabBar, $isShowingTabBar)
 
             if isShowingTabBar {
-                ZStack {
-                    HStack {
-                        ForEach(TabbedItems.allCases, id: \.self) { item in
-                            Button {
-                                if !homeViewModel.isLoading {
-                                    selectedTab = item.rawValue
-                                }
-                            } label: {
-                                CustomTabItem(imageName: item.iconName,
-                                              title: item.title,
-                                              isActive: (selectedTab == item.rawValue))
-                            }
-                            .disabled(homeViewModel.isLoading)
-                        }
-                    }
-                    .padding(6)
-                }
-                .frame(height: 70)
-                .background(Color("tertiary"))
-                .cornerRadius(35)
-                .padding(.horizontal, 26)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                customTabBar
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: isShowingTabBar)
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isShowingTabBar)
+    }
+    
+    private var customTabBar: some View {
+        HStack(spacing: 0) {
+            ForEach(TabbedItems.allCases, id: \.self) { item in
+                TabBarButton(
+                    item: item,
+                    isSelected: selectedTab == item.rawValue,
+                    action: {
+                        if !homeViewModel.isLoading {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                selectedTab = item.rawValue
+                            }
+                        }
+                    }
+                )
+                .disabled(homeViewModel.isLoading)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(
+            Capsule()
+                .fill(.ultraThinMaterial)
+                .shadow(color: .black.opacity(0.12), radius: 12, y: 5)
+        )
+        .overlay(
+            Capsule()
+                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+        )
+        .padding(.horizontal, 40)
+        .padding(.bottom, 4)
     }
 }
 
+struct TabBarButton: View {
+    let item: TabbedItems
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 2) {
+                ZStack {
+                    if isSelected {
+                        Circle()
+                            .fill(Color("primary"))
+                            .frame(width: 36, height: 36)
+                            .shadow(color: Color("primary").opacity(0.3), radius: 4, y: 2)
+                    }
+                    
+                    Image(systemName: isSelected ? item.iconNameFilled : item.iconName)
+                        .font(.system(size: 16, weight: isSelected ? .semibold : .regular))
+                        .foregroundColor(isSelected ? .white : .gray)
+                }
+                .frame(height: 36)
+                
+                Text(item.title)
+                    .font(.system(size: 9, weight: isSelected ? .semibold : .regular))
+                    .foregroundColor(isSelected ? Color("primary") : .gray)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(TabBarButtonStyle())
+    }
+}
+
+struct TabBarButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.spring(response: 0.2, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
 
 private struct IsShowingTabBarKey: EnvironmentKey {
     static let defaultValue: Binding<Bool> = .constant(true)
@@ -106,26 +157,15 @@ enum TabbedItems: Int, CaseIterable {
             return "person"
         }
     }
-}
-
-extension RootView {
-    func CustomTabItem(imageName: String, title: String, isActive: Bool) -> some View {
-        HStack(spacing: 10) {
-            Spacer()
-            Image(systemName: imageName)
-                .resizable()
-                .renderingMode(.template)
-                .foregroundColor(isActive ? .white : .black)
-                .frame(width: 20, height: 20)
-            if isActive {
-                Text(title)
-                    .font(.system(size: 14))
-                    .foregroundColor(isActive ? .white : .black)
-            }
-            Spacer()
+    
+    var iconNameFilled: String {
+        switch self {
+        case .home:
+            return "house.fill"
+        case .artMap:
+            return "map.fill"
+        case .profile:
+            return "person.fill"
         }
-        .frame(width: isActive ? 160 : 60, height: 60)
-        .background(isActive ? Color.brown.opacity(0.6) : .clear)
-        .cornerRadius(30)
     }
 }
