@@ -58,7 +58,7 @@ final class SessionManager: SessionManagerProtocol {
         return nil
     }
     
-    /// Alias for token - backward compatibility
+    
     var authToken: String? {
         return token
     }

@@ -68,7 +68,7 @@ struct RootView: View {
     }
 }
 
-// MARK: - Environment Key
+
 private struct IsShowingTabBarKey: EnvironmentKey {
     static let defaultValue: Binding<Bool> = .constant(true)
 }

@@ -10,12 +10,10 @@ import SwiftUI
 @MainActor
 class HomeViewModel: ObservableObject {
     
-    // MARK: - Repositories
     private let productRepository: ProductRepositoryProtocol
     private let serviceRepository: ServiceRepositoryProtocol
     private let cartRepository: CartRepositoryProtocol
     
-    // MARK: - Published State
     @Published var products: [ProductData] = []
     @Published var services: [ServiceData] = []
     @Published var categories: [Category] = []

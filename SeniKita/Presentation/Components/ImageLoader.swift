@@ -6,7 +6,6 @@
 //
 import SwiftUI
 
-// MARK: - Async Image Loader
 struct AsyncImageLoader: View {
     let url: String?
     let placeholder: String
@@ -48,7 +47,6 @@ struct AsyncImageLoader: View {
     }
 }
 
-// MARK: - Placeholder View
 struct PlaceholderView: View {
     let systemImage: String
     
@@ -63,7 +61,6 @@ struct PlaceholderView: View {
     }
 }
 
-// MARK: - Product Image
 struct ProductImageView: View {
     let imageURL: String?
     let size: CGSize
@@ -85,7 +82,6 @@ struct ProductImageView: View {
     }
 }
 
-// MARK: - Avatar Image
 struct AvatarImageView: View {
     let imageURL: String?
     let size: CGFloat
@@ -118,7 +114,6 @@ struct AvatarImageView: View {
     }
 }
 
-// MARK: - Banner Image
 struct BannerImageView: View {
     let imageURL: String?
     let height: CGFloat

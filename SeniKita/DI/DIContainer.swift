@@ -12,7 +12,6 @@ final class DIContainer {
     
     private init() {}
     
-    // MARK: - Core Managers
     private lazy var _keychainManager: KeychainManagerProtocol = KeychainManager()
     private lazy var _sessionManager: SessionManagerProtocol = SessionManager(keychainManager: _keychainManager)
     private lazy var _userDefaultsManager: UserDefaultsManagerProtocol = UserDefaultsManager()
@@ -21,7 +20,6 @@ final class DIContainer {
     var sessionManager: SessionManagerProtocol { _sessionManager }
     var userDefaultsManager: UserDefaultsManagerProtocol { _userDefaultsManager }
     
-    // MARK: - Repositories (Lazy Initialized Singletons)
     private lazy var _authRepository: AuthRepositoryProtocol = AuthRepository(sessionManager: _sessionManager)
     private lazy var _productRepository: ProductRepositoryProtocol = ProductRepository()
     private lazy var _serviceRepository: ServiceRepositoryProtocol = ServiceRepository()
@@ -32,7 +30,6 @@ final class DIContainer {
     private lazy var _artMapRepository: ArtMapRepositoryProtocol = ArtMapRepository()
     private lazy var _aiRepository: AIRepositoryProtocol = AIRepository()
     
-    // MARK: - Public Repository Accessors
     var authRepository: AuthRepositoryProtocol { _authRepository }
     var productRepository: ProductRepositoryProtocol { _productRepository }
     var serviceRepository: ServiceRepositoryProtocol { _serviceRepository }
@@ -52,7 +49,6 @@ final class DIContainer {
     #endif
 }
 
-// MARK: - Authentication Helpers
 
 extension DIContainer {
     var isAuthenticated: Bool {

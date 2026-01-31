@@ -6,7 +6,6 @@
 //
 import SwiftUI
 
-// MARK: - Loading Modifier
 struct LoadingModifier: ViewModifier {
     let isLoading: Bool
     let message: String
@@ -24,7 +23,6 @@ struct LoadingModifier: ViewModifier {
     }
 }
 
-// MARK: - Loading Overlay
 struct LoadingOverlay: View {
     let message: String
     
@@ -51,7 +49,6 @@ struct LoadingOverlay: View {
     }
 }
 
-// MARK: - Error Alert Modifier
 struct ErrorAlertModifier: ViewModifier {
     @Binding var error: String?
     let title: String
@@ -77,7 +74,6 @@ struct ErrorAlertModifier: ViewModifier {
     }
 }
 
-// MARK: - Toast Modifier
 struct ToastModifier: ViewModifier {
     @Binding var message: String?
     let duration: Double
@@ -113,7 +109,6 @@ struct ToastModifier: ViewModifier {
     }
 }
 
-// MARK: - Empty State Modifier
 struct EmptyStateModifier: ViewModifier {
     let isEmpty: Bool
     let title: String
@@ -137,7 +132,6 @@ struct EmptyStateModifier: ViewModifier {
     }
 }
 
-// MARK: - Empty State View
 struct EmptyStateView: View {
     let title: String
     let message: String
@@ -177,7 +171,6 @@ struct EmptyStateView: View {
     }
 }
 
-// MARK: - Shimmer Effect
 struct ShimmerModifier: ViewModifier {
     @State private var phase: CGFloat = 0
     
@@ -210,7 +203,6 @@ struct ShimmerModifier: ViewModifier {
     }
 }
 
-// MARK: - View Extensions
 extension View {
     func loading(isLoading: Bool, message: String = "Memuat...") -> some View {
         modifier(LoadingModifier(isLoading: isLoading, message: message))
@@ -254,7 +246,6 @@ extension View {
     }
 }
 
-// MARK: - Conditional Modifier
 extension View {
     @ViewBuilder
     func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {

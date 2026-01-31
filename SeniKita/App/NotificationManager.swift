@@ -8,17 +8,15 @@ import Foundation
 import UserNotifications
 import UIKit
 
-// MARK: - Notification Manager
+
 final class NotificationManager {
-    // MARK: - Singleton
     static let shared = NotificationManager()
     
-    // MARK: - Properties
     private let notificationCenter = UNUserNotificationCenter.current()
     
     private init() {}
     
-    // MARK: - Permission
+    
     func requestPermission(completion: ((Bool) -> Void)? = nil) {
         let options: UNAuthorizationOptions = [.alert, .badge, .sound]
         
@@ -42,7 +40,7 @@ final class NotificationManager {
         }
     }
     
-    // MARK: - Check Permission Status
+    
     func checkPermissionStatus(completion: @escaping (UNAuthorizationStatus) -> Void) {
         notificationCenter.getNotificationSettings { settings in
             DispatchQueue.main.async {
@@ -51,7 +49,7 @@ final class NotificationManager {
         }
     }
     
-    // MARK: - Schedule Local Notification
+    
     func scheduleNotification(
         identifier: String,
         title: String,
@@ -86,7 +84,7 @@ final class NotificationManager {
         }
     }
     
-    // MARK: - Schedule Date Notification
+    
     func scheduleNotification(
         identifier: String,
         title: String,
@@ -126,7 +124,7 @@ final class NotificationManager {
         }
     }
     
-    // MARK: - Cancel Notifications
+    
     func cancelNotification(identifier: String) {
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
         notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
@@ -139,7 +137,7 @@ final class NotificationManager {
         print("🗑️ All notifications cancelled")
     }
     
-    // MARK: - Get Pending Notifications
+    
     func getPendingNotifications(completion: @escaping ([UNNotificationRequest]) -> Void) {
         notificationCenter.getPendingNotificationRequests { requests in
             DispatchQueue.main.async {
@@ -148,7 +146,7 @@ final class NotificationManager {
         }
     }
     
-    // MARK: - Badge Management
+    
     func setBadgeCount(_ count: Int) {
         Task { @MainActor in
             if #available(iOS 16.0, *) {
@@ -164,7 +162,7 @@ final class NotificationManager {
     }
 }
 
-// MARK: - Notification Identifiers
+
 enum NotificationIdentifier {
     static let orderStatus = "order_status"
     static let cartReminder = "cart_reminder"

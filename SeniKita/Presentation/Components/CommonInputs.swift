@@ -6,7 +6,6 @@
 //
 import SwiftUI
 
-// MARK: - Seni Text Field (renamed to avoid conflict with existing CustomTextField)
 struct SeniTextField: View {
     let title: String
     let placeholder: String
@@ -77,7 +76,6 @@ struct SeniTextField: View {
     }
 }
 
-// MARK: - Search Bar
 struct SearchBar: View {
     @Binding var text: String
     let placeholder: String
@@ -125,7 +123,6 @@ struct SearchBar: View {
     }
 }
 
-// MARK: - Text Area
 struct TextArea: View {
     let title: String
     let placeholder: String
@@ -190,7 +187,6 @@ struct TextArea: View {
     }
 }
 
-// MARK: - Dropdown Picker
 struct DropdownPicker<T: Hashable>: View {
     let title: String
     let placeholder: String
@@ -279,7 +275,6 @@ struct DropdownPicker<T: Hashable>: View {
     }
 }
 
-// MARK: - OTP Input Field
 struct OTPTextField: View {
     @Binding var otp: String
     let length: Int
@@ -318,7 +313,6 @@ struct OTPTextField: View {
     }
 }
 
-// MARK: - OTP Digit Box
 struct OTPDigitBox: View {
     let digit: String
     let isFocused: Bool

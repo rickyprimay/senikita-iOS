@@ -11,7 +11,6 @@ protocol ArtMapRepositoryProtocol {
     func getArtMapDetail(slug: String) async throws -> ArtMapResult
 }
 
-// MARK: - AI Repository Protocol
 
 protocol AIRepositoryProtocol {
     func sendPrompt(prompt: String, context: String) async throws -> String

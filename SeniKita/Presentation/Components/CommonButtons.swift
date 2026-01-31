@@ -6,7 +6,6 @@
 //
 import SwiftUI
 
-// MARK: - Primary Button
 struct PrimaryButton: View {
     let title: String
     let isLoading: Bool
@@ -47,7 +46,6 @@ struct PrimaryButton: View {
     }
 }
 
-// MARK: - Secondary Button
 struct SecondaryButton: View {
     let title: String
     let isLoading: Bool
@@ -88,7 +86,6 @@ struct SecondaryButton: View {
     }
 }
 
-// MARK: - Icon Button
 struct IconButton: View {
     let systemImage: String
     let size: CGFloat
@@ -116,7 +113,6 @@ struct IconButton: View {
     }
 }
 
-// MARK: - Cart Button
 struct CartButton: View {
     let itemCount: Int
     let action: () -> Void
@@ -142,7 +138,6 @@ struct CartButton: View {
     }
 }
 
-// MARK: - Quantity Button
 struct QuantityButton: View {
     @Binding var quantity: Int
     let minValue: Int
@@ -203,7 +198,6 @@ struct QuantityButton: View {
     }
 }
 
-// MARK: - Back Button
 struct BackButton: View {
     @Environment(\.dismiss) private var dismiss
     
@@ -218,7 +212,6 @@ struct BackButton: View {
     }
 }
 
-// MARK: - Floating Action Button
 struct FloatingActionButton: View {
     let systemImage: String
     let action: () -> Void

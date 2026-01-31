@@ -6,7 +6,6 @@
 //
 import Foundation
 
-// MARK: - Response Helpers
 
 struct LoginResponse: Codable {
     let status: String

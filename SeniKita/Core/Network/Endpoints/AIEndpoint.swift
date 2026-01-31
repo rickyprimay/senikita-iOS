@@ -6,7 +6,6 @@
 //
 import Foundation
 
-// MARK: - Request Models (inline for AI endpoints)
 
 private struct GeminiRequest: Encodable {
     let contents: [Content]
@@ -31,7 +30,6 @@ private struct TTSRequest: Encodable {
     }
 }
 
-// MARK: - AI Endpoints
 
 enum AIEndpoint: Endpoint {
     case generateText(prompt: String, context: String)
