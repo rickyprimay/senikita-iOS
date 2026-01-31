@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct LineView: View {
     var body: some View {
         Rectangle()

@@ -204,11 +204,12 @@ struct EditProfile: View {
                     }
                     
                     Button(action: {
+                        let finalDateString: String = dateFormatter.string(from: birthDate)
                         profileViewModel.updateProfile(
                             name: name,
                             username: username,
                             callNumber: callNumber,
-                            birthDate: dateFormatter.string(from: birthDate),
+                            birthDateString: finalDateString,
                             birthLocation: birthLocation,
                             gender: gender,
                             profilePicture: imageData.isEmpty ? nil : imageData
@@ -264,11 +265,17 @@ struct EditProfile: View {
                     username = profile.username ?? ""
                     callNumber = profile.callNumber ?? ""
                     birthLocation = profile.birthLocation ?? ""
-                    gender = (profile.gender == "male") ? "Laki-laki" : "Perempuan"
+                    if let genderValue = profile.gender {
+                        gender = (genderValue == "male" || genderValue == "Laki-laki") ? "Laki-laki" : "Perempuan"
+                    }
 
-                    if let birthDateString = profile.birthDate,
-                       let date = dateFormatter.date(from: birthDateString) {
-                        birthDate = date
+                    if let dateString = profile.birthDate {
+                        let formatter = DateFormatter()
+                        formatter.dateFormat = "yyyy-MM-dd"
+                        formatter.locale = Locale(identifier: "en_US_POSIX")
+                        if let date = formatter.date(from: dateString) {
+                            birthDate = date
+                        }
                     }
                 }
             }
@@ -294,12 +301,13 @@ struct EditProfile: View {
                         .bold()
                         .foregroundColor(Color("tertiary"))
                 }
-            }
+            } 
             
             if profileViewModel.isLoading {
                 Loading(opacity: 0.5)
             }
         }
+        .hideTabBar()
     }
     
     private let dateFormatter: DateFormatter = {

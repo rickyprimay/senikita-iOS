@@ -5,7 +5,6 @@
 //  Created by Ricky Primayuda Putra on 26/02/25.
 //
 
-
 import SwiftUI
 
 struct OTPInput: View {
@@ -169,16 +168,11 @@ struct OTPInput: View {
         }
         
         authViewModel.verifyOTP(email: email, otp: otpCode) { success, message in
-            DispatchQueue.main.async {
-                if success {
-                    print("✅ OTP berhasil diverifikasi!")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        UIApplication.shared.windows.first?.rootViewController?.dismiss(animated: true, completion: nil)
-                    }
-                } else {
-                    showErrorPopup = true
-                    print("❌ OTP gagal diverifikasi: \(message ?? "Unknown error")")
-                }
+            if !success {
+                showErrorPopup = true
+                print("❌ OTP gagal diverifikasi: \(message ?? "Unknown error")")
+            } else {
+                print("✅ OTP berhasil diverifikasi!")
             }
         }
     }

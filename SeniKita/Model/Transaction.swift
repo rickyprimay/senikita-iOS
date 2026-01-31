@@ -5,7 +5,6 @@
 //  Created by Ricky Primayuda Putra on 13/03/25.
 //
 
-
 struct Transaction: Codable {
     let id: Int
     let order_id: Int
@@ -21,7 +20,6 @@ extension Transaction {
 
         id = try container.decode(Int.self, forKey: .id)
         
-        // Handle order_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .order_id) {
             order_id = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .order_id) {

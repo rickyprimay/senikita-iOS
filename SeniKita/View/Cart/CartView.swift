@@ -96,6 +96,7 @@ struct CartView: View {
             }
             .background(Color.white.ignoresSafeArea())
             .navigationBarBackButtonHidden(true)
+            .hideTabBar()
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
@@ -247,9 +248,6 @@ struct CartProductView: View {
                 HStack(spacing: 12) {
                     Button(action: {
                         if product.qty > 1 {
-                            if let index = viewModel.cart.firstIndex(where: { $0.cart_item_id == product.cart_item_id }) {
-                                viewModel.cart[index].qty -= 1
-                            }
                             viewModel.decrementQuantity(cartItemId: product.cart_item_id)
                         } else if product.qty == 1 {
                             viewModel.deleteCartByIdItem(cartItemId: product.cart_item_id)
@@ -269,9 +267,6 @@ struct CartProductView: View {
                         .frame(minWidth: 30)
                     
                     Button(action: {
-                        if let index = viewModel.cart.firstIndex(where: { $0.cart_item_id == product.cart_item_id }) {
-                            viewModel.cart[index].qty += 1
-                        }
                         viewModel.incrementQuantity(cartItemId: product.cart_item_id)
                     }) {
                         Image(systemName: "plus")

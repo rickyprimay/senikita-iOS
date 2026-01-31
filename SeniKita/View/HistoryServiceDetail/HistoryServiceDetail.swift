@@ -14,7 +14,6 @@ struct HistoryServiceDetail: View {
     
     @ObservedObject var historyViewModel: HistoryViewModel
     
-    
     var idHistory: Int
     
     init(historyViewModel: HistoryViewModel, idHistory: Int) {
@@ -310,6 +309,7 @@ struct HistoryServiceDetail: View {
                     .zIndex(1)
             }
         }
+        .hideTabBar()
     }
     
 }

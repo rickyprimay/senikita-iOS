@@ -23,6 +23,17 @@ struct ArtMapResult: Codable, Identifiable {
         case id, name, longitude, latitude, subtitle, slug, content
         case artProvinceDetails = "art_province_details"
     }
+    
+    init(id: Int, name: String?, longitude: Double?, latitude: Double?, subtitle: String?, slug: String?, artProvinceDetails: [ArtProvinceDetail]?, content: String?) {
+        self.id = id
+        self.name = name
+        self.longitude = longitude
+        self.latitude = latitude
+        self.subtitle = subtitle
+        self.slug = slug
+        self.artProvinceDetails = artProvinceDetails
+        self.content = content
+    }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -66,7 +77,6 @@ struct ArtProvinceWrapper: Codable {
         case artProvince = "art_province"
     }
 }
-
 
 struct ArtProvinceDetail: Codable, Identifiable {
     let id: Int

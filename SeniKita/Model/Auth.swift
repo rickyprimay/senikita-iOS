@@ -45,7 +45,6 @@ struct Auth: Codable {
     }
 }
 
-
 struct User: Codable, Identifiable, Equatable {
     let id: Int
     let name: String?
@@ -96,12 +95,40 @@ struct User: Codable, Identifiable, Equatable {
             isHaveStore = nil
         }
     }
+    
+    init(
+        id: Int,
+        name: String? = nil,
+        username: String? = nil,
+        email: String? = nil,
+        callNumber: String? = nil,
+        birthDate: String? = nil,
+        birthLocation: String? = nil,
+        gender: String? = nil,
+        emailVerifiedAt: String? = nil,
+        profilePicture: String? = nil,
+        isHaveStore: Int? = nil,
+        role: Int? = nil,
+        token: String? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.username = username
+        self.email = email
+        self.callNumber = callNumber
+        self.birthDate = birthDate
+        self.birthLocation = birthLocation
+        self.gender = gender
+        self.emailVerifiedAt = emailVerifiedAt
+        self.profilePicture = profilePicture
+        self.isHaveStore = isHaveStore
+        self.role = role
+        self.token = token
+    }
 }
-
 
 struct PasswordUpdateResponse: Decodable {
     let code: Int
     let message: String
     let status: String
 }
-

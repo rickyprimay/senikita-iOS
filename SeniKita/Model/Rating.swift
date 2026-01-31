@@ -5,7 +5,6 @@
 //  Created by Ricky Primayuda Putra on 07/03/25.
 //
 
-
 struct Rating: Codable, Identifiable {
     let id: Int
     let user_id: Int

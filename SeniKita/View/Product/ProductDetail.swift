@@ -348,7 +348,6 @@ struct ProductDetail: View {
                 self.isPopupVisible = true
             }
         }
+        .hideTabBar()
     }
 }
-
-

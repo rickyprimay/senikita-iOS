@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RootView: View {
     @State private var selectedTab = 0
+    @State private var isShowingTabBar = true
     @StateObject var homeViewModel = HomeViewModel()
     @StateObject var profileViewModel = ProfileViewModel()
     @StateObject var artMapViewModel = ArtMapViewModel()
@@ -16,42 +17,66 @@ struct RootView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            NavigationStack {
-                TabView(selection: $selectedTab) {
+            TabView(selection: $selectedTab) {
+                NavigationStack {
                     Home(profileViewModel: profileViewModel, homeViewModel: homeViewModel)
-                        .tag(0)
-                    
+                }
+                .tag(0)
+                .toolbar(.hidden, for: .tabBar)
+                
+                NavigationStack {
                     ArtMap(artMapViewModel: artMapViewModel)
-                        .tag(1)
-                    
+                }
+                .tag(1)
+                .toolbar(.hidden, for: .tabBar)
+                
+                NavigationStack {
                     Profile(authViewModel: authViewModel, profileViewModel: profileViewModel)
-                        .tag(2)
                 }
-                .disabled(homeViewModel.isLoading)
+                .tag(2)
+                .toolbar(.hidden, for: .tabBar)
             }
+            .disabled(homeViewModel.isLoading)
+            .environment(\.isShowingTabBar, $isShowingTabBar)
 
-            ZStack {
-                HStack {
-                    ForEach(TabbedItems.allCases, id: \.self) { item in
-                        Button {
-                            if !homeViewModel.isLoading {
-                                selectedTab = item.rawValue
+            if isShowingTabBar {
+                ZStack {
+                    HStack {
+                        ForEach(TabbedItems.allCases, id: \.self) { item in
+                            Button {
+                                if !homeViewModel.isLoading {
+                                    selectedTab = item.rawValue
+                                }
+                            } label: {
+                                CustomTabItem(imageName: item.iconName,
+                                              title: item.title,
+                                              isActive: (selectedTab == item.rawValue))
                             }
-                        } label: {
-                            CustomTabItem(imageName: item.iconName,
-                                          title: item.title,
-                                          isActive: (selectedTab == item.rawValue))
+                            .disabled(homeViewModel.isLoading)
                         }
-                        .disabled(homeViewModel.isLoading)
                     }
+                    .padding(6)
                 }
-                .padding(6)
+                .frame(height: 70)
+                .background(Color("tertiary"))
+                .cornerRadius(35)
+                .padding(.horizontal, 26)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            .frame(height: 70)
-            .background(Color("tertiary"))
-            .cornerRadius(35)
-            .padding(.horizontal, 26)
         }
+        .animation(.easeInOut(duration: 0.2), value: isShowingTabBar)
+    }
+}
+
+// MARK: - Environment Key
+private struct IsShowingTabBarKey: EnvironmentKey {
+    static let defaultValue: Binding<Bool> = .constant(true)
+}
+
+extension EnvironmentValues {
+    var isShowingTabBar: Binding<Bool> {
+        get { self[IsShowingTabBarKey.self] }
+        set { self[IsShowingTabBarKey.self] = newValue }
     }
 }
 

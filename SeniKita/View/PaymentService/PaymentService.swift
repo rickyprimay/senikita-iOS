@@ -110,6 +110,7 @@ struct PaymentService: View {
                     .foregroundColor(Color("tertiary"))
             }
         }
+        .hideTabBar()
     }
     
 }

@@ -5,7 +5,6 @@
 //  Created by Ricky Primayuda Putra on 15/04/25.
 //
 
-
 //
 //  ArtMap.swift
 //  SeniKita

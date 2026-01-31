@@ -229,5 +229,6 @@ struct ArtMapDetail: View {
                 Loading(opacity: 1)
             }
         }
+        .hideTabBar()
     }
 }

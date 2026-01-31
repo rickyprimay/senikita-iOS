@@ -14,7 +14,6 @@ struct HistoryProductDetail: View {
     
     @ObservedObject var historyViewModel: HistoryViewModel
     
-    
     var idHistory: Int
     
     init(historyViewModel: HistoryViewModel, idHistory: Int) {
@@ -233,7 +232,7 @@ struct HistoryProductDetail: View {
                                    daysPassed <= 2 {
                                     
                                     Button(action: {
-                                        if let url = URL(string: historyDetail.invoice_url ?? "") {
+                                        if let url = URL(string: historyDetail.invoice_url) {
                                             UIApplication.shared.open(url)
                                         }
                                     }) {
@@ -289,6 +288,7 @@ struct HistoryProductDetail: View {
                     .zIndex(1)
             }
         }
+        .hideTabBar()
     }
     
 }

@@ -16,7 +16,6 @@ struct RegisterForm: View {
     @Binding var isConfirmationPasswordVisible: Bool
     @State private var isEmailValid: Bool = true
 
-
     @FocusState.Binding var nameFocus: Bool
     @FocusState.Binding var emailFocus: Bool
     @FocusState.Binding var passwordFocus: Bool

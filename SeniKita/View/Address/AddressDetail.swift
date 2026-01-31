@@ -121,5 +121,6 @@ struct AddressDetail: View {
             }
 
         }
+        .hideTabBar()
     }
 }

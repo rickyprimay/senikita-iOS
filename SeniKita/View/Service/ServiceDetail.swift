@@ -11,6 +11,7 @@ import SDWebImageSwiftUI
 struct ServiceDetail: View {
     
     @Environment(\.presentationMode) var presentationMode
+
     
     @StateObject var serviceViewModel = ServiceViewModel()
     @ObservedObject var homeViewModel: HomeViewModel
@@ -297,6 +298,7 @@ struct ServiceDetail: View {
             }
             .ignoresSafeArea(edges: .bottom)
         }
+        .hideTabBar()
     }
     
 }

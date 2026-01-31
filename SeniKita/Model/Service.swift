@@ -46,7 +46,6 @@ extension ServiceData {
         id = try container.decode(Int.self, forKey: .id)
         name = try? container.decode(String.self, forKey: .name)
         
-        // Handle price as String from API
         if let strValue = try? container.decode(String.self, forKey: .price) {
             price = Int(strValue)
         } else if let intValue = try? container.decode(Int.self, forKey: .price) {

@@ -5,7 +5,6 @@
 //  Created by Ricky Primayuda Putra on 13/03/25.
 //
 
-
 struct ProductWithPivot: Codable {
     let id: Int
     let name: String?
@@ -30,7 +29,6 @@ extension ProductWithPivot {
         id = try container.decode(Int.self, forKey: .id)
         name = try? container.decode(String.self, forKey: .name)
         
-        // Handle price as String or Int
         if let strValue = try? container.decode(String.self, forKey: .price) {
             price = Int(strValue)
         } else if let intValue = try? container.decode(Int.self, forKey: .price) {
@@ -41,7 +39,6 @@ extension ProductWithPivot {
         
         desc = try? container.decode(String.self, forKey: .desc)
         
-        // Handle stock as String or Int
         if let strValue = try? container.decode(String.self, forKey: .stock) {
             stock = Int(strValue)
         } else if let intValue = try? container.decode(Int.self, forKey: .stock) {
@@ -50,7 +47,6 @@ extension ProductWithPivot {
             stock = nil
         }
         
-        // Handle status as String or Int
         if let strValue = try? container.decode(String.self, forKey: .status) {
             status = Int(strValue)
         } else if let intValue = try? container.decode(Int.self, forKey: .status) {
@@ -61,7 +57,6 @@ extension ProductWithPivot {
         
         thumbnail = try? container.decode(String.self, forKey: .thumbnail)
         
-        // Handle category_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .category_id) {
             category_id = Int(strValue)
         } else if let intValue = try? container.decode(Int.self, forKey: .category_id) {
@@ -70,7 +65,6 @@ extension ProductWithPivot {
             category_id = nil
         }
         
-        // Handle shop_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .shop_id) {
             shop_id = Int(strValue)
         } else if let intValue = try? container.decode(Int.self, forKey: .shop_id) {
@@ -79,7 +73,6 @@ extension ProductWithPivot {
             shop_id = nil
         }
         
-        // Handle sold as String or Int
         if let strValue = try? container.decode(String.self, forKey: .sold) {
             sold = Int(strValue)
         } else if let intValue = try? container.decode(Int.self, forKey: .sold) {
@@ -105,7 +98,6 @@ extension Pivot {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        // Handle order_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .order_id) {
             order_id = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .order_id) {
@@ -114,7 +106,6 @@ extension Pivot {
             order_id = 0
         }
         
-        // Handle product_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .product_id) {
             product_id = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .product_id) {
@@ -123,7 +114,6 @@ extension Pivot {
             product_id = 0
         }
         
-        // Handle qty as String or Int
         if let strValue = try? container.decode(String.self, forKey: .qty) {
             qty = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .qty) {
@@ -133,4 +123,3 @@ extension Pivot {
         }
     }
 }
-

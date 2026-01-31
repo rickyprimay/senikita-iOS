@@ -5,7 +5,6 @@
 //  Created by Ricky Primayuda Putra on 07/03/25.
 //
 
-
 struct RatingImage: Codable, Identifiable {
     let id: Int
     let rating_product_id: Int

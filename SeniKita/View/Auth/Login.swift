@@ -86,17 +86,8 @@ struct Login: View {
                     .padding(.vertical)
 
                     Button {
-                        authViewModel.login(email: email, password: password) {
-                            success,
-                            message in
-                            if success {
-                                showErrorPopup = false
-                                // Tunggu sebentar agar state isAuthenticated ter-update
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                    // Dismiss semua navigation stack untuk kembali ke root
-                                    UIApplication.shared.windows.first?.rootViewController?.dismiss(animated: true, completion: nil)
-                                }
-                            } else {
+                        authViewModel.login(email: email, password: password) { success, message in
+                            if !success {
                                 showErrorPopup = true
                             }
                         }
@@ -118,6 +109,11 @@ struct Login: View {
                     Spacer()
                 }
                 .padding(30)
+            }
+            .onChange(of: authViewModel.errorMessage) { oldValue, newValue in
+                if newValue != nil {
+                    showErrorPopup = true
+                }
             }
 
             if authViewModel.isLoading {

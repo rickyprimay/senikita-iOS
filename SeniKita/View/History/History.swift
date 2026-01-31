@@ -105,5 +105,6 @@ struct History: View {
                 historyViewModel.getHistoryService()
             }
         }
+        .hideTabBar()
     }
 }

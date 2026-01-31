@@ -46,7 +46,6 @@ extension OrderServiceHistory {
 
         id = try container.decode(Int.self, forKey: .id)
         
-        // Handle user_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .user_id) {
             user_id = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .user_id) {
@@ -55,7 +54,6 @@ extension OrderServiceHistory {
             user_id = 0
         }
         
-        // Handle service_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .service_id) {
             service_id = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .service_id) {
@@ -66,7 +64,6 @@ extension OrderServiceHistory {
         
         name = try container.decode(String.self, forKey: .name)
         
-        // Handle qty as String or Int
         if let strValue = try? container.decode(String.self, forKey: .qty) {
             qty = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .qty) {
@@ -81,7 +78,6 @@ extension OrderServiceHistory {
         email = try container.decode(String.self, forKey: .email)
         activity_time = try container.decode(String.self, forKey: .activity_time)
         
-        // Handle province_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .province_id) {
             province_id = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .province_id) {
@@ -90,7 +86,6 @@ extension OrderServiceHistory {
             province_id = 0
         }
         
-        // Handle city_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .city_id) {
             city_id = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .city_id) {
@@ -99,7 +94,6 @@ extension OrderServiceHistory {
             city_id = 0
         }
         
-        // Handle attendee as String or Int
         if let strValue = try? container.decode(String.self, forKey: .attendee) {
             attendee = Int(strValue) ?? 0
         } else if let intValue = try? container.decode(Int.self, forKey: .attendee) {
@@ -131,4 +125,3 @@ struct HistoryServiceResponseDetail: Codable {
 struct OrderServiceDetailWrapper: Codable {
     let order: OrderServiceHistory
 }
-

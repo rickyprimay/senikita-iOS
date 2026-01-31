@@ -334,6 +334,7 @@ struct Payment: View {
                 EmptyView()
             }
         }
+        .hideTabBar()
     }
     
 }

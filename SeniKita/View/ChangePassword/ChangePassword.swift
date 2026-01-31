@@ -124,6 +124,7 @@ struct ChangePassword: View {
                     .foregroundColor(Color("tertiary"))
             }
         }
+        .hideTabBar()
     }
     
     private func changePassword() {

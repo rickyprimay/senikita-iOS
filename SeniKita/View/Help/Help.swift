@@ -78,5 +78,6 @@ struct Help: View {
                 }
             }
         }
+        .hideTabBar()
     }
 }

@@ -84,7 +84,7 @@ struct Home: View {
                                 .padding(.horizontal, 15)
                             }
                         }
-                        .padding(.bottom, 30)
+                        .padding(.bottom, 100)
                     }
                 }
                 .refreshable {

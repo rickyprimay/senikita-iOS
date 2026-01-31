@@ -28,7 +28,6 @@ extension City {
 
         id = try container.decode(Int.self, forKey: .id)
         
-        // Handle province_id as String or Int
         if let strValue = try? container.decode(String.self, forKey: .province_id) {
             province_id = Int(strValue)
         } else if let intValue = try? container.decode(Int.self, forKey: .province_id) {

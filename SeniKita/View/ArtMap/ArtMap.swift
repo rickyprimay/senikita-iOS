@@ -157,7 +157,7 @@ struct ArtMap: View {
         .cornerRadius(16)
         .shadow(radius: 3)
         .padding(.horizontal, 15)
-        .padding(.bottom, 40)
+            .padding(.bottom, 100)
     }
 
     private var instructionCard: some View {
@@ -171,8 +171,7 @@ struct ArtMap: View {
             .cornerRadius(12)
             .shadow(radius: 3)
             .padding(.horizontal, 15)
-            .padding(.bottom, 40)
+            .padding(.bottom, 100)
     }
-
 
 }
