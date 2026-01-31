@@ -10,26 +10,27 @@ import SwiftUI
 struct ProfileRow: View {
     var icon: String
     var title: String
-    var color: Color = .black
+    var isDestructive: Bool = false
     
     var body: some View {
-        HStack {
+        HStack(spacing: 16) {
             Image(systemName: icon)
-                .foregroundColor(color)
-                .frame(width: 25)
+                .font(.system(size: 18))
+                .foregroundColor(isDestructive ? .red : Color("brick"))
+                .frame(width: 24)
             
             Text(title)
-                .font(AppFont.Crimson.subtitle)
-                .bold()
-                .foregroundColor(color)
+                .font(AppFont.Raleway.bodyMedium)
+                .foregroundColor(isDestructive ? .red : .primary)
             
             Spacer()
             
             Image(systemName: "chevron.right")
-                .foregroundColor(.gray)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(Color(UIColor.systemGray3))
         }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(10)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .contentShape(Rectangle())
     }
 }

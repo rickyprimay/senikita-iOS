@@ -11,7 +11,6 @@ import SDWebImageSwiftUI
 struct EditProfile: View {
     
     @ObservedObject var profileViewModel: ProfileViewModel
-    
     @Environment(\.presentationMode) var presentationMode
     
     @State private var name: String = ""
@@ -23,298 +22,320 @@ struct EditProfile: View {
     @State private var showDatePicker: Bool = false
     
     @State var imageData: Data = .init(capacity: 0)
-    @State var showImage: Bool = false
     @State var imagePicker = false
     @State var source: UIImagePickerController.SourceType = .photoLibrary
     @State private var showActionSheet = false
     @State private var showErrorPopup: Bool = false
     @State private var showSuccessPopup: Bool = false
     
-    @FocusState private var nameFocus: Bool
-    @FocusState private var usernameFocus: Bool
-    @FocusState private var callNumberFocus: Bool
-    @FocusState private var birthDateFocus: Bool
-    @FocusState private var birthLocationFocus: Bool
-    @FocusState private var genderFocus: Bool
-    
-    private enum FocusField {
-        case name, username, callNumber, birthLocation
-    }
-    
-    init(profileViewModel: ProfileViewModel) {
-        self.profileViewModel = profileViewModel
-        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color("primary"))
-        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
-        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
-        UISegmentedControl.appearance().backgroundColor = UIColor(Color("tertiary"))
-    }
-    
     private let genderOptions = ["Laki-laki", "Perempuan"]
     
     var body: some View {
         ZStack {
+            Color(UIColor.systemGroupedBackground)
+                .ignoresSafeArea()
+            
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 24) {
+                    profilePhotoSection
+                    personalInfoSection
+                    birthInfoSection
+                    genderSection
                     
-                    VStack {
-                        if let profilePicture = profileViewModel.profile?.profilePicture,
-                           let url = URL(string: profilePicture) {
-                            WebImage(url: url)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 100)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-                                .padding()
-                        } else if let uiImage = UIImage(data: imageData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 100)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(Color.gray, lineWidth: 2))
-                                .padding()
-                        } else {
-                            Image(systemName: "person.crop.circle.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 100, height: 100)
-                                .foregroundColor(.gray)
-                                .padding()
-                        }
-                        
-                        Button("Pilih Foto Profil") {
-                            showActionSheet.toggle()
-                        }
-                        .padding()
-                        .font(AppFont.Crimson.bodyLarge)
-                        .background(LinearGradient(gradient: Gradient(colors: [Color("primary"), Color("tertiary")]), startPoint: .leading, endPoint: .trailing))
-                        .cornerRadius(8)
-                        .foregroundColor(.white)
-                        .confirmationDialog("Pilih Sumber Gambar", isPresented: $showActionSheet) {
-                            Button("Camera") {
-                                source = .camera
-                                imagePicker.toggle()
-                            }
-                            Button("Photo Library") {
-                                source = .photoLibrary
-                                imagePicker.toggle()
-                            }
-                            Button("Batal", role: .cancel) {}
-                        }
-                    }
-                    
-                    CustomTextField(
-                        label: "Nama",
-                        text: $name,
-                        placeholder: "Masukkan nama",
-                        isSecure: false,
-                        fontType: .crimson,
-                        nextFocus: $usernameFocus,
-                        isLast: false
-                    ).focused($nameFocus)
-                    
-                    CustomTextField(
-                        label: "Username",
-                        text: $username,
-                        placeholder: "Masukkan username",
-                        isSecure: false,
-                        fontType: .crimson,
-                        nextFocus: $callNumberFocus,
-                        isLast: false
-                    ).focused($usernameFocus)
-                    
-                    CustomTextField(
-                        label: "Nomor Telepon",
-                        text: $callNumber,
-                        placeholder: "Masukkan nomor telepon",
-                        isSecure: false,
-                        keyboardType: .phonePad,
-                        fontType: .crimson,
-                        nextFocus: $birthDateFocus,
-                        isLast: false
-                    ).focused($callNumberFocus)
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Tanggal Lahir")
-                            .font(.footnote)
-                            .foregroundColor(.black)
-                        
-                        Button(action: {
-                            withAnimation {
-                                showDatePicker.toggle()
-                            }
-                        }) {
-                            Text(dateFormatter.string(from: birthDate))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding()
-                                .background(Color.gray.opacity(0.2))
-                                .cornerRadius(8)
-                                .foregroundColor(.black)
-                                .overlay(RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color("brick"), lineWidth: 2))
-                        }
-                        
-                        if showDatePicker {
-                            VStack {
-                                DatePicker("", selection: $birthDate, displayedComponents: .date)
-                                    .datePickerStyle(WheelDatePickerStyle())
-                                    .labelsHidden()
-                                    .overlay(RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color("tertiary"), lineWidth: 2))
-                                
-                                Button("Submit") {
-                                    withAnimation {
-                                        showDatePicker = false
-                                    }
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(LinearGradient(gradient: Gradient(colors: [Color("primary"), Color("tertiary")]), startPoint: .leading, endPoint: .trailing))
-                                .cornerRadius(8)
-                                .foregroundColor(.white)
-                            }
-                            .background(Color.white)
-                            .cornerRadius(12)
-                            .shadow(radius: 5)
-                        }
-                    }
-                    
-                    CustomTextField(
-                        label: "Tempat Lahir",
-                        text: $birthLocation,
-                        placeholder: "Masukkan tempat lahir",
-                        isSecure: false,
-                        fontType: .crimson,
-                        nextFocus: $genderFocus,
-                        isLast: false
-                    ).focused($birthLocationFocus)
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Jenis Kelamin")
-                            .font(AppFont.Crimson.footnoteLarge)
-                            .foregroundColor(.black)
-                        Picker("Pilih Jenis Kelamin", selection: $gender) {
-                            ForEach(genderOptions, id: \ .self) { option in
-                                Text(option).tag(option)
-                                    .font(AppFont.Crimson.footnoteLarge)
-                            }
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                    }
-                    
-                    Button(action: {
-                        let finalDateString: String = dateFormatter.string(from: birthDate)
-                        profileViewModel.updateProfile(
-                            name: name,
-                            username: username,
-                            callNumber: callNumber,
-                            birthDateString: finalDateString,
-                            birthLocation: birthLocation,
-                            gender: gender,
-                            profilePicture: imageData.isEmpty ? nil : imageData
-                        ) { success, message in
-                            if success {
-                                showSuccessPopup = true
-                            } else {
-                                showErrorPopup = true
-                            }
-                        }
-                    }) {
-                        Text(profileViewModel.isLoading ? "Loading..." : "Simpan")
-                            .font(AppFont.Crimson.footnoteLarge)
-                            .bold()
-                            .frame(maxWidth: .infinity, minHeight: 50)
-                            .background(LinearGradient(gradient: Gradient(colors: [Color("primary"), Color("tertiary")]), startPoint: .leading, endPoint: .trailing))
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                    }
-                    .disabled(profileViewModel.isLoading)
-                    
-                    
-                    Spacer()
+                    saveButton
                 }
-                .padding()
-                .overlay(
-                    Group {
-                        if showErrorPopup, let errorMessage = profileViewModel.errorMessage {
-                            BasePopup(isShowing: $showErrorPopup, message: errorMessage, onConfirm: {
-                                showErrorPopup = false
-                                presentationMode.wrappedValue.dismiss()
-                                profileViewModel.errorMessage = nil
-                            })
-                            .transition(.opacity)
-                        }
-                        if showSuccessPopup {
-                            BasePopup(isShowing: $showSuccessPopup, message: "Profil berhasil diperbarui!", onConfirm: {
-                                showSuccessPopup = false
-                                presentationMode.wrappedValue.dismiss()
-                            }, isSuccess: true)
-                            .transition(.opacity)
-                        }
-                    }
-                )
-                
+                .padding(.horizontal, 16)
+                .padding(.top, 20)
+                .padding(.bottom, 40)
             }
-            .sheet(isPresented: $imagePicker) {
-                ImagePicker(showPicker: $imagePicker, image: $imageData, source: source)
-            }
-            .onAppear {
-                if let profile = profileViewModel.profile {
-                    name = profile.name ?? ""
-                    username = profile.username ?? ""
-                    callNumber = profile.callNumber ?? ""
-                    birthLocation = profile.birthLocation ?? ""
-                    if let genderValue = profile.gender {
-                        gender = (genderValue == "male" || genderValue == "Laki-laki") ? "Laki-laki" : "Perempuan"
-                    }
-
-                    if let dateString = profile.birthDate {
-                        let formatter = DateFormatter()
-                        formatter.dateFormat = "yyyy-MM-dd"
-                        formatter.locale = Locale(identifier: "en_US_POSIX")
-                        if let date = formatter.date(from: dateString) {
-                            birthDate = date
-                        }
-                    }
-                }
-            }
-
-            .background(Color.white.ignoresSafeArea())
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 18, weight: .bold))
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                    .tint(Color("tertiary"))
-                }
-                ToolbarItem(placement: .principal) {
-                    Text("Edit Profile")
-                        .font(AppFont.Crimson.bodyLarge)
-                        .bold()
-                        .foregroundColor(Color("tertiary"))
-                }
-            } 
             
             if profileViewModel.isLoading {
                 Loading(opacity: 0.5)
+            }
+            
+            if showErrorPopup, let errorMessage = profileViewModel.errorMessage {
+                BasePopup(isShowing: $showErrorPopup, message: errorMessage, onConfirm: {
+                    showErrorPopup = false
+                    profileViewModel.errorMessage = nil
+                })
+            }
+            
+            if showSuccessPopup {
+                BasePopup(isShowing: $showSuccessPopup, message: "Profil berhasil diperbarui!", onConfirm: {
+                    showSuccessPopup = false
+                    presentationMode.wrappedValue.dismiss()
+                }, isSuccess: true)
+            }
+        }
+        .sheet(isPresented: $imagePicker) {
+            ImagePicker(showPicker: $imagePicker, image: $imageData, source: source)
+        }
+        .onAppear(perform: loadProfileData)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color("primary"))
+                }
+            }
+            ToolbarItem(placement: .principal) {
+                Text("Edit Profil")
+                    .font(AppFont.Nunito.subtitle)
+                    .foregroundColor(.primary)
             }
         }
         .hideTabBar()
     }
     
-    private let dateFormatter: DateFormatter = {
+    private var profilePhotoSection: some View {
+        VStack(spacing: 16) {
+            ZStack {
+                if let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                } else if let profilePicture = profileViewModel.profile?.profilePicture,
+                          let url = URL(string: profilePicture) {
+                    WebImage(url: url)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                } else {
+                    Circle()
+                        .fill(Color(UIColor.systemGray5))
+                        .frame(width: 100, height: 100)
+                        .overlay(
+                            Image(systemName: "person.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(.gray)
+                        )
+                }
+                
+                Circle()
+                    .stroke(Color.white, lineWidth: 4)
+                    .frame(width: 100, height: 100)
+            }
+            .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+            
+            Button {
+                showActionSheet.toggle()
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "camera.fill")
+                        .font(.system(size: 12))
+                    Text("Ubah Foto")
+                        .font(AppFont.Nunito.footnoteSmall)
+                }
+                .foregroundColor(Color("primary"))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(Color("primary").opacity(0.1))
+                .cornerRadius(20)
+            }
+            .confirmationDialog("Pilih Sumber Gambar", isPresented: $showActionSheet) {
+                Button("Kamera") {
+                    source = .camera
+                    imagePicker.toggle()
+                }
+                Button("Galeri Foto") {
+                    source = .photoLibrary
+                    imagePicker.toggle()
+                }
+                Button("Batal", role: .cancel) {}
+            }
+        }
+        .padding(.vertical, 24)
+        .frame(maxWidth: .infinity)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+    }
+    
+    private var personalInfoSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Informasi Pribadi")
+                .font(AppFont.Nunito.footnoteSmall)
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+                .padding(.leading, 4)
+            
+            VStack(spacing: 0) {
+                EditProfileField(
+                    label: "Nama Lengkap",
+                    text: $name,
+                    placeholder: "Masukkan nama lengkap"
+                )
+                
+                Divider().padding(.leading, 16)
+                
+                EditProfileField(
+                    label: "Username",
+                    text: $username,
+                    placeholder: "Masukkan username"
+                )
+                
+                Divider().padding(.leading, 16)
+                
+                EditProfileField(
+                    label: "Nomor Telepon",
+                    text: $callNumber,
+                    placeholder: "08xxxxxxxxxx",
+                    keyboardType: .phonePad
+                )
+            }
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+        }
+    }
+    
+    private var birthInfoSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Data Kelahiran")
+                .font(AppFont.Nunito.footnoteSmall)
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+                .padding(.leading, 4)
+            
+            VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Tanggal Lahir")
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(.secondary)
+                    
+                    DatePicker("", selection: $birthDate, displayedComponents: .date)
+                        .datePickerStyle(.compact)
+                        .labelsHidden()
+                        .tint(Color("primary"))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                
+                Divider().padding(.leading, 16)
+                
+                EditProfileField(
+                    label: "Tempat Lahir",
+                    text: $birthLocation,
+                    placeholder: "Masukkan tempat lahir"
+                )
+            }
+            .background(Color.white)
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+        }
+    }
+    
+    private var genderSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Jenis Kelamin")
+                .font(AppFont.Nunito.footnoteSmall)
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+                .padding(.leading, 4)
+            
+            HStack(spacing: 12) {
+                ForEach(genderOptions, id: \.self) { option in
+                    Button {
+                        gender = option
+                    } label: {
+                        Text(option)
+                            .font(AppFont.Nunito.bodyMedium)
+                            .foregroundColor(gender == option ? .white : .primary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(gender == option ? Color("primary") : Color.white)
+                            .cornerRadius(12)
+                            .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+                    }
+                }
+            }
+        }
+    }
+    
+    private var saveButton: some View {
+        Button(action: saveProfile) {
+            Text(profileViewModel.isLoading ? "Menyimpan..." : "Simpan Perubahan")
+                .font(AppFont.Nunito.subtitle)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color("primary"))
+                .cornerRadius(12)
+        }
+        .disabled(profileViewModel.isLoading)
+    }
+    
+    private func loadProfileData() {
+        if let profile = profileViewModel.profile {
+            name = profile.name ?? ""
+            username = profile.username ?? ""
+            callNumber = profile.callNumber ?? ""
+            birthLocation = profile.birthLocation ?? ""
+            
+            if let genderValue = profile.gender {
+                gender = (genderValue == "male" || genderValue == "Laki-laki") ? "Laki-laki" : "Perempuan"
+            }
+            
+            if let dateString = profile.birthDate {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd"
+                formatter.locale = Locale(identifier: "en_US_POSIX")
+                if let date = formatter.date(from: dateString) {
+                    birthDate = date
+                }
+            }
+        }
+    }
+    
+    private func saveProfile() {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        return formatter
-    }()
+        let finalDateString = formatter.string(from: birthDate)
+        
+        profileViewModel.updateProfile(
+            name: name,
+            username: username,
+            callNumber: callNumber,
+            birthDateString: finalDateString,
+            birthLocation: birthLocation,
+            gender: gender,
+            profilePicture: imageData.isEmpty ? nil : imageData
+        ) { success, message in
+            if success {
+                showSuccessPopup = true
+            } else {
+                showErrorPopup = true
+            }
+        }
+    }
+}
+
+struct EditProfileField: View {
+    let label: String
+    @Binding var text: String
+    var placeholder: String = ""
+    var keyboardType: UIKeyboardType = .default
     
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(AppFont.Raleway.footnoteSmall)
+                .foregroundColor(.secondary)
+            
+            TextField(placeholder, text: $text)
+                .font(AppFont.Raleway.bodyMedium)
+                .keyboardType(keyboardType)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+    }
 }

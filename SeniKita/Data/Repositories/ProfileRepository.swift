@@ -4,6 +4,7 @@
 //
 //  Created by Ricky Primayuda Putra on 31/01/26.
 //
+
 import Foundation
 
 final class ProfileRepository: ProfileRepositoryProtocol {
@@ -22,8 +23,24 @@ final class ProfileRepository: ProfileRepositoryProtocol {
         return user
     }
     
-    func updateProfile(name: String, email: String, phone: String?) async throws -> User {
-        let endpoint = ProfileEndpoint.update(name: name, email: email, phone: phone)
+    func updateProfile(
+        name: String,
+        email: String,
+        phone: String?,
+        username: String?,
+        birthDate: String?,
+        birthLocation: String?,
+        gender: String?
+    ) async throws -> User {
+        let endpoint = ProfileEndpoint.update(
+            name: name,
+            email: email,
+            phone: phone,
+            username: username,
+            birthDate: birthDate,
+            birthLocation: birthLocation,
+            gender: gender
+        )
         let response: Auth = try await client.request(endpoint: endpoint)
         
         guard response.status == "success", let user = response.user ?? response.data else {

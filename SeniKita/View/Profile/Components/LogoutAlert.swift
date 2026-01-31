@@ -14,58 +14,73 @@ struct LogoutAlert: View {
     var body: some View {
         ZStack {
             Color.black.opacity(0.4)
-                .edgesIgnoringSafeArea(.all)
-                .transition(.opacity)
+                .ignoresSafeArea()
                 .onTapGesture {
-                    isShowing = false
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        isShowing = false
+                    }
                 }
             
             VStack(spacing: 20) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 50, height: 50)
-                    .foregroundColor(.yellow)
-                
-                Text("Apakah Anda yakin ingin keluar?")
-                    .font(AppFont.Crimson.bodyMedium)
-                    .multilineTextAlignment(.center)
-                
-                HStack(spacing: 20) {
-                    Button(action: {
-                        isShowing = false
-                    }) {
-                        Text("Batal")
-                            .font(AppFont.Crimson.bodyMedium)
-                            .foregroundColor(.gray)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(10)
-                            .shadow(radius: 2)
+                VStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.orange.opacity(0.1))
+                            .frame(width: 64, height: 64)
+                        
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                            .font(.system(size: 24, weight: .medium))
+                            .foregroundColor(.orange)
                     }
                     
-                    Button(action: {
+                    Text("Keluar dari Akun?")
+                        .font(AppFont.Nunito.subtitle)
+                        .foregroundColor(.primary)
+                    
+                    Text("Anda perlu masuk kembali untuk\nmengakses akun Anda")
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                
+                HStack(spacing: 12) {
+                    Button {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            isShowing = false
+                        }
+                    } label: {
+                        Text("Batal")
+                            .font(AppFont.Nunito.bodyMedium)
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(Color(UIColor.systemGray6))
+                            .cornerRadius(12)
+                    }
+                    
+                    Button {
                         onConfirm()
-                        isShowing = false
-                    }) {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            isShowing = false
+                        }
+                    } label: {
                         Text("Keluar")
-                            .font(AppFont.Crimson.bodyMedium)
+                            .font(AppFont.Nunito.bodyMedium)
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color("customRed"))
-                            .cornerRadius(10)
-                            .shadow(radius: 2)
+                            .padding(.vertical, 14)
+                            .background(Color.orange)
+                            .cornerRadius(12)
                     }
                 }
             }
-            .padding()
+            .padding(24)
             .background(Color.white)
-            .cornerRadius(15)
-            .shadow(radius: 10)
-            .frame(maxWidth: 300)
-            .transition(.scale)
+            .cornerRadius(20)
+            .shadow(color: .black.opacity(0.15), radius: 20)
+            .padding(.horizontal, 40)
+            .transition(.scale.combined(with: .opacity))
         }
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isShowing)
     }
 }

@@ -4,6 +4,7 @@
 //
 //  Created by Ricky Primayuda Putra on 31/01/26.
 //
+
 import Foundation
 
 @MainActor
@@ -87,7 +88,11 @@ class ProfileViewModel: ObservableObject {
                 _ = try await profileRepository.updateProfile(
                     name: name ?? "",
                     email: profile?.email ?? "",
-                    phone: callNumber
+                    phone: callNumber,
+                    username: username,
+                    birthDate: birthDateString,
+                    birthLocation: birthLocation,
+                    gender: gender
                 )
                 
                 self.getProfile()
@@ -99,20 +104,5 @@ class ProfileViewModel: ObservableObject {
                 completion(false, error.localizedDescription)
             }
         }
-    }
-    
-    private func formatDateToYYYYMMDD(_ dateString: String) -> String {
-        let inputFormatter = DateFormatter()
-        inputFormatter.dateFormat = "dd/MM/yyyy"
-        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
-        
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateFormat = "yyyy-MM-dd"
-        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
-        
-        if let date = inputFormatter.date(from: dateString) {
-            return outputFormatter.string(from: date)
-        }
-        return dateString
     }
 }
