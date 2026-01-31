@@ -7,9 +7,6 @@
 
 import SwiftUI
 
-// Using a counter instead of boolean to handle nested navigation
-// Each view that hides tab bar increments counter on appear, decrements on disappear
-// Tab bar only shows when counter is 0
 class TabBarVisibilityManager: ObservableObject {
     @Published var hideCount: Int = 0
     
