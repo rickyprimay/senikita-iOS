@@ -22,213 +22,306 @@ struct ArtMapDetail: View {
     
     var body: some View {
         ZStack {
-            ScrollView {
-                VStack {
-                    Spacer()
-                    
-                    VStack(alignment: .leading) {
-                        Text("Provinsi \(artMapViewModel.selectedArtMap?.name ?? "")")
-                            .font(AppFont.Crimson.headerMedium)
-                            .foregroundColor(.black)
-                    }
-                    
-                    HStack {
-                        Text(artMapViewModel.selectedArtMap?.subtitle ?? "")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(.black)
-                            .padding(.bottom)
-                            .padding(.horizontal)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        if artMapViewModel.isSendingPrompt && artMapViewModel.animatedText.isEmpty {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .padding()
-                                .background(Color("primary"))
-                                .clipShape(RoundedCorner(radius: 12, corners: [.topRight, .topLeft, .bottomLeft]))
-                        } else {
-                            Text(artMapViewModel.animatedText)
-                                .font(AppFont.Raleway.footnoteSmall)
-                                .foregroundColor(.white)
-                                .padding()
-                                .background(Color("primary"))
-                                .clipShape(RoundedCorner(radius: 12, corners: [.topRight, .topLeft, .bottomLeft]))
-                        }
-                        
-                        HStack {
-                            VStack(alignment: .leading, spacing: 8) {
-                                CategoryButton(icon: "💃", text: "Tarian Tradisional", action: {
-                                    promptText = "Tarian Tradisional di \(name)"
-                                })
-                                CategoryButton(icon: "🎷", text: "Alat Musik Tradisional", action: {
-                                    promptText = "Alat Musik Tradisional di \(name)"
-                                })
-                                CategoryButton(icon: "🎊", text: "Festival Budaya", action: {
-                                    promptText = "Festival Budaya di \(name)"
-                                })
-                                CategoryButton(icon: "🥻", text: "Pakaian Adat", action: {
-                                    promptText = "Pakaian Adat di \(name)"
-                                })
-                            }
-                            
-                            Spacer()
-                            
-                            Image("avatar")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 300)
-                                .cornerRadius(12)
-                                .offset(y: isAnimating ? -10 : 10)
-                                .animation(Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isAnimating)
-                                .onAppear {
-                                    isAnimating = true
-                                }
-                        }
-                        
-                        ZStack(alignment: .trailing) {
-                            TextField("Tanyakan tentang \(name)", text: $promptText)
-                                .font(AppFont.Raleway.footnoteSmall)
-                                .foregroundColor(.black)
-                                .padding(.trailing, 50)
-                                .padding(.leading, 12)
-                                .padding(.vertical, 16)
-                                .background(Color.gray.opacity(0.1))
-                                .cornerRadius(12)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color.gray, lineWidth: 1)
-                                )
-                            
-                            Button(action: {
-                                print("Button clicked, promptText: \(promptText), name: \(name)")
-                                artMapViewModel.animatedText = ""
-                                artMapViewModel.sendPromptToGemini(prompt: promptText, statue: name)
-                            }) {
-                                if artMapViewModel.isAnimatingText {
-                                    ProgressView()
-                                        .tint(.white)
-                                        .padding(8)
-                                        .background(Color("primary"))
-                                        .clipShape(Circle())
-                                        .padding(.trailing, 8)
-                                } else {
-                                    Image(systemName: "arrow.right.circle.fill")
-                                        .foregroundColor(.white)
-                                        .padding(8)
-                                        .background(Color("primary"))
-                                        .clipShape(Circle())
-                                        .padding(.trailing, 8)
-                                }
-                            }
-                            .disabled(artMapViewModel.isAnimatingText)
-                        }
-                    }
-                    .padding(.horizontal)
-                    
-                    if let details = artMapViewModel.selectedArtMap?.artProvinceDetails {
-                        VStack(alignment: .leading, spacing: 16) {
-                            ForEach(details) { detail in
-                                Button(action: {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        selectedDetail = (selectedDetail?.id == detail.id) ? nil : detail
-                                    }
-                                }) {
-                                    ZStack {
-                                        if let imageUrl = URL(string: detail.image) {
-                                            WebImage(url: imageUrl)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: UIScreen.main.bounds.width - 48, height: selectedDetail?.id == detail.id ? 200 : 100)
-                                                .clipped()
-                                                .cornerRadius(12)
-                                                .opacity(0.6)
-                                                .overlay(
-                                                    Color.black.opacity(selectedDetail?.id == detail.id ? 0.6 : 0.3)
-                                                        .cornerRadius(12)
-                                                )
-                                        } else {
-                                            Color.gray
-                                                .frame(width: UIScreen.main.bounds.width - 48, height: 200)
-                                                .cornerRadius(12)
-                                        }
-                                        VStack(spacing: 8) {
-                                            Text(detail.name)
-                                                .font(AppFont.Crimson.bodyMedium)
-                                                .foregroundColor(.white)
-                                                .multilineTextAlignment(.center)
-                                                .frame(maxWidth: .infinity)
-                                            if selectedDetail?.id == detail.id {
-                                                Text(detail.description)
-                                                    .font(AppFont.Raleway.footnoteSmall)
-                                                    .foregroundColor(.white)
-                                                    .padding()
-                                                    .background(Color.black.opacity(0.5))
-                                                    .cornerRadius(12)
-                                            }
-                                        }
-                                        .padding()
-                                    }
-                                    .padding(.vertical, 8)
-                                }
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                    }
-
-                    
-                    Spacer()
+            Color(UIColor.systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    heroSection
+                    aiAssistantSection
+                    culturalItemsSection
                 }
-                .padding(.horizontal)
-            }
-            .onAppear {
-                Task {
-                    artMapViewModel.fetchArtMapBySlug(slug: slug)
-                    if let firstDetail = artMapViewModel.selectedArtMap?.artProvinceDetails?.first {
-                        selectedDetail = firstDetail
-                    }
-                }
-            }
-            .onDisappear {
-                Task {
-                    await artMapViewModel.speakText(textUsing: "")
-                }
+                .padding(.bottom, 40)
             }
             
-            .onChange(of: artMapViewModel.isLoading) {
-                if !artMapViewModel.isLoading {
-                    Task {
-                        await artMapViewModel.startTextAnimation(textUsing: artMapViewModel.content ?? "")
-                    }
-
-                }
-            }
-            .background(Color.white.ignoresSafeArea())
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(AppFont.Crimson.bodyLarge)
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                    .tint(Color("tertiary"))
-                }
-                ToolbarItem(placement: .principal) {
-                    Text(name)
-                        .font(AppFont.Crimson.bodyLarge)
-                        .bold()
-                        .foregroundColor(Color("tertiary"))
-                }
-            }
             if artMapViewModel.isLoading {
-                Loading(opacity: 1)
+                Loading(opacity: 0.6)
+            }
+        }
+        .onAppear {
+            artMapViewModel.fetchArtMapBySlug(slug: slug)
+            if let firstDetail = artMapViewModel.selectedArtMap?.artProvinceDetails?.first {
+                selectedDetail = firstDetail
+            }
+        }
+        .onDisappear {
+            Task {
+                await artMapViewModel.speakText(textUsing: "")
+            }
+        }
+        .onChange(of: artMapViewModel.isLoading) {
+            if !artMapViewModel.isLoading {
+                Task {
+                    await artMapViewModel.startTextAnimation(textUsing: artMapViewModel.content ?? "")
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color("primary"))
+                }
+            }
+            ToolbarItem(placement: .principal) {
+                Text(name)
+                    .font(AppFont.Nunito.subtitle)
+                    .foregroundColor(.primary)
             }
         }
         .hideTabBar()
+    }
+    
+    private var heroSection: some View {
+        VStack(spacing: 12) {
+            Text("Provinsi \(artMapViewModel.selectedArtMap?.name ?? name)")
+                .font(AppFont.Nunito.headerMedium)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.center)
+            
+            Text(artMapViewModel.selectedArtMap?.subtitle ?? "Memuat informasi...")
+                .font(AppFont.Raleway.bodyMedium)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+        }
+        .padding(.top, 16)
+    }
+    
+    private var aiAssistantSection: some View {
+        VStack(spacing: 16) {
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 12) {
+                    aiResponseBubble
+                    categoryButtons
+                }
+                
+                Spacer()
+                
+                Image("avatar")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 130, height: 180)
+                    .offset(y: isAnimating ? -6 : 6)
+                    .onAppear {
+                        withAnimation(
+                            Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true)
+                        ) {
+                            isAnimating = true
+                        }
+                    }
+            }
+            
+            promptInputField
+        }
+        .padding(16)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+        .padding(.horizontal, 16)
+    }
+    
+    private var aiResponseBubble: some View {
+        Group {
+            if artMapViewModel.isSendingPrompt && artMapViewModel.animatedText.isEmpty {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    Text("Sedang berpikir...")
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(.white)
+                }
+                .padding(12)
+                .background(Color("primary"))
+                .cornerRadius(12)
+            } else if !artMapViewModel.animatedText.isEmpty {
+                Text(artMapViewModel.animatedText)
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.white)
+                    .padding(12)
+                    .background(Color("primary"))
+                    .cornerRadius(12)
+                    .frame(maxWidth: 180, alignment: .leading)
+            }
+        }
+    }
+    
+    private var categoryButtons: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            CategoryChip(icon: "💃", text: "Tarian Tradisional") {
+                promptText = "Tarian Tradisional di \(name)"
+            }
+            CategoryChip(icon: "🎷", text: "Alat Musik Tradisional") {
+                promptText = "Alat Musik Tradisional di \(name)"
+            }
+            CategoryChip(icon: "🎊", text: "Festival Budaya") {
+                promptText = "Festival Budaya di \(name)"
+            }
+            CategoryChip(icon: "🥻", text: "Pakaian Adat") {
+                promptText = "Pakaian Adat di \(name)"
+            }
+        }
+    }
+    
+    private var promptInputField: some View {
+        HStack(spacing: 12) {
+            TextField("Tanyakan tentang \(name)...", text: $promptText)
+                .font(AppFont.Raleway.footnoteSmall)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(Color(UIColor.systemGray6))
+                .cornerRadius(25)
+            
+            Button(action: {
+                artMapViewModel.animatedText = ""
+                artMapViewModel.sendPromptToGemini(prompt: promptText, statue: name)
+            }) {
+                ZStack {
+                    Circle()
+                        .fill(Color("primary"))
+                        .frame(width: 44, height: 44)
+                    
+                    if artMapViewModel.isAnimatingText {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Image(systemName: "arrow.up")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .disabled(artMapViewModel.isAnimatingText || promptText.isEmpty)
+        }
+    }
+    
+    private var culturalItemsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            if let details = artMapViewModel.selectedArtMap?.artProvinceDetails, !details.isEmpty {
+                Text("Kesenian & Budaya")
+                    .font(AppFont.Nunito.subtitle)
+                    .foregroundColor(.primary)
+                    .padding(.horizontal, 16)
+                
+                VStack(spacing: 12) {
+                    ForEach(details) { detail in
+                        let isSelected = selectedDetail?.id == detail.id
+                        
+                        ZStack(alignment: .bottomLeading) {
+                            if let imageUrl = URL(string: detail.image) {
+                                WebImage(url: imageUrl)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 100)
+                                    .clipped()
+                                    .overlay(
+                                        LinearGradient(
+                                            colors: [.clear, .black.opacity(0.6)],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                    )
+                            } else {
+                                Rectangle()
+                                    .fill(Color(UIColor.systemGray4))
+                                    .frame(height: 100)
+                            }
+                            
+                            HStack {
+                                Text(detail.name)
+                                    .font(AppFont.Nunito.bodyMedium)
+                                    .foregroundColor(.white)
+                                    .shadow(radius: 2)
+                                
+                                Spacer()
+                                
+                                if isSelected {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 20))
+                                }
+                            }
+                            .padding(12)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 100)
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(isSelected ? Color("primary") : .clear, lineWidth: 2)
+                        )
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                if isSelected {
+                                    selectedDetail = nil
+                                } else {
+                                    selectedDetail = detail
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                
+                if let selected = selectedDetail {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text(selected.name)
+                                .font(AppFont.Nunito.subtitle)
+                                .foregroundColor(.primary)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                withAnimation {
+                                    selectedDetail = nil
+                                }
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        Text(selected.description)
+                            .font(AppFont.Raleway.bodyMedium)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(16)
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+                    .padding(.horizontal, 16)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+            }
+        }
+    }
+}
+
+struct CategoryChip: View {
+    let icon: String
+    let text: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Text(icon)
+                    .font(.system(size: 12))
+                Text(text)
+                    .font(AppFont.Raleway.footnoteSmall)
+            }
+            .foregroundColor(.primary)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color(UIColor.systemGray6))
+            .cornerRadius(20)
+        }
     }
 }
