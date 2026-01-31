@@ -13,85 +13,84 @@ struct AddressCard: View {
     var address: Address
     var onDelete: () -> Void
     @Binding var isEditing: Bool
-    
     @Binding var addressToEdit: Address?
     @Binding var showSheetAddAddress: Bool
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(address.label_address)
-                .font(AppFont.Raleway.bodyMedium)
-                .bold()
-                .foregroundStyle(Color("primary"))
-                .padding(4)
-                .background(Color("tertiary").opacity(0.5))
-                .cornerRadius(12)
-            
-            Text(address.name)
-                .font(AppFont.Raleway.bodyMedium)
-                .bold()
-            
-            Text(address.phone)
-                .font(AppFont.Raleway.bodyMedium)
-            
-            Text(address.address_detail)
-                .font(AppFont.Raleway.bodyMedium)
-            
-            Text(address.note ?? "")
-                .font(AppFont.Raleway.bodyMedium)
-                .foregroundColor(.gray)
-            
-            HStack {
-                Button(action: {
-                    addressViewModel.getAddressById(idAddress: address.id)
-                    addressToEdit = address
-                    isEditing = true
-                    showSheetAddAddress = true
-                }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "square.and.pencil")
-                        Text("Ubah Alamat")
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        Text(address.label_address)
+                            .font(AppFont.Nunito.footnoteSmall)
+                            .foregroundColor(Color("brick"))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(Color("brick").opacity(0.12))
+                            .cornerRadius(12)
+                        
+                        Spacer()
                     }
-                    .font(AppFont.Raleway.bodyMedium)
-                    .bold()
-                    .foregroundColor(.black)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.gray.opacity(0.4), lineWidth: 1)
-                    )
-                }
-
-                
-                Button(action: {
-                    onDelete()
-                }) {
-                    HStack {
-                        Image(systemName: "trash")
-                        Text("Hapus")
-                    }
-                    .font(AppFont.Raleway.bodyMedium)
-                    .bold()
-                    .foregroundColor(.red)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.gray.opacity(0.4), lineWidth: 1)
-                    )
+                    
+                    Text(address.name)
+                        .font(AppFont.Nunito.subtitle)
+                        .foregroundColor(.primary)
+                    
+                    Text(address.phone)
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(.secondary)
                 }
                 
                 Spacer()
+                
+                Menu {
+                    Button {
+                        addressViewModel.getAddressById(idAddress: address.id)
+                        addressToEdit = address
+                        isEditing = true
+                        showSheetAddAddress = true
+                    } label: {
+                        Label("Ubah", systemImage: "pencil")
+                    }
+                    
+                    Button(role: .destructive) {
+                        onDelete()
+                    } label: {
+                        Label("Hapus", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.secondary)
+                        .frame(width: 32, height: 32)
+                        .background(Color(UIColor.systemGray6))
+                        .cornerRadius(8)
+                }
             }
-            .padding(.top, 8)
+            
+            Divider()
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(address.address_detail)
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.primary)
+                    .lineLimit(2)
+                
+                if let note = address.note, !note.isEmpty {
+                    HStack(spacing: 4) {
+                        Image(systemName: "note.text")
+                            .font(.system(size: 11))
+                        Text(note)
+                            .font(AppFont.Raleway.footnoteSmall)
+                    }
+                    .foregroundColor(.secondary)
+                    .padding(.top, 2)
+                }
+            }
         }
-        .padding()
+        .padding(16)
         .background(Color.white)
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.gray.opacity(0.4), lineWidth: 1)
-        )
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
     }
 }

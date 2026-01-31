@@ -20,92 +20,21 @@ struct AddressDetail: View {
     
     var body: some View {
         ZStack {
-            VStack {
-                HStack {
-                    Text("Daftar Alamat")
-                        .font(AppFont.Crimson.bodyLarge)
-                        .bold()
-                    
-                    Spacer()
-                    
-                    Button {
-                        showSheetAddAddress.toggle()
-                        isEditing = false
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "plus")
-                            Text("Tambah Alamat")
-                        }
-                        .font(AppFont.Raleway.bodyMedium)
-                        .foregroundStyle(.white)
-                        .padding(8)
-                        .background(Color("primary"))
-                        .cornerRadius(8)
-                    }
-                }
-                
-                ScrollView {
-                    if addressViewModel.address.isEmpty {
-                        Text("Anda belum mempunyai alamat")
-                            .font(AppFont.Raleway.bodyLarge)
-                            .foregroundColor(Color("primary"))
-                            .multilineTextAlignment(.center)
-                            .lineLimit(nil)
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        ForEach(addressViewModel.address, id: \.id) { address in
-                            AddressCard(
-                                addressViewModel: addressViewModel,
-                                address: address,
-                                onDelete: {
-                                    addressToDelete = address
-                                    isShowingDeleteAlert = true
-                                },
-                                isEditing: $isEditing,
-                                addressToEdit: $addressToEdit,
-                                showSheetAddAddress: $showSheetAddAddress
-                            )
-
-                        }
-                    }
-                }
-                .sheet(isPresented: $showSheetAddAddress) {
-                    AddAddressSheet(addressViewModel: addressViewModel, isEditing: $isEditing, addressToEdit: $addressToEdit)
-                }
-                .refreshable {
-                    addressViewModel.getAddress()
-                }
-                .onAppear {
-                    addressViewModel.getAddress()
-                    addressViewModel.getProvinces()
-                }
-                .background(Color.white.ignoresSafeArea())
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .font(AppFont.Raleway.bodyLarge)
-                                .frame(width: 40, height: 40)
-                                .background(Color.brown.opacity(0.3))
-                                .clipShape(Circle())
-                        }
-                        .tint(Color("tertiary"))
-                    }
-                    ToolbarItem(placement: .principal) {
-                        Text("Alamat")
-                            .font(AppFont.Raleway.bodyLarge)
-                            .bold()
-                            .foregroundColor(Color("tertiary"))
-                    }
+            Color(UIColor.systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                if addressViewModel.address.isEmpty && !addressViewModel.isLoading {
+                    emptyStateView
+                } else {
+                    addressListView
                 }
             }
-            .padding(.horizontal)
+            
             if addressViewModel.isLoading {
                 Loading(opacity: 0.5)
             }
+            
             if isShowingDeleteAlert {
                 DeleteAddressAlert(isShowing: $isShowingDeleteAlert) {
                     if let address = addressToDelete {
@@ -119,8 +48,108 @@ struct AddressDetail: View {
                     }
                 }
             }
-
+        }
+        .sheet(isPresented: $showSheetAddAddress) {
+            AddAddressSheet(addressViewModel: addressViewModel, isEditing: $isEditing, addressToEdit: $addressToEdit)
+        }
+        .onAppear {
+            addressViewModel.getAddress()
+            addressViewModel.getProvinces()
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color("brick"))
+                }
+            }
+            ToolbarItem(placement: .principal) {
+                Text("Alamat Saya")
+                    .font(AppFont.Nunito.subtitle)
+                    .foregroundColor(.primary)
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showSheetAddAddress.toggle()
+                    isEditing = false
+                    addressToEdit = nil
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color("brick"))
+                }
+            }
         }
         .hideTabBar()
+    }
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Spacer()
+            
+            Image(systemName: "mappin.slash")
+                .font(.system(size: 60))
+                .foregroundColor(Color.gray.opacity(0.4))
+            
+            VStack(spacing: 8) {
+                Text("Belum Ada Alamat")
+                    .font(AppFont.Nunito.subtitle)
+                    .foregroundColor(.primary)
+                
+                Text("Tambahkan alamat pengiriman untuk\nmemudahkan proses pembelian")
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            Button {
+                showSheetAddAddress.toggle()
+                isEditing = false
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus")
+                    Text("Tambah Alamat")
+                }
+                .font(AppFont.Nunito.bodyMedium)
+                .foregroundColor(.white)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 12)
+                .background(Color("brick"))
+                .cornerRadius(25)
+            }
+            
+            Spacer()
+        }
+        .padding()
+    }
+    
+    private var addressListView: some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(addressViewModel.address, id: \.id) { address in
+                    AddressCard(
+                        addressViewModel: addressViewModel,
+                        address: address,
+                        onDelete: {
+                            addressToDelete = address
+                            isShowingDeleteAlert = true
+                        },
+                        isEditing: $isEditing,
+                        addressToEdit: $addressToEdit,
+                        showSheetAddAddress: $showSheetAddAddress
+                    )
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 100)
+        }
+        .refreshable {
+            addressViewModel.getAddress()
+        }
     }
 }

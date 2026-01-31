@@ -44,173 +44,159 @@ struct AddAddressSheet: View {
     }
     
     var body: some View {
-        ZStack {
-            VStack(alignment: .leading, spacing: 16) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Tambah Alamat Baru")
-                        .font(AppFont.Raleway.bodyLarge)
-                        .bold()
-                        .padding(.horizontal)
-                    
-                    Text("Masukkan alamat lengkap baru")
-                        .font(AppFont.Raleway.subtitle)
-                        .foregroundStyle(.gray)
-                        .padding(.horizontal)
-                    
-                    DividerLabel(label: "Tambah Alamat")
-                        .padding(.vertical)
-                }
+        NavigationView {
+            ZStack {
+                Color(UIColor.systemGroupedBackground)
+                    .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        CustomTextField(
-                            label: "Label Alamat",
-                            text: $labelAddress,
-                            placeholder: "Contoh: Rumah, Kantor, dll.",
-                            isSecure: false,
-                            fontType: .crimson,
-                            nextFocus: $nameFocusState,
-                            isLast: false
-                        )
-                        
-                        CustomTextField(
-                            label: "Nama Penerima/Penanggung Jawab",
-                            text: $name,
-                            placeholder: "Masukan nama",
-                            isSecure: false,
-                            fontType: .crimson,
-                            nextFocus: $phoneFocusState,
-                            isLast: false
-                        )
-                        .focused($nameFocusState)
-                        
-                        CustomTextField(
-                            label: "Telepon",
-                            text: $phone,
-                            placeholder: "Masukkan nomor telepon",
-                            isSecure: false,
-                            keyboardType: .phonePad,
-                            fontType: .crimson,
-                            nextFocus: $addressDetailFocusState,
-                            isLast: false
-                        )
-                        .focused($phoneFocusState)
-                        
-                        CustomTextField(
-                            label: "Kode Pos",
-                            text: $postalCode,
-                            placeholder: "Masukkan kode pos",
-                            isSecure: false,
-                            keyboardType: .phonePad,
-                            fontType: .crimson,
-                            isLast: false
-                        )
-                        
-                        CustomTextField(
-                            label: "Alamat",
-                            text: $addressDetail,
-                            placeholder: "Masukan alamat lengkap",
-                            isSecure: false,
-                            fontType: .crimson,
-                            isLast: false
-                        )
-                        .focused($addressDetailFocusState)
-                        
-                        CustomPicker(
-                            label: "Provinsi",
-                            selection: $selectedProvince,
-                            options: addressViewModel.province,
-                            displayProperty: \.name
-                        )
-                        .onChange(of: selectedProvince) {
-                            if let provinceId = selectedProvince?.id {
+                    VStack(spacing: 20) {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Informasi Penerima")
+                                .font(AppFont.Nunito.footnoteSmall)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            
+                            VStack(spacing: 0) {
+                                FormField(
+                                    label: "Label Alamat",
+                                    text: $labelAddress,
+                                    placeholder: "Rumah, Kantor, dll.",
+                                    isFirst: true
+                                )
                                 
-                                addressViewModel.getCitiesByIdProvinces(idProvinces: provinceId){
-                                    
-                                }
+                                Divider().padding(.leading, 16)
+                                
+                                FormField(
+                                    label: "Nama Penerima",
+                                    text: $name,
+                                    placeholder: "Masukkan nama lengkap"
+                                )
+                                
+                                Divider().padding(.leading, 16)
+                                
+                                FormField(
+                                    label: "Nomor Telepon",
+                                    text: $phone,
+                                    placeholder: "08xxxxxxxxxx",
+                                    keyboardType: .phonePad,
+                                    isLast: true
+                                )
                             }
-                            selectedCity = nil
+                            .background(Color.white)
+                            .cornerRadius(12)
                         }
                         
-                        CustomPicker(
-                            label: "Kabupaten/Kota",
-                            selection: $selectedCity,
-                            options: addressViewModel.cityByProvince,
-                            displayProperty: \.name
-                        )
-                        .disabled(selectedProvince == nil)
-                        .opacity(selectedProvince == nil ? 0.5 : 1)
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Detail Alamat")
+                                .font(AppFont.Nunito.footnoteSmall)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            
+                            VStack(spacing: 0) {
+                                CustomPicker(
+                                    label: "Provinsi",
+                                    selection: $selectedProvince,
+                                    options: addressViewModel.province,
+                                    displayProperty: \.name
+                                )
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                                .onChange(of: selectedProvince) {
+                                    if let provinceId = selectedProvince?.id {
+                                        addressViewModel.getCitiesByIdProvinces(idProvinces: provinceId) {}
+                                    }
+                                    selectedCity = nil
+                                }
+                                
+                                Divider().padding(.leading, 16)
+                                
+                                CustomPicker(
+                                    label: "Kabupaten/Kota",
+                                    selection: $selectedCity,
+                                    options: addressViewModel.cityByProvince,
+                                    displayProperty: \.name
+                                )
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                                .disabled(selectedProvince == nil)
+                                .opacity(selectedProvince == nil ? 0.5 : 1)
+                                
+                                Divider().padding(.leading, 16)
+                                
+                                FormField(
+                                    label: "Kode Pos",
+                                    text: $postalCode,
+                                    placeholder: "Masukkan kode pos",
+                                    keyboardType: .numberPad
+                                )
+                                
+                                Divider().padding(.leading, 16)
+                                
+                                FormTextArea(
+                                    label: "Alamat Lengkap",
+                                    text: $addressDetail,
+                                    placeholder: "Nama jalan, no. rumah, RT/RW, dll.",
+                                    isLast: true
+                                )
+                            }
+                            .background(Color.white)
+                            .cornerRadius(12)
+                        }
                         
-                        CustomTextField(
-                            label: "Catatan",
-                            text: $note,
-                            placeholder: "Berikan catatan",
-                            isSecure: false,
-                            fontType: .crimson,
-                            isLast: true
-                        )
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Catatan (Opsional)")
+                                .font(AppFont.Nunito.footnoteSmall)
+                                .foregroundColor(.secondary)
+                                .textCase(.uppercase)
+                            
+                            VStack(spacing: 0) {
+                                FormField(
+                                    label: "Catatan",
+                                    text: $note,
+                                    placeholder: "Patokan, warna rumah, dll.",
+                                    isFirst: true,
+                                    isLast: true
+                                )
+                            }
+                            .background(Color.white)
+                            .cornerRadius(12)
+                        }
                     }
-                    .padding(.horizontal)
+                    .padding(16)
+                    .padding(.bottom, 80)
                 }
                 
-                Button(action: {
-                    guard let provinceId = selectedProvince?.id, let cityId = selectedCity?.id else {
-                        popupMessage = "Provinsi atau Kota belum dipilih"
-                        showErrorPopup = true
-                        return
-                    }
+                VStack {
+                    Spacer()
                     
-                    if isEditing, let address = addressToEdit {
-                        addressViewModel.updateAddress(
-                            idAddress: address.id,
-                            labelAddress: labelAddress,
-                            name: name,
-                            phone: phone,
-                            addressDetail: addressDetail,
-                            provinceId: provinceId,
-                            cityId: cityId,
-                            postalCode: postalCode,
-                            note: note
-                        ) { success, message in
-                            popupMessage = message
-                            if success {
-                                showSuccessPopup = true
-                            } else {
-                                showErrorPopup = true
-                            }
-                        }
-                    } else {
-                        addressViewModel.addAddress(
-                            labelAddress: labelAddress,
-                            name: name,
-                            phone: phone,
-                            addressDetail: addressDetail,
-                            provinceId: provinceId,
-                            cityId: cityId,
-                            postalCode: postalCode,
-                            note: note
-                        ) { success, message in
-                            popupMessage = message
-                            if success {
-                                showSuccessPopup = true
-                            } else {
-                                showErrorPopup = true
-                            }
-                        }
+                    Button(action: submitForm) {
+                        Text(isEditing ? "Simpan Perubahan" : "Simpan Alamat")
+                            .font(AppFont.Nunito.subtitle)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(isFormValid ? Color("brick") : Color.gray.opacity(0.4))
+                            .cornerRadius(12)
                     }
-                }) {
-                    Text(isEditing ? "Ubah" : "Simpan")
-                        .font(AppFont.Raleway.bodyMedium)
-                        .bold()
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(isFormValid ? Color("primary") : Color.gray)
-                        .cornerRadius(8)
+                    .disabled(!isFormValid)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
+                    .background(
+                        Color(UIColor.systemGroupedBackground)
+                            .shadow(color: .black.opacity(0.05), radius: 8, y: -4)
+                    )
                 }
-                .disabled(!isFormValid)
-                .padding(.horizontal)
-                .padding(.top)
+            }
+            .navigationTitle(isEditing ? "Ubah Alamat" : "Tambah Alamat")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Batal") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .foregroundColor(Color("brick"))
+                }
             }
             .onAppear {
                 if let detail = addressToEdit {
@@ -232,25 +218,118 @@ struct AddAddressSheet: View {
                     }
                 }
             }
-            .padding(.vertical)
-            .background(Color.white.ignoresSafeArea())
+            
             if showErrorPopup || showSuccessPopup {
-                BasePopup(isShowing: showErrorPopup ? $showErrorPopup : $showSuccessPopup,
-                          message: popupMessage,
-                          onConfirm: {
-                    if showSuccessPopup {
-                        showSuccessPopup = false
-                        presentationMode.wrappedValue.dismiss()
-                    } else {
-                        showErrorPopup = false
-                    }
-                },
-                          isSuccess: showSuccessPopup)
+                BasePopup(
+                    isShowing: showErrorPopup ? $showErrorPopup : $showSuccessPopup,
+                    message: popupMessage,
+                    onConfirm: {
+                        if showSuccessPopup {
+                            showSuccessPopup = false
+                            presentationMode.wrappedValue.dismiss()
+                        } else {
+                            showErrorPopup = false
+                        }
+                    },
+                    isSuccess: showSuccessPopup
+                )
             }
             
             if addressViewModel.isLoading {
                 Loading(opacity: 0.5)
             }
         }
+    }
+    
+    private func submitForm() {
+        guard let provinceId = selectedProvince?.id, let cityId = selectedCity?.id else {
+            popupMessage = "Provinsi atau Kota belum dipilih"
+            showErrorPopup = true
+            return
+        }
+        
+        if isEditing, let address = addressToEdit {
+            addressViewModel.updateAddress(
+                idAddress: address.id,
+                labelAddress: labelAddress,
+                name: name,
+                phone: phone,
+                addressDetail: addressDetail,
+                provinceId: provinceId,
+                cityId: cityId,
+                postalCode: postalCode,
+                note: note
+            ) { success, message in
+                popupMessage = message
+                if success {
+                    showSuccessPopup = true
+                } else {
+                    showErrorPopup = true
+                }
+            }
+        } else {
+            addressViewModel.addAddress(
+                labelAddress: labelAddress,
+                name: name,
+                phone: phone,
+                addressDetail: addressDetail,
+                provinceId: provinceId,
+                cityId: cityId,
+                postalCode: postalCode,
+                note: note
+            ) { success, message in
+                popupMessage = message
+                if success {
+                    showSuccessPopup = true
+                } else {
+                    showErrorPopup = true
+                }
+            }
+        }
+    }
+}
+
+struct FormField: View {
+    let label: String
+    @Binding var text: String
+    var placeholder: String = ""
+    var keyboardType: UIKeyboardType = .default
+    var isFirst: Bool = false
+    var isLast: Bool = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(AppFont.Raleway.footnoteSmall)
+                .foregroundColor(.secondary)
+            
+            TextField(placeholder, text: $text)
+                .font(AppFont.Raleway.bodyMedium)
+                .keyboardType(keyboardType)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+    }
+}
+
+struct FormTextArea: View {
+    let label: String
+    @Binding var text: String
+    var placeholder: String = ""
+    var isFirst: Bool = false
+    var isLast: Bool = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(AppFont.Raleway.footnoteSmall)
+                .foregroundColor(.secondary)
+            
+            TextField(placeholder, text: $text, axis: .vertical)
+                .font(AppFont.Raleway.bodyMedium)
+                .lineLimit(2...4)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
     }
 }
