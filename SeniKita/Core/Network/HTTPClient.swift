@@ -276,7 +276,7 @@ class SeniKitaLogger: EventMonitor, @unchecked Sendable {
     
     func request<Value>(_ request: DataRequest, didParseResponse response: DataResponse<Value, AFError>) {
         #if DEBUG
-        logResponse(request: request, response: response.response, data: response.data as? Data, error: response.error, metrics: response.metrics)
+        logResponse(request: request, response: response.response, data: response.data, error: response.error, metrics: response.metrics)
         #endif
     }
     
