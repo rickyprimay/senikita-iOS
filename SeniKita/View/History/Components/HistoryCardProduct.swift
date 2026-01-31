@@ -19,92 +19,124 @@ struct HistoryCardProduct: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             if let firstProduct = historyItem.product.first {
-                
-                if let statusInfo = statusMap[historyItem.computedStatus] {
-                    if historyItem.computedStatus == "pending",
-                       let createdDate = historyItem.created_at.toDate(),
-                       let daysPassed = Calendar.current.dateComponents([.day], from: createdDate, to: Date()).day,
-                       daysPassed > 2 {
-                        
-                        if let failedStatusInfo = statusMap["gagal"] {
-                            HStack {
-                                Image(systemName: failedStatusInfo.icon)
-                                Text(failedStatusInfo.text)
-                            }
-                            .font(AppFont.Raleway.footnoteSmall)
-                            .bold()
-                            .padding(8)
-                            .background(failedStatusInfo.bgColor)
-                            .foregroundColor(failedStatusInfo.textColor)
-                            .cornerRadius(10)
-                        }
-                    } else {
-                        HStack {
-                            Image(systemName: statusInfo.icon)
-                            Text(statusInfo.text)
-                        }
-                        .font(AppFont.Raleway.footnoteSmall)
-                        .bold()
-                        .padding(8)
-                        .background(statusInfo.bgColor)
-                        .foregroundColor(statusInfo.textColor)
-                        .cornerRadius(10)
-                    }
-                }
+                headerSection
                 
                 Divider()
+                    .background(Color(UIColor.systemGray5))
                 
-                Text("Produk Kesenian | \(historyItem.no_transaction) | \(firstProduct.created_at?.formattedDate() ?? "")")
-                    .font(AppFont.Raleway.footnoteSmall)
-                    .foregroundColor(.gray)
+                productInfoSection(firstProduct)
                 
-                Divider()
-                
-                HStack{
-                    if let imageUrl = URL(string: firstProduct.thumbnail ?? "") {
-                        WebImage(url: imageUrl)
-                            .resizable()
-                            .frame(width: 80, height: 80)
-                            .cornerRadius(8)
-                    } else {
-                        Color.gray.frame(width: 80, height: 80)
-                    }
-                    
-                    VStack(alignment: .leading){
-                        Text(firstProduct.shop?.name ?? "")
-                            .font(AppFont.Raleway.footnoteLarge)
-                            .foregroundStyle(Color("tertiary"))
-                        
-                        Text(firstProduct.name ?? "Nama tidak tersedia")
-                            .font(AppFont.Raleway.bodyMedium)
-                        
-                        Text("\(firstProduct.pivot?.qty ?? 0) item x \((firstProduct.price ?? 0).toDouble().formatPrice())")
+                NavigationLink(destination: HistoryProductDetail(historyViewModel: historyViewModel, idHistory: historyItem.id)) {
+                    HStack {
+                        Text("Lihat Detail")
                             .font(AppFont.Nunito.footnoteSmall)
                         
-                        Text("\(historyItem.price.formatPrice())")
-                            .font(AppFont.Nunito.bodyMedium)
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
                     }
-                    
-                }
-                
-                HStack {
-                    Spacer()
-                    
-                    NavigationLink(destination: HistoryProductDetail(historyViewModel: historyViewModel, idHistory: historyItem.id)){
-                        Text("Lihat Detail Transaksi >")
-                            .font(AppFont.Raleway.footnoteLarge)
-                            .bold()
-                            .foregroundStyle(Color("primary"))
-                    }
+                    .foregroundColor(Color("primary"))
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 12)
+                    .background(Color("primary").opacity(0.08))
+                    .cornerRadius(8)
                 }
             }
         }
-        .padding()
+        .padding(16)
         .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 3)
-        .padding(.horizontal)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+    }
+    
+    private var headerSection: some View {
+        HStack {
+            statusBadge
+            
+            Spacer()
+            
+            if let firstProduct = historyItem.product.first {
+                Text(firstProduct.created_at?.formattedDate() ?? "")
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+    
+    private var statusBadge: some View {
+        Group {
+            if let statusInfo = currentStatusInfo {
+                HStack(spacing: 4) {
+                    Image(systemName: statusInfo.icon)
+                        .font(.system(size: 10))
+                    Text(statusInfo.text)
+                        .font(.system(size: 11, weight: .semibold))
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(statusInfo.bgColor)
+                .foregroundColor(statusInfo.textColor)
+                .cornerRadius(8)
+            }
+        }
+    }
+    
+    private var currentStatusInfo: (icon: String, text: String, bgColor: Color, textColor: Color)? {
+        if historyItem.computedStatus == "pending",
+           let createdDate = historyItem.created_at.toDate(),
+           let daysPassed = Calendar.current.dateComponents([.day], from: createdDate, to: Date()).day,
+           daysPassed > 2 {
+            if let status = statusMap["gagal"] {
+                return (status.icon, status.text, status.bgColor, status.textColor)
+            } else {
+                return nil
+            }
+        }
+        if let status = statusMap[historyItem.computedStatus] {
+            return (status.icon, status.text, status.bgColor, status.textColor)
+        } else {
+            return nil
+        }
+    }
+    
+    private func productInfoSection(_ product: ProductWithPivot) -> some View {
+        HStack(spacing: 12) {
+            if let imageUrl = URL(string: product.thumbnail ?? "") {
+                WebImage(url: imageUrl)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 70, height: 70)
+                    .cornerRadius(10)
+                    .clipped()
+            } else {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color(UIColor.systemGray5))
+                    .frame(width: 70, height: 70)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(product.shop?.name ?? "")
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(Color("primary"))
+                
+                Text(product.name ?? "Nama tidak tersedia")
+                    .font(AppFont.Nunito.bodyMedium)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                
+                Text("\(product.pivot?.qty ?? 0) item")
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.secondary)
+                
+                Text(historyItem.price.formatPrice())
+                    .font(AppFont.Nunito.bodyMedium)
+                    .foregroundColor(.primary)
+            }
+            
+            Spacer()
+        }
     }
 }

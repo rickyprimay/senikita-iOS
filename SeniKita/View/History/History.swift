@@ -14,85 +14,24 @@ struct History: View {
     
     var isFromPayment: Bool
     @State private var navigateToRootView = false
-    
-    @State private var selectedTab: String = "Produk Kesenian"
+    @State private var selectedTab: Int = 0
     
     var body: some View {
         ZStack {
-            VStack {
-                HStack {
-                    TabButton(title: "Produk Kesenian", selectedTab: $selectedTab)
-                    TabButton(title: "Jasa Kesenian", selectedTab: $selectedTab)
-                }
-                .background(Color.white)
+            Color(UIColor.systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                segmentedControl
                 
-                ScrollView {
-                    VStack {
-                        if selectedTab == "Produk Kesenian" {
-                            if historyViewModel.history.isEmpty && !historyViewModel.isLoading {
-                                Text("Tidak ada riwayat pembelian\nProduk Kesenian")
-                                    .font(AppFont.Raleway.bodyLarge)
-                                    .foregroundColor(Color("primary"))
-                                    .multilineTextAlignment(.center)
-                                    .lineLimit(nil)
-                                    .frame(maxWidth: .infinity)
-                            } else {
-                                ForEach(historyViewModel.history, id: \.id) { item in
-                                    HistoryCardProduct(historyViewModel: historyViewModel, historyItem: item)
-                                }
-                            }
-                        } else {
-                            if historyViewModel.historyService.isEmpty && !historyViewModel.isLoading {
-                                Text("Tidak ada riwayat pemesanan\nJasa Kesenian")
-                                    .font(AppFont.Raleway.bodyLarge)
-                                    .foregroundColor(Color("primary"))
-                                    .multilineTextAlignment(.center)
-                                    .frame(maxWidth: .infinity)
-                            } else {
-                                ForEach(historyViewModel.historyService, id: \.id) { item in
-                                    HistoryCardService(historyViewModel: historyViewModel, historyItemService: item)
-                                }
-                            }
-                        }
-                    }
-                    .padding(.top, 16)
+                TabView(selection: $selectedTab) {
+                    productHistoryList
+                        .tag(0)
+                    
+                    serviceHistoryList
+                        .tag(1)
                 }
-                .background(Color.white.ignoresSafeArea())
-                .navigationBarBackButtonHidden(true)
-                .refreshable {
-                    if selectedTab == "Jasa Kesenian" {
-                        historyViewModel.getHistoryService()
-                    } else {
-                        historyViewModel.gethistoryProduct()
-                    }
-                }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {
-                            if !isFromPayment {
-                                presentationMode.wrappedValue.dismiss()
-                            } else {
-                                navigateToRootView = true
-                            }
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .font(AppFont.Raleway.bodyLarge)
-                                .frame(width: 40, height: 40)
-                                .background(Color.brown.opacity(0.3))
-                                .clipShape(Circle())
-                        }
-                        .tint(Color("tertiary"))
-                    }
-                    ToolbarItem(placement: .principal) {
-                        Text("Daftar Transaksi")
-                            .font(AppFont.Crimson.bodyLarge)
-                            .bold()
-                            .foregroundColor(Color("tertiary"))
-                    }
-                }
-                NavigationLink(destination: RootView(), isActive: $navigateToRootView) {
-                    EmptyView()
-                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
             }
             
             if historyViewModel.isLoading {
@@ -100,11 +39,171 @@ struct History: View {
                     .zIndex(1)
             }
         }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    if !isFromPayment {
+                        presentationMode.wrappedValue.dismiss()
+                    } else {
+                        navigateToRootView = true
+                    }
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color("primary"))
+                }
+            }
+            ToolbarItem(placement: .principal) {
+                Text("Riwayat Transaksi")
+                    .font(AppFont.Nunito.subtitle)
+                    .foregroundColor(.primary)
+            }
+        }
         .onChange(of: selectedTab) {
-            if selectedTab == "Jasa Kesenian" {
+            if selectedTab == 1 {
                 historyViewModel.getHistoryService()
             }
         }
+        .refreshable {
+            if selectedTab == 1 {
+                historyViewModel.getHistoryService()
+            } else {
+                historyViewModel.gethistoryProduct()
+            }
+        }
+        .background(
+            NavigationLink(destination: RootView(), isActive: $navigateToRootView) {
+                EmptyView()
+            }
+        )
         .hideTabBar()
+    }
+    
+    private var segmentedControl: some View {
+        HStack(spacing: 0) {
+            SegmentButton(
+                title: "Produk",
+                icon: "cube.box.fill",
+                isSelected: selectedTab == 0
+            ) {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    selectedTab = 0
+                }
+            }
+            
+            SegmentButton(
+                title: "Jasa",
+                icon: "paintbrush.pointed.fill",
+                isSelected: selectedTab == 1
+            ) {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    selectedTab = 1
+                }
+            }
+        }
+        .padding(4)
+        .background(Color(UIColor.systemGray6))
+        .cornerRadius(12)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color.white)
+    }
+    
+    private var productHistoryList: some View {
+        ScrollView(showsIndicators: false) {
+            if historyViewModel.history.isEmpty && !historyViewModel.isLoading {
+                emptyState(
+                    icon: "cube.box",
+                    title: "Belum Ada Transaksi",
+                    subtitle: "Riwayat pembelian produk kesenian akan muncul di sini"
+                )
+            } else {
+                LazyVStack(spacing: 12) {
+                    ForEach(historyViewModel.history, id: \.id) { item in
+                        HistoryCardProduct(historyViewModel: historyViewModel, historyItem: item)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 40)
+            }
+        }
+    }
+    
+    private var serviceHistoryList: some View {
+        ScrollView(showsIndicators: false) {
+            if historyViewModel.historyService.isEmpty && !historyViewModel.isLoading {
+                emptyState(
+                    icon: "paintbrush.pointed",
+                    title: "Belum Ada Transaksi",
+                    subtitle: "Riwayat pemesanan jasa kesenian akan muncul di sini"
+                )
+            } else {
+                LazyVStack(spacing: 12) {
+                    ForEach(historyViewModel.historyService, id: \.id) { item in
+                        HistoryCardService(historyViewModel: historyViewModel, historyItemService: item)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 40)
+            }
+        }
+    }
+    
+    private func emptyState(icon: String, title: String, subtitle: String) -> some View {
+        VStack(spacing: 16) {
+            Spacer()
+                .frame(height: 60)
+            
+            ZStack {
+                Circle()
+                    .fill(Color("primary").opacity(0.1))
+                    .frame(width: 80, height: 80)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 32))
+                    .foregroundColor(Color("primary"))
+            }
+            
+            VStack(spacing: 4) {
+                Text(title)
+                    .font(AppFont.Nunito.bodyMedium)
+                    .foregroundColor(.primary)
+                
+                Text(subtitle)
+                    .font(AppFont.Raleway.footnoteSmall)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct SegmentButton: View {
+    let title: String
+    let icon: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 14))
+                
+                Text(title)
+                    .font(AppFont.Nunito.footnoteSmall)
+            }
+            .foregroundColor(isSelected ? .white : .secondary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(isSelected ? Color("primary") : Color.clear)
+            .cornerRadius(10)
+        }
     }
 }
