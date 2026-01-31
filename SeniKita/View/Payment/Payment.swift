@@ -29,7 +29,6 @@ struct Payment: View {
     }
     
     @State private var cityId: Int = 0
-    
     @State private var selectedShipping: String = "Pilih Pengiriman"
     @State private var selectedService: String = ""
     @State private var showAddressSheet = false
@@ -38,11 +37,11 @@ struct Payment: View {
     @State private var navigateToHistory = false
     
     var shippingOptions: [String] {
-        ["Pilih Pengiriman"] + paymentViewModel.ongkir.map { "\($0.description) - Rp. \($0.cost.first?.value ?? 0)" }
+        ["Pilih Pengiriman"] + paymentViewModel.ongkir.map { "\($0.description) - Rp\(formatPrice($0.cost.first?.value ?? 0))" }
     }
     
     var selectedShippingCost: Int {
-        if let selectedOption = paymentViewModel.ongkir.first(where: { "\($0.description) - Rp. \($0.cost.first?.value ?? 0)" == selectedShipping }) {
+        if let selectedOption = paymentViewModel.ongkir.first(where: { "\($0.description) - Rp\(formatPrice($0.cost.first?.value ?? 0))" == selectedShipping }) {
             return selectedOption.cost.first?.value ?? 0
         }
         return 0
@@ -53,272 +52,37 @@ struct Payment: View {
     }
     
     var body: some View {
-        ZStack {
-            ScrollView {
-                VStack {
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack {
-                            if let url = URL(string: storeAvatar), !storeAvatar.isEmpty {
-                                WebImage(url: url)
-                                    .frame(width: 40, height: 40)
-                                    .cornerRadius(8)
-                                    .clipShape(Circle())
-                                    .scaledToFill()
-                            } else {
-                                Image(systemName: "person.circle.fill")
-                                    .resizable()
-                                    .frame(width: 40, height: 40)
-                                    .foregroundColor(.gray)
-                            }
-                            
-                            VStack(alignment: .leading) {
-                                Text(storeName)
-                                    .font(AppFont.Raleway.bodyLarge)
-                                Text(storeLocation)
-                                    .font(AppFont.Raleway.bodyMedium)
-                                    .foregroundColor(.gray)
-                            }
-                        }
+        ZStack(alignment: .bottom) {
+            Color(UIColor.systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                navigationHeader
+                
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 16) {
+                        // Store & Product Card
+                        storeProductCard
                         
-                        HStack {
-                            if productImage != "" {
-                                WebImage(url: URL(string: productImage))
-                                    .frame(width: 40, height: 40)
-                                    .cornerRadius(8)
-                                    .clipShape(Circle())
-                                    .scaledToFit()
-                            } else {
-                                Color.gray
-                                    .frame(width: 60, height: 60)
-                                    .cornerRadius(8)
-                            }
-                            
-                            VStack(alignment: .leading) {
-                                Text(productName)
-                                    .font(AppFont.Raleway.bodyMedium)
-                                
-                                Text("\(productQty) item x Rp\(productPrice)")
-                                    .font(AppFont.Nunito.footnoteLarge)
-                                    .foregroundColor(.gray)
-                                Text("\(totalPriceOrder)")
-                                    .font(AppFont.Nunito.footnoteLarge)
-                                    .bold()
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.gray, lineWidth: 2)
-                        )
+                        // Address Card
+                        addressCard
                         
-                        VStack {
-                            Picker(
-                                "Pilih Pengiriman", selection: $selectedShipping
-                            ) {
-                                ForEach(shippingOptions, id: \.self) { option in
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "truck.box")
-                                        Text(option)
-                                    }
-                                    .font(AppFont.Raleway.bodyMedium)
-                                }
-                            }
-                            .accentColor(Color("primary"))
-                            .pickerStyle(MenuPickerStyle())
-                            .frame(maxWidth: .infinity)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.gray, lineWidth: 1)
-                            )
-                            .background(Color("tertiary").opacity(0.3))
-                            .cornerRadius(8)
-                            .onChange(of: selectedShipping) {
-                                if let selectedOption = paymentViewModel.ongkir.first(where: {
-                                    "\($0.description) - Rp. \($0.cost.first?.value ?? 0)" == selectedShipping
-                                }) {
-                                    selectedService = selectedOption.service
-                                } else {
-                                    selectedService = ""
-                                }
-                            }
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: 40)
+                        // Order Summary Card
+                        orderSummaryCard
                     }
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray, lineWidth: 1)
-                    )
-                    .padding()
-                    
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack {
-                            Text("Alamat Anda")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .bold()
-                            
-                            Spacer()
-                            
-                            Button {
-                                showAddressSheet.toggle()
-                            } label: {
-                                Text("Ganti alamat")
-                                    .font(AppFont.Raleway.bodyMedium)
-                                    .bold()
-                                    .foregroundColor(Color("primary"))
-                            }
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            if let firstAddress = paymentViewModel.firstAddress, !paymentViewModel.address.isEmpty {
-                                AddressPaymentCard(address: firstAddress)
-                            } else {
-                                Text("Anda belum memiliki alamat")
-                                    .font(AppFont.Raleway.bodyMedium)
-                                    .foregroundColor(.red)
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .background(Color.gray.opacity(0.2))
-                                    .cornerRadius(10)
-                            }
-                        }
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color("primary"), lineWidth: 1)
-                        )
-                    }
-                    .padding(.horizontal)
-                    
-                    VStack(alignment: .leading) {
-                        Text("Ringkasan Belanja")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .bold()
-                        
-                        HStack {
-                            Text("Total Harga")
-                                .font(AppFont.Raleway.bodyMedium)
-                            Spacer()
-                            Text("\(totalPriceOrder)")
-                                .font(AppFont.Nunito.bodyMedium)
-                        }
-                        
-                        HStack {
-                            Text("Biaya Layanan")
-                                .font(AppFont.Raleway.bodyMedium)
-                            Spacer()
-                            Text("Rp5.000")
-                                .font(AppFont.Nunito.bodyMedium)
-                        }
-                        
-                        if selectedShipping != "Pilih Pengiriman" {
-                            HStack {
-                                Text("Biaya Ongkir")
-                                    .font(AppFont.Raleway.bodyMedium)
-                                Spacer()
-                                Text("Rp\(selectedShippingCost)")
-                                    .font(AppFont.Nunito.bodyMedium)
-                            }
-                        }
-                        
-                        Divider()
-                        
-                        HStack {
-                            Text("Total Belanja")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .bold()
-                            Spacer()
-                            Text("Rp\(totalOrderPrice)")
-                                .font(AppFont.Nunito.bodyMedium)
-                        }
-                        
-                        Button{
-                            
-                            let addressId = paymentViewModel.firstAddress?.id ?? 0
-                            let addressNote = paymentViewModel.firstAddress?.note ?? ""
-                            
-                            paymentViewModel.makeCheckout(
-                                productIDs: [productId],
-                                qtys: [productQty],
-                                courier: "jne",
-                                service: selectedService,
-                                addressID: addressId
-                            )
-                            
-                        } label: {
-                            Text("Checkout")
-                                .font(AppFont.Raleway.bodyMedium)
-                                .bold()
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .frame(height: 40)
-                                .background(Color("primary"))
-                                .cornerRadius(10)
-                                .padding(.vertical)
-                        }
-                        
-                    }
-                    .padding()
-                    
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                    .padding(.bottom, 120)
                 }
             }
-            .onAppear{
-                paymentViewModel.getAddress()
-            }
-            .onReceive(paymentViewModel.$isAddressLoaded) { loaded in
-                if loaded {
-                    if let address = paymentViewModel.firstAddress {
-                        self.cityId = address.city_id
-                        paymentViewModel.getOngkirCost(originId: originId, destination: cityId) { success, message in
-                            if success {
-                                print("Berhasil mengambil data ongkir dan cost")
-                            } else {
-                                print("Gagal mengambil data ongkir dan cost: \(message)")
-                            }
-                        }
-                    } else {
-                        print("firstAddress masih nil, tidak bisa mengambil ongkir")
-                    }
-                }
-            }
-            .onReceive(paymentViewModel.$isCheckoutSuccess) { success in
-                if success {
-                    popupMessage = "Pemesanan Berhasil, Lanjut ke Pembayaran?"
-                    showPopup = true
-                }
-            }
-            .background(Color.white.ignoresSafeArea())
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(AppFont.Crimson.bodyLarge)
-                            .frame(width: 40, height: 40)
-                            .background(Color.brown.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                    .tint(Color("tertiary"))
-                }
-                ToolbarItem(placement: .principal) {
-                    Text("Checkout")
-                        .font(AppFont.Crimson.bodyLarge)
-                        .bold()
-                        .foregroundColor(Color("tertiary"))
-                }
-            }
-            .sheet(isPresented: $showAddressSheet) {
-                AddressSelectionSheet(addresses: paymentViewModel.address, selectedAddress: $paymentViewModel.firstAddress, cityId: $cityId, paymentViewModel: paymentViewModel, originId: originId, selectedShipping: $selectedShipping)
-            }
+            
+            // Checkout Button
+            checkoutButton
             
             if paymentViewModel.isLoading {
                 Loading(opacity: 0.5)
             }
+            
             if showPopup {
                 BasePopup(
                     isShowing: $showPopup,
@@ -330,11 +94,393 @@ struct Payment: View {
                     isSuccess: true
                 )
             }
+            
             NavigationLink(destination: History(isFromPayment: true), isActive: $navigateToHistory) {
                 EmptyView()
             }
         }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .onAppear {
+            paymentViewModel.getAddress()
+        }
+        .onReceive(paymentViewModel.$isAddressLoaded) { loaded in
+            if loaded {
+                if let address = paymentViewModel.firstAddress {
+                    self.cityId = address.city_id
+                    paymentViewModel.getOngkirCost(originId: originId, destination: cityId) { success, message in
+                        if success {
+                            print("Berhasil mengambil data ongkir dan cost")
+                        } else {
+                            print("Gagal mengambil data ongkir dan cost: \(message)")
+                        }
+                    }
+                }
+            }
+        }
+        .onReceive(paymentViewModel.$isCheckoutSuccess) { success in
+            if success {
+                popupMessage = "Pemesanan Berhasil, Lanjut ke Pembayaran?"
+                showPopup = true
+            }
+        }
+        .sheet(isPresented: $showAddressSheet) {
+            AddressSelectionSheet(
+                addresses: paymentViewModel.address,
+                selectedAddress: $paymentViewModel.firstAddress,
+                cityId: $cityId,
+                paymentViewModel: paymentViewModel,
+                originId: originId,
+                selectedShipping: $selectedShipping
+            )
+        }
         .hideTabBar()
     }
     
+    // MARK: - Navigation Header
+    private var navigationHeader: some View {
+        HStack {
+            Button(action: {
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(Color("primary"))
+                    .frame(width: 40, height: 40)
+                    .background(Color.white)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+            }
+            
+            Spacer()
+            
+            Text("Checkout")
+                .font(AppFont.Nunito.subtitle)
+                .foregroundColor(.primary)
+            
+            Spacer()
+            
+            // Invisible spacer for balance
+            Color.clear
+                .frame(width: 40, height: 40)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color(UIColor.systemGroupedBackground))
+    }
+    
+    // MARK: - Store & Product Card
+    private var storeProductCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Store info
+            HStack(spacing: 12) {
+                if let url = URL(string: storeAvatar), !storeAvatar.isEmpty {
+                    WebImage(url: url)
+                        .resizable()
+                        .indicator(.activity)
+                        .scaledToFill()
+                        .frame(width: 48, height: 48)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(Color(UIColor.systemGray5), lineWidth: 1)
+                        )
+                } else {
+                    ZStack {
+                        Circle()
+                            .fill(Color(UIColor.systemGray5))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(.gray)
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(storeName)
+                        .font(AppFont.Nunito.bodyLarge)
+                        .foregroundColor(.primary)
+                    Text(storeLocation)
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+            }
+            
+            // Product info
+            HStack(spacing: 12) {
+                if !productImage.isEmpty {
+                    WebImage(url: URL(string: productImage))
+                        .resizable()
+                        .indicator(.activity)
+                        .scaledToFill()
+                        .frame(width: 56, height: 56)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                } else {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color(UIColor.systemGray5))
+                        .frame(width: 56, height: 56)
+                        .overlay(
+                            Image(systemName: "cube.box")
+                                .foregroundColor(.gray)
+                        )
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(productName)
+                        .font(AppFont.Nunito.bodyMedium)
+                        .foregroundColor(.primary)
+                        .lineLimit(2)
+                    
+                    Text("\(productQty) item x Rp\(formatPrice(productPrice))")
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Rp\(formatPrice(totalPriceOrder))")
+                        .font(AppFont.Nunito.bodyLarge)
+                        .foregroundColor(Color("primary"))
+                }
+                
+                Spacer()
+            }
+            .padding(12)
+            .background(Color(UIColor.systemGray6))
+            .cornerRadius(12)
+            
+            // Shipping Picker
+            VStack(alignment: .leading, spacing: 8) {
+                Picker("Pilih Pengiriman", selection: $selectedShipping) {
+                    ForEach(shippingOptions, id: \.self) { option in
+                        HStack(spacing: 6) {
+                            Image(systemName: "truck.box")
+                            Text(option)
+                        }
+                        .font(AppFont.Raleway.bodyMedium)
+                    }
+                }
+                .accentColor(Color("primary"))
+                .pickerStyle(MenuPickerStyle())
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color(UIColor.systemGray6))
+                .cornerRadius(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color("tertiary").opacity(0.5), lineWidth: 1)
+                )
+                .onChange(of: selectedShipping) {
+                    if let selectedOption = paymentViewModel.ongkir.first(where: {
+                        "\($0.description) - Rp\(formatPrice($0.cost.first?.value ?? 0))" == selectedShipping
+                    }) {
+                        selectedService = selectedOption.service
+                    } else {
+                        selectedService = ""
+                    }
+                }
+            }
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+    }
+    
+    // MARK: - Address Card
+    private var addressCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Alamat Pengiriman")
+                    .font(AppFont.Nunito.bodyLarge)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Button {
+                    showAddressSheet.toggle()
+                } label: {
+                    Text("Ganti")
+                        .font(AppFont.Raleway.bodyMedium)
+                        .foregroundColor(Color("primary"))
+                }
+            }
+            
+            if let firstAddress = paymentViewModel.firstAddress, !paymentViewModel.address.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(firstAddress.label_address.uppercased())
+                        .font(AppFont.Raleway.footnoteSmall)
+                        .foregroundColor(Color("primary"))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color("tertiary").opacity(0.2))
+                        .cornerRadius(6)
+                    
+                    Text(firstAddress.name)
+                        .font(AppFont.Nunito.bodyMedium)
+                        .foregroundColor(.primary)
+                    
+                    Text(firstAddress.phone)
+                        .font(AppFont.Raleway.bodyMedium)
+                        .foregroundColor(.secondary)
+                    
+                    Text(firstAddress.address_detail)
+                        .font(AppFont.Raleway.bodyMedium)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                    
+                    if let note = firstAddress.note, !note.isEmpty {
+                        Text(note)
+                            .font(AppFont.Raleway.footnoteSmall)
+                            .foregroundColor(.secondary)
+                            .italic()
+                    }
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(UIColor.systemGray6))
+                .cornerRadius(10)
+            } else {
+                HStack(spacing: 12) {
+                    Image(systemName: "mappin.slash")
+                        .font(.system(size: 24))
+                        .foregroundColor(.red.opacity(0.7))
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Belum Ada Alamat")
+                            .font(AppFont.Nunito.bodyMedium)
+                            .foregroundColor(.primary)
+                        
+                        Text("Tambahkan alamat pengiriman")
+                            .font(AppFont.Raleway.footnoteSmall)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                }
+                .padding(16)
+                .background(Color.red.opacity(0.05))
+                .cornerRadius(10)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.red.opacity(0.2), lineWidth: 1)
+                )
+            }
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+    }
+    
+    // MARK: - Order Summary Card
+    private var orderSummaryCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Ringkasan Pesanan")
+                .font(AppFont.Nunito.bodyLarge)
+                .foregroundColor(.primary)
+            
+            VStack(spacing: 10) {
+                HStack {
+                    Text("Subtotal Produk")
+                        .font(AppFont.Raleway.bodyMedium)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("Rp\(formatPrice(totalPriceOrder))")
+                        .font(AppFont.Nunito.bodyMedium)
+                        .foregroundColor(.primary)
+                }
+                
+                HStack {
+                    Text("Biaya Layanan")
+                        .font(AppFont.Raleway.bodyMedium)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    Text("Rp\(formatPrice(5000))")
+                        .font(AppFont.Nunito.bodyMedium)
+                        .foregroundColor(.primary)
+                }
+                
+                if selectedShipping != "Pilih Pengiriman" {
+                    HStack {
+                        Text("Biaya Ongkir")
+                            .font(AppFont.Raleway.bodyMedium)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("Rp\(formatPrice(selectedShippingCost))")
+                            .font(AppFont.Nunito.bodyMedium)
+                            .foregroundColor(.primary)
+                    }
+                }
+            }
+            
+            Divider()
+            
+            HStack {
+                Text("Total Pembayaran")
+                    .font(AppFont.Nunito.bodyLarge)
+                    .foregroundColor(.primary)
+                Spacer()
+                Text("Rp\(formatPrice(totalOrderPrice))")
+                    .font(AppFont.Nunito.headerMedium)
+                    .foregroundColor(Color("primary"))
+            }
+        }
+        .padding(20)
+        .background(Color.white)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.04), radius: 8, y: 2)
+    }
+    
+    // MARK: - Checkout Button
+    private var checkoutButton: some View {
+        VStack(spacing: 0) {
+            Divider()
+            
+            Button {
+                let addressId = paymentViewModel.firstAddress?.id ?? 0
+                
+                paymentViewModel.makeCheckout(
+                    productIDs: [productId],
+                    qtys: [productQty],
+                    courier: "jne",
+                    service: selectedService,
+                    addressID: addressId
+                )
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "creditcard.fill")
+                        .font(.system(size: 16))
+                    Text("Bayar Sekarang")
+                        .font(AppFont.Nunito.bodyLarge)
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color("primary"), Color("tertiary")]),
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .cornerRadius(12)
+                .shadow(color: Color("primary").opacity(0.3), radius: 8, y: 4)
+            }
+            .disabled(selectedShipping == "Pilih Pengiriman" || paymentViewModel.firstAddress == nil)
+            .opacity(selectedShipping == "Pilih Pengiriman" || paymentViewModel.firstAddress == nil ? 0.6 : 1.0)
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 30)
+            .background(Color.white)
+        }
+    }
+    
+    // MARK: - Helper
+    private func formatPrice(_ price: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = "."
+        formatter.decimalSeparator = ","
+        return formatter.string(from: NSNumber(value: price)) ?? "\(price)"
+    }
 }
