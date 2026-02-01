@@ -343,38 +343,55 @@ struct MainInformation: View {
                 )
             }
             
-            if showProvinceDropdown && !addressViewModel.province.isEmpty {
+            if showProvinceDropdown {
                 VStack(spacing: 0) {
-                    ScrollView(showsIndicators: false) {
-                        LazyVStack(spacing: 0) {
-                            ForEach(addressViewModel.province, id: \.id) { province in
-                                Button {
-                                    selectedProvince = province
-                                    provinceId = province.id
-                                    selectedCity = nil
-                                    cityId = 0
-                                    showProvinceDropdown = false
-                                    addressViewModel.getCitiesByIdProvinces(idProvinces: province.id) { }
-                                } label: {
-                                    HStack {
-                                        Text(province.name)
-                                            .font(AppFont.Nunito.bodyMedium)
-                                            .foregroundColor(.black)
-                                        Spacer()
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 14)
+                    if addressViewModel.isLoadingProvinces {
+                        // Skeleton Loading
+                        VStack(spacing: 0) {
+                            ForEach(0..<5, id: \.self) { _ in
+                                HStack {
+                                    SkeletonLoading(width: 150, height: 16, cornerRadius: 4)
+                                    Spacer()
                                 }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 14)
                                 
-                                if province.id != addressViewModel.province.last?.id {
-                                    Divider()
+                                Divider()
+                                    .padding(.horizontal, 16)
+                            }
+                        }
+                    } else if !addressViewModel.province.isEmpty {
+                        ScrollView(showsIndicators: false) {
+                            LazyVStack(spacing: 0) {
+                                ForEach(addressViewModel.province, id: \.id) { province in
+                                    Button {
+                                        selectedProvince = province
+                                        provinceId = province.id
+                                        selectedCity = nil
+                                        cityId = 0
+                                        showProvinceDropdown = false
+                                        addressViewModel.getCitiesByIdProvinces(idProvinces: province.id) { }
+                                    } label: {
+                                        HStack {
+                                            Text(province.name)
+                                                .font(AppFont.Nunito.bodyMedium)
+                                                .foregroundColor(.black)
+                                            Spacer()
+                                        }
                                         .padding(.horizontal, 16)
+                                        .padding(.vertical, 14)
+                                    }
+                                    
+                                    if province.id != addressViewModel.province.last?.id {
+                                        Divider()
+                                            .padding(.horizontal, 16)
+                                    }
                                 }
                             }
                         }
                     }
-                    .frame(maxHeight: 220)
                 }
+                .frame(maxHeight: 220)
                 .background(Color.white)
                 .cornerRadius(12)
                 .shadow(color: .black.opacity(0.1), radius: 10, y: 4)
@@ -419,35 +436,58 @@ struct MainInformation: View {
                 )
             }
             
-            if showCityDropdown && !addressViewModel.cityByProvince.isEmpty {
+            if showCityDropdown {
                 VStack(spacing: 0) {
-                    ScrollView(showsIndicators: false) {
-                        LazyVStack(spacing: 0) {
-                            ForEach(addressViewModel.cityByProvince, id: \.id) { city in
-                                Button {
-                                    selectedCity = city
-                                    cityId = city.id
-                                    showCityDropdown = false
-                                } label: {
-                                    HStack {
-                                        Text(city.name)
-                                            .font(AppFont.Nunito.bodyMedium)
-                                            .foregroundColor(.black)
-                                        Spacer()
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 14)
+                    if addressViewModel.isLoadingCities {
+                        // Skeleton Loading
+                        VStack(spacing: 0) {
+                            ForEach(0..<5, id: \.self) { _ in
+                                HStack {
+                                    SkeletonLoading(width: 150, height: 16, cornerRadius: 4)
+                                    Spacer()
                                 }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 14)
                                 
-                                if city.id != addressViewModel.cityByProvince.last?.id {
-                                    Divider()
+                                Divider()
+                                    .padding(.horizontal, 16)
+                            }
+                        }
+                    } else if !addressViewModel.cityByProvince.isEmpty {
+                        ScrollView(showsIndicators: false) {
+                            LazyVStack(spacing: 0) {
+                                ForEach(addressViewModel.cityByProvince, id: \.id) { city in
+                                    Button {
+                                        selectedCity = city
+                                        cityId = city.id
+                                        showCityDropdown = false
+                                    } label: {
+                                        HStack {
+                                            Text(city.name)
+                                                .font(AppFont.Nunito.bodyMedium)
+                                                .foregroundColor(.black)
+                                            Spacer()
+                                        }
                                         .padding(.horizontal, 16)
+                                        .padding(.vertical, 14)
+                                    }
+                                    
+                                    if city.id != addressViewModel.cityByProvince.last?.id {
+                                        Divider()
+                                            .padding(.horizontal, 16)
+                                    }
                                 }
                             }
                         }
+                    } else {
+                        // Empty state
+                        Text("Tidak ada kota/kabupaten")
+                            .font(AppFont.Raleway.bodyMedium)
+                            .foregroundColor(.gray)
+                            .padding()
                     }
-                    .frame(maxHeight: 220)
                 }
+                .frame(maxHeight: 220)
                 .background(Color.white)
                 .cornerRadius(12)
                 .shadow(color: .black.opacity(0.1), radius: 10, y: 4)

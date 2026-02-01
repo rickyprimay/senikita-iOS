@@ -12,6 +12,8 @@ class AddressViewModel: ObservableObject {
     private let addressRepository: AddressRepositoryProtocol
     
     @Published var isLoading: Bool = false
+    @Published var isLoadingProvinces: Bool = false
+    @Published var isLoadingCities: Bool = false
     @Published var address: [Address] = []
     @Published var city: [City] = []
     @Published var province: [Province] = []
@@ -171,15 +173,15 @@ class AddressViewModel: ObservableObject {
     }
     
     func getProvinces() {
-        isLoading = true
+        isLoadingProvinces = true
         Task {
             do {
                 let provinces = try await addressRepository.getProvinces()
                 self.province = provinces
-                self.isLoading = false
+                self.isLoadingProvinces = false
             } catch {
                 print("error: \(error.localizedDescription)")
-                self.isLoading = false
+                self.isLoadingProvinces = false
             }
         }
     }
@@ -199,16 +201,17 @@ class AddressViewModel: ObservableObject {
     }
     
     func getCitiesByIdProvinces(idProvinces: Int, completion: @escaping () -> Void) {
-        isLoading = true
+        isLoadingCities = true
+        cityByProvince = []
         Task {
             do {
                 let cities = try await addressRepository.getCitiesByProvince(provinceId: idProvinces)
                 self.cityByProvince = cities
-                self.isLoading = false
+                self.isLoadingCities = false
                 completion()
             } catch {
                 print("error: \(error.localizedDescription)")
-                self.isLoading = false
+                self.isLoadingCities = false
                 completion()
             }
         }
