@@ -11,12 +11,7 @@ struct LoginResponse: Codable {
     let status: String
     let message: String
     let code: Int?
-    let data: LoginData?
-}
-
-struct LoginData: Codable {
-    let user: User
-    let token: String
+    let user: User?
 }
 
 struct OTPResponse: Codable {
@@ -44,12 +39,12 @@ final class AuthRepository: AuthRepositoryProtocol {
         let endpoint = AuthEndpoint.login(email: email, password: password)
         let response: LoginResponse = try await client.request(endpoint: endpoint)
         
-        guard response.status == "success", let data = response.data else {
+        guard response.status == "success", let user = response.user, let token = user.token else {
             throw NetworkError.validationError(message: response.message)
         }
         
-        sessionManager.saveToken(data.token)
-        return data.user
+        sessionManager.saveToken(token)
+        return user
     }
     
     func register(name: String, email: String, password: String) async throws -> String {
