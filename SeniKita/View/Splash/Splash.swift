@@ -20,11 +20,13 @@ struct Splash: View {
     
     var body: some View {
         if isActive {
-            NavigationStack {
+            Group {
                 if authViewModel.isAuthenticated {
                     RootView()
                 } else {
-                    Login()
+                    NavigationStack {
+                        Login()
+                    }
                 }
             }
             .environmentObject(authViewModel)

@@ -28,7 +28,7 @@ struct Register: View {
     @FocusState private var confirmationPasswordFocus: Bool
 
     var isFormValid: Bool {
-        !name.isEmpty && !email.isEmpty && !password.isEmpty && password == confirmationPassword
+        !name.isEmpty && !email.isEmpty && !password.isEmpty && password == confirmationPassword && isAgreed
     }
     
     var isValidEmail: Bool {
@@ -38,57 +38,146 @@ struct Register: View {
     
     var body: some View {
         ZStack {
+            Color(UIColor.systemGroupedBackground)
+                .ignoresSafeArea()
+            
             ScrollView(.vertical, showsIndicators: false) {
-                VStack {
+                VStack(spacing: 0) {
                     TopAuth()
-                    Spacer()
                     
-                    Text("Daftar di Senikita")
-                        .font(AppFont.Crimson.titleMedium)
-                        .bold()
-                    
-                    HStack {
-                        Text("Sudah punya akun?")
-                            .font(AppFont.Raleway.footnoteLarge)
+                    VStack(spacing: 8) {
+                        Text("Daftar di Senikita")
+                            .font(AppFont.Crimson.titleMedium)
+                            .bold()
                         
-                        NavigationLink(destination: Login()) {
-                            Text("Masuk disini")
-                                .foregroundColor(Color("brick"))
+                        HStack(spacing: 4) {
+                            Text("Sudah punya akun?")
                                 .font(AppFont.Raleway.footnoteLarge)
+                                .foregroundColor(.secondary)
+                            
+                            NavigationLink(destination: Login()) {
+                                Text("Masuk disini")
+                                    .foregroundColor(Color("tertiary"))
+                                    .font(AppFont.Raleway.footnoteLarge)
+                                    .bold()
+                            }
                         }
                     }
+                    .padding(.bottom, 24)
                     
+                    // Google Sign In Button
                     GoogleButton().environmentObject(authViewModel)
+                        .padding(.horizontal, 24)
                     
-                    DividerLabel(label: "atau").padding(.vertical, 4)
+                    DividerLabel(label: "atau")
+                        .padding(.vertical, 16)
                     
-                    RegisterForm(
-                        name: $name,
-                        email: $email,
-                        password: $password,
-                        confirmationPassword: $confirmationPassword,
-                        isPasswordVisible: $isPasswordVisible,
-                        isConfirmationPasswordVisible: $isConfirmationPasswordVisible,
-                        nameFocus: $nameFocus,
-                        emailFocus: $emailFocus,
-                        passwordFocus: $passwordFocus,
-                        confirmationPasswordFocus: $confirmationPasswordFocus
-                    )
-                    
-                    Toggle(isOn: $isAgreed) {
-                        Text("Saya menyetujui dengan mendaftarkan akun di Senikita")
-                            .font(AppFont.Raleway.footnoteSmall)
+                    // Form Fields
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Name Field
+                        formField(
+                            title: "Nama Lengkap",
+                            placeholder: "Masukkan Nama Lengkap",
+                            text: $name,
+                            isFocused: nameFocus
+                        )
+                        .focused($nameFocus)
+                        
+                        // Email Field
+                        VStack(alignment: .leading, spacing: 8) {
+                            formField(
+                                title: "Email",
+                                placeholder: "Masukkan Email",
+                                text: $email,
+                                isFocused: emailFocus,
+                                keyboardType: .emailAddress
+                            )
+                            .focused($emailFocus)
+                            .onChange(of: email) {
+                                isEmailValid = email.isEmpty || isValidEmail
+                            }
+                            
+                            if !isEmailValid {
+                                Text("Format email tidak valid")
+                                    .foregroundColor(.red)
+                                    .font(AppFont.Raleway.footnoteSmall)
+                            }
+                        }
+                        
+                        // Password Field
+                        passwordField(
+                            title: "Password",
+                            placeholder: "Masukkan Password",
+                            text: $password,
+                            isVisible: $isPasswordVisible,
+                            isFocused: passwordFocus
+                        )
+                        .focused($passwordFocus)
+                        
+                        // Confirmation Password Field
+                        passwordField(
+                            title: "Konfirmasi Password",
+                            placeholder: "Masukkan Konfirmasi Password",
+                            text: $confirmationPassword,
+                            isVisible: $isConfirmationPasswordVisible,
+                            isFocused: confirmationPasswordFocus
+                        )
+                        .focused($confirmationPasswordFocus)
+                        
+                        // Agreement Toggle
+                        HStack(alignment: .top, spacing: 12) {
+                            Text("Saya menyetujui dengan mendaftarkan akun di Senikita")
+                                .font(AppFont.Raleway.footnoteSmall)
+                                .foregroundColor(.secondary)
+                            
+                            Spacer()
+                            
+                            Toggle("", isOn: $isAgreed)
+                                .labelsHidden()
+                                .tint(Color("tertiary"))
+                        }
                     }
-                    .padding(.vertical)
+                    .padding(.horizontal, 24)
                     
-                    RegisterButton()
+                    // Register Button
+                    Button {
+                        authViewModel.register(name: name, email: email, password: password) { success in
+                            if success {
+                                isNavigatingToOTP = true
+                            } else {
+                                showErrorPopup = true
+                            }
+                        }
+                    } label: {
+                        Text("Daftar")
+                            .font(AppFont.Nunito.bodyLarge)
+                            .bold()
+                            .frame(maxWidth: .infinity, minHeight: 50)
+                            .background(
+                                Group {
+                                    if !isFormValid {
+                                        Color.gray.opacity(0.5)
+                                    } else {
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [Color("primary"), Color("tertiary")]),
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    }
+                                }
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                            .shadow(color: !isFormValid ? .clear : Color("tertiary").opacity(0.3), radius: 8, y: 4)
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 24)
+                    .padding(.bottom, 30)
+                    .disabled(!isFormValid)
                     
-                    Spacer()
+                    NavigationLink("", destination: OTPInput(email: email).environmentObject(authViewModel), isActive: $isNavigatingToOTP)
+                        .hidden()
                 }
-                .padding(30)
-                
-                NavigationLink("", destination: OTPInput(email: email).environmentObject(authViewModel), isActive: $isNavigatingToOTP)
-                    .hidden()
             }
             
             if authViewModel.isLoading {
@@ -104,25 +193,69 @@ struct Register: View {
         .navigationBarHidden(true)
     }
     
-    private func RegisterButton() -> some View {
-        Button {
-            authViewModel.register(name: name, email: email, password: password) { success in
-                if success {
-                    isNavigatingToOTP = true
+    // MARK: - Helper Views
+    
+    private func formField(
+        title: String,
+        placeholder: String,
+        text: Binding<String>,
+        isFocused: Bool,
+        keyboardType: UIKeyboardType = .default
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(AppFont.Nunito.bodyMedium)
+                .bold()
+            
+            TextField(placeholder, text: text)
+                .font(AppFont.Nunito.bodyMedium)
+                .keyboardType(keyboardType)
+                .autocapitalization(keyboardType == .emailAddress ? .none : .words)
+                .padding()
+                .background(Color.white)
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(isFocused ? Color("tertiary") : Color.gray.opacity(0.3), lineWidth: 1.5)
+                )
+        }
+    }
+    
+    private func passwordField(
+        title: String,
+        placeholder: String,
+        text: Binding<String>,
+        isVisible: Binding<Bool>,
+        isFocused: Bool
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(AppFont.Nunito.bodyMedium)
+                .bold()
+            
+            HStack {
+                if isVisible.wrappedValue {
+                    TextField(placeholder, text: text)
+                        .font(AppFont.Nunito.bodyMedium)
                 } else {
-                    showErrorPopup = true
+                    SecureField(placeholder, text: text)
+                        .font(AppFont.Nunito.bodyMedium)
+                }
+                
+                Button {
+                    isVisible.wrappedValue.toggle()
+                } label: {
+                    Image(systemName: isVisible.wrappedValue ? "eye.fill" : "eye.slash.fill")
+                        .foregroundColor(.gray)
                 }
             }
-        } label: {
-            Text("Daftar")
-                .font(AppFont.Nunito.footnoteLarge)
-                .bold()
-                .frame(maxWidth: .infinity, minHeight: 50)
-                .background(isFormValid ? Color("brick") : Color.gray.opacity(0.5))
-                .foregroundColor(.white)
-                .cornerRadius(10)
+            .padding()
+            .background(Color.white)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isFocused ? Color("tertiary") : Color.gray.opacity(0.3), lineWidth: 1.5)
+            )
         }
-        .padding(.top)
-        .disabled(!isFormValid || !isAgreed)
     }
 }

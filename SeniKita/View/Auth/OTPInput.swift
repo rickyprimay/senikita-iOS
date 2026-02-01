@@ -24,65 +24,91 @@ struct OTPInput: View {
     var email: String
     
     var body: some View {
-        ZStack{
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Masukkan Kode OTP")
-                    .font(AppFont.Crimson.titleMedium)
-                    .bold()
-                    .foregroundColor(.black)
-                    .padding(.top, 60)
-                
-                Text("Silakan masukkan kode OTP yang telah dikirim ke nomor Anda.")
-                    .font(AppFont.Raleway.bodyMedium)
-                    .foregroundColor(.gray)
-                    .padding(.bottom, 10)
-                
-                HStack(spacing: 12) {
-                    ForEach(0..<6, id: \.self) { index in
-                        TextField("", text: $otp[index])
-                            .frame(width: 50, height: 50)
-                            .background(Color.white)
-                            .cornerRadius(10)
-                            .shadow(color: Color.gray.opacity(0.3), radius: 5, x: 0, y: 2)
-                            .multilineTextAlignment(.center)
-                            .keyboardType(.numberPad)
-                            .focused($focusedIndex, equals: index)
-                            .onChange(of: otp[index]) {
-                                handleInputChange(otp[index], at: index)
-                            }
-                    }
-                }
-                .padding(.top, 10)
-                
-                HStack{
-                    Text("Otp tidak terkirim? ")
+        ZStack {
+            Color(UIColor.systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            VStack(alignment: .leading, spacing: 0) {
+                // Content
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Masukkan Kode OTP")
+                        .font(AppFont.Crimson.titleMedium)
+                        .bold()
+                        .foregroundColor(.primary)
+                    
+                    Text("Silakan masukkan kode OTP yang telah dikirim ke nomor Anda.")
                         .font(AppFont.Raleway.bodyMedium)
-                    Button(action: resendOTP) {
-                        Text(isCountingDown ? "Tunggu dalam \(formattedTime()) lagi" : "Kirim Ulang")
-                            .font(AppFont.Raleway.bodyMedium)
-                            .foregroundColor(Color("brick"))
+                        .foregroundColor(.secondary)
+                        .padding(.bottom, 16)
+                    
+                    // OTP Input Fields
+                    HStack(spacing: 10) {
+                        ForEach(0..<6, id: \.self) { index in
+                            TextField("", text: $otp[index])
+                                .frame(width: 48, height: 56)
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(
+                                            focusedIndex == index ? Color("tertiary") : Color.gray.opacity(0.3),
+                                            lineWidth: focusedIndex == index ? 2 : 1
+                                        )
+                                )
+                                .multilineTextAlignment(.center)
+                                .font(AppFont.Nunito.titleMedium)
+                                .keyboardType(.numberPad)
+                                .focused($focusedIndex, equals: index)
+                                .onChange(of: otp[index]) {
+                                    handleInputChange(otp[index], at: index)
+                                }
+                        }
                     }
-                    .disabled(isCountingDown)
+                    .padding(.vertical, 8)
+                    
+                    // Resend OTP
+                    HStack(spacing: 4) {
+                        Text("Otp tidak terkirim?")
+                            .font(AppFont.Raleway.bodyMedium)
+                            .foregroundColor(.secondary)
+                        
+                        Button(action: resendOTP) {
+                            Text(isCountingDown ? "Tunggu dalam \(formattedTime()) lagi" : "Kirim Ulang")
+                                .font(AppFont.Raleway.bodyMedium)
+                                .foregroundColor(Color("tertiary"))
+                                .bold()
+                        }
+                        .disabled(isCountingDown)
+                    }
+                    .padding(.top, 8)
+                    
+                    // Verify Button
+                    Button(action: {
+                        verifyOTP()
+                    }) {
+                        Text("Verifikasi")
+                            .font(AppFont.Nunito.bodyLarge)
+                            .bold()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color("primary"), Color("tertiary")]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                            .shadow(color: Color("tertiary").opacity(0.3), radius: 8, y: 4)
+                    }
+                    .padding(.top, 24)
+                    
+                    Spacer()
                 }
-                .padding(.top, 10)
-                
-                Button(action: {
-                    verifyOTP()
-                }) {
-                    Text("Verifikasi")
-                        .font(AppFont.Raleway.footnoteLarge)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(Color("brick"))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .shadow(color: Color.gray.opacity(0.5), radius: 5, x: 0, y: 2)
-                }
-                .padding(.top, 10)
-                
-                Spacer()
+                .padding(.horizontal, 24)
+                .padding(.top, 24)
             }
-            .padding(.horizontal, 20)
             
             if authViewModel.isLoading {
                 Loading(opacity: 0.5)
@@ -93,7 +119,6 @@ struct OTPInput: View {
                     showErrorPopup = false
                 }
             }
-            
         }
         .navigationBarTitle("Verifikasi OTP", displayMode: .inline)
         .navigationBarBackButtonHidden(true)
@@ -103,13 +128,14 @@ struct OTPInput: View {
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color("tertiary"))
                 }
-                .tint(Color("brick"))
             }
         }
         .onAppear {
             startCountdown()
+            focusedIndex = 0
         }
     }
     
@@ -168,11 +194,11 @@ struct OTPInput: View {
         }
         
         authViewModel.verifyOTP(email: email, otp: otpCode) { success, message in
-            if !success {
+            if success {
+                print("✅ OTP berhasil diverifikasi!")
+            } else {
                 showErrorPopup = true
                 print("❌ OTP gagal diverifikasi: \(message ?? "Unknown error")")
-            } else {
-                print("✅ OTP berhasil diverifikasi!")
             }
         }
     }
@@ -183,5 +209,4 @@ struct OTPInput: View {
         let seconds = countdown % 60
         return String(format: "%d:%02d", minutes, seconds)
     }
-    
 }

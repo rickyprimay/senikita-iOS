@@ -49,7 +49,9 @@ struct Home: View {
                     homeViewModel.fetchServices(isLoad: false)
                     homeViewModel.fetchCart()
                 }
+
             }
+            .ignoresSafeArea(edges: .top)
             
             if isPopupVisible {
                 BasePopup(isShowing: $isPopupVisible, message: popupMessage, onConfirm: {
@@ -57,7 +59,8 @@ struct Home: View {
                 }, isSuccess: isSuccess)
             }
         }
-        .navigationBarHidden(true)
+
+        .toolbar(.hidden, for: .navigationBar)
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ShowPopup"))) { notification in
             if let userInfo = notification.userInfo,
                let message = userInfo["message"] as? String,

@@ -23,7 +23,7 @@ struct OTPResponse: Codable {
     let status: String
     let message: String
     let code: Int?
-    let data: LoginData?
+    let user: User?
 }
 
 struct BasicResponse: Codable {
@@ -67,12 +67,12 @@ final class AuthRepository: AuthRepositoryProtocol {
         let endpoint = AuthEndpoint.verifyOTP(email: email, otp: otp)
         let response: OTPResponse = try await client.request(endpoint: endpoint)
         
-        guard response.status == "success", let data = response.data else {
+        guard response.status == "success", let user = response.user, let token = user.token else {
             throw NetworkError.validationError(message: response.message)
         }
         
-        sessionManager.saveToken(data.token)
-        return data.user
+        sessionManager.saveToken(token)
+        return user
     }
     
     func resendOTP(email: String) async throws -> String {

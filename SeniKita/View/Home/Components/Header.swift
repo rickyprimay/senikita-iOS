@@ -86,6 +86,7 @@ struct Header: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 16)
         }
+        .padding(.top, safeAreaInsets.top > 0 ? safeAreaInsets.top : 20)
         .background(
             LinearGradient(
                 gradient: Gradient(colors: [Color("tertiary"), Color("primary")]),
@@ -96,5 +97,13 @@ struct Header: View {
             .shadow(color: Color("primary").opacity(0.2), radius: 8, y: 4)
             .ignoresSafeArea(edges: .top)
         )
+    }
+    
+    private var safeAreaInsets: UIEdgeInsets {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            return window.safeAreaInsets
+        }
+        return .zero
     }
 }
