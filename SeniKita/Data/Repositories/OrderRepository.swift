@@ -23,10 +23,14 @@ struct SingleOrderResponse: Codable {
     let data: OrderDetailWrapper
 }
 
+struct ServiceOrderWrapper: Codable {
+    let order: OrderServiceHistory
+}
+
 struct ServiceCheckoutResponse: Codable {
     let status: String
     let message: String
-    let data: OrderServiceHistory?
+    let data: ServiceOrderWrapper?
 }
 
 final class OrderRepository: OrderRepositoryProtocol {
@@ -169,7 +173,7 @@ final class OrderRepository: OrderRepositoryProtocol {
             throw NetworkError.serverError(response.message)
         }
         
-        return data
+        return data.order
     }
     
     func getServiceOrderHistory() async throws -> [OrderServiceHistory] {

@@ -14,17 +14,43 @@ struct SpecialRequest: View {
     @Binding var isStepThree: Bool
     
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 24) {
+            // Header
+            VStack(spacing: 8) {
+                Image(systemName: "doc.text.fill")
+                    .font(.system(size: 40))
+                    .foregroundStyle(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color("primary"), Color("tertiary")]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                
+                Text("Permintaan Khusus")
+                    .font(AppFont.Nunito.titleMedium)
+                    .bold()
+                    .foregroundColor(.primary)
+                
+                Text("Tambahkan catatan atau instruksi khusus untuk pemesanan Anda")
+                    .font(AppFont.Raleway.footnoteLarge)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.top, 8)
+            
+            // Text Area
             CustomTextAreaField(
                 title: "Catatan/Instruksi Tambahan",
                 tip: "Jelaskan instruksi khusus yang Anda harapkan dari tim kami. Misalnya, preferensi pakaian, atau penyesuaian tema acara.",
-                placeholder: "Masukkan perintah khusus atau intruksi tambahan",
+                placeholder: "Masukkan perintah khusus atau instruksi tambahan",
                 text: $additionalNote
             )
             
-            HStack {
-                Button{
-                    withAnimation {
+            // Buttons
+            HStack(spacing: 12) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
                         isStepTwo = false
                         if currentStep == 2 {
                             self.currentStep -= 1
@@ -32,15 +58,17 @@ struct SpecialRequest: View {
                     }
                 } label: {
                     Text("Kembali")
-                        .font(AppFont.Raleway.bodyMedium)
-                        .foregroundStyle(.white)
+                        .font(AppFont.Nunito.bodyMedium)
+                        .bold()
+                        .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding()
+                        .padding(.vertical, 14)
                         .background(Color("secondary"))
-                        .cornerRadius(10)
+                        .cornerRadius(12)
                 }
-                Button{
-                    withAnimation {
+                
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
                         isStepTwo = false
                         isStepThree = true
                         if currentStep < 3 {
@@ -49,14 +77,23 @@ struct SpecialRequest: View {
                     }
                 } label: {
                     Text("Selanjutnya")
-                        .font(AppFont.Raleway.bodyMedium)
-                        .foregroundStyle(.white)
+                        .font(AppFont.Nunito.bodyMedium)
+                        .bold()
+                        .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color("primary"))
-                        .cornerRadius(10)
+                        .padding(.vertical, 14)
+                        .background(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color("primary"), Color("tertiary")]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(12)
+                        .shadow(color: Color("primary").opacity(0.3), radius: 8, y: 4)
                 }
             }
+            .padding(.top, 8)
         }
     }
 }

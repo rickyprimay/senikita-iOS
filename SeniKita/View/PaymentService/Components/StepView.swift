@@ -17,20 +17,25 @@ struct StepView: View {
             ZStack {
                 Circle()
                     .fill(isActive ? Color("tertiary") : Color.white)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 28, height: 28)
                     .overlay(
                         Circle()
-                            .stroke(Color.gray.opacity(0.3), lineWidth: isActive ? 0 : 1)
+                            .stroke(isActive ? Color.clear : Color.gray.opacity(0.4), lineWidth: 1)
                     )
+                    .shadow(color: isActive ? Color("tertiary").opacity(0.3) : .clear, radius: 4, y: 2)
+                
                 Text(stepNumber)
                     .foregroundColor(isActive ? .white : .gray)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(AppFont.Nunito.footnoteLarge)
+                    .bold()
             }
 
             Text(title)
-                .font(AppFont.Raleway.bodyMedium)
+                .font(AppFont.Raleway.footnoteSmall)
                 .multilineTextAlignment(.center)
                 .foregroundColor(isActive ? Color("tertiary") : .gray)
+                .lineLimit(3)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
     }

@@ -83,7 +83,7 @@ struct HistoryCardService: View {
     
     private var serviceInfoSection: some View {
         HStack(spacing: 12) {
-            if let imageUrl = URL(string: historyItemService.service.thumbnail ?? "") {
+            if let imageUrl = URL(string: historyItemService.service?.thumbnail ?? "") {
                 WebImage(url: imageUrl)
                     .resizable()
                     .scaledToFill()
@@ -97,11 +97,11 @@ struct HistoryCardService: View {
             }
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(historyItemService.service.shop?.name ?? "")
+                Text(historyItemService.service?.shop?.name ?? "")
                     .font(AppFont.Raleway.footnoteSmall)
                     .foregroundColor(Color("primary"))
                 
-                Text(historyItemService.service.name ?? "Nama tidak tersedia")
+                Text(historyItemService.service?.name ?? "Nama tidak tersedia")
                     .font(AppFont.Nunito.bodyMedium)
                     .foregroundColor(.primary)
                     .lineLimit(1)
