@@ -76,11 +76,12 @@ class AddressViewModel: ObservableObject {
         Task {
             do {
                 _ = try await addressRepository.createAddress(
+                    labelAddress: labelAddress,
                     name: name,
                     phone: phone,
                     provinceId: provinceId,
                     cityId: cityId,
-                    address: addressDetail,
+                    addressDetail: addressDetail,
                     postalCode: postalCode,
                     note: note,
                     isDefault: false
@@ -118,11 +119,12 @@ class AddressViewModel: ObservableObject {
             do {
                 _ = try await addressRepository.updateAddress(
                     id: idAddress,
+                    labelAddress: labelAddress,
                     name: name,
                     phone: phone,
                     provinceId: provinceId,
                     cityId: cityId,
-                    address: addressDetail,
+                    addressDetail: addressDetail,
                     postalCode: postalCode,
                     note: note,
                     isDefault: false

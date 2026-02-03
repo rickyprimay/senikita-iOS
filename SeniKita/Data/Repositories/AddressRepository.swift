@@ -39,21 +39,23 @@ final class AddressRepository: AddressRepositoryProtocol {
     }
     
     func createAddress(
+        labelAddress: String,
         name: String,
         phone: String,
         provinceId: Int,
         cityId: Int,
-        address: String,
+        addressDetail: String,
         postalCode: String,
         note: String?,
         isDefault: Bool
     ) async throws -> Address {
         let endpoint = AddressEndpoint.create(
+            labelAddress: labelAddress,
             name: name,
             phone: phone,
             provinceId: provinceId,
             cityId: cityId,
-            address: address,
+            addressDetail: addressDetail,
             postalCode: postalCode,
             note: note,
             isDefault: isDefault
@@ -69,22 +71,24 @@ final class AddressRepository: AddressRepositoryProtocol {
     
     func updateAddress(
         id: Int,
+        labelAddress: String,
         name: String,
         phone: String,
         provinceId: Int,
         cityId: Int,
-        address: String,
+        addressDetail: String,
         postalCode: String,
         note: String?,
         isDefault: Bool
     ) async throws -> Address {
         let endpoint = AddressEndpoint.update(
             id: id,
+            labelAddress: labelAddress,
             name: name,
             phone: phone,
             provinceId: provinceId,
             cityId: cityId,
-            address: address,
+            addressDetail: addressDetail,
             postalCode: postalCode,
             note: note,
             isDefault: isDefault

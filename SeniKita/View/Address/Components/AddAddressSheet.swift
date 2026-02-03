@@ -219,20 +219,29 @@ struct AddAddressSheet: View {
                 }
             }
             
-            if showErrorPopup || showSuccessPopup {
+            if showSuccessPopup {
                 BasePopup(
-                    isShowing: showErrorPopup ? $showErrorPopup : $showSuccessPopup,
+                    isShowing: $showSuccessPopup,
                     message: popupMessage,
                     onConfirm: {
-                        if showSuccessPopup {
-                            showSuccessPopup = false
-                            presentationMode.wrappedValue.dismiss()
-                        } else {
-                            showErrorPopup = false
-                        }
+                        showSuccessPopup = false
+                        presentationMode.wrappedValue.dismiss()
                     },
-                    isSuccess: showSuccessPopup
+                    isSuccess: true
                 )
+                .zIndex(1)
+            }
+            
+            if showErrorPopup {
+                BasePopup(
+                    isShowing: $showErrorPopup,
+                    message: popupMessage,
+                    onConfirm: {
+                        showErrorPopup = false
+                    },
+                    isSuccess: false
+                )
+                .zIndex(1)
             }
             
             if addressViewModel.isLoading {
@@ -260,11 +269,13 @@ struct AddAddressSheet: View {
                 postalCode: postalCode,
                 note: note
             ) { success, message in
-                popupMessage = message
-                if success {
-                    showSuccessPopup = true
-                } else {
-                    showErrorPopup = true
+                DispatchQueue.main.async {
+                    popupMessage = message
+                    if success {
+                        showSuccessPopup = true
+                    } else {
+                        showErrorPopup = true
+                    }
                 }
             }
         } else {
@@ -278,11 +289,13 @@ struct AddAddressSheet: View {
                 postalCode: postalCode,
                 note: note
             ) { success, message in
-                popupMessage = message
-                if success {
-                    showSuccessPopup = true
-                } else {
-                    showErrorPopup = true
+                DispatchQueue.main.async {
+                    popupMessage = message
+                    if success {
+                        showSuccessPopup = true
+                    } else {
+                        showErrorPopup = true
+                    }
                 }
             }
         }

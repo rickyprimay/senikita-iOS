@@ -20,7 +20,7 @@ struct HistoryCardProduct: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if let firstProduct = historyItem.product.first {
+            if let firstProduct = historyItem.product?.first {
                 headerSection
                 
                 Divider()
@@ -58,7 +58,7 @@ struct HistoryCardProduct: View {
             
             Spacer()
             
-            if let firstProduct = historyItem.product.first {
+            if let firstProduct = historyItem.product?.first {
                 Text(firstProduct.created_at?.formattedDate() ?? "")
                     .font(AppFont.Raleway.footnoteSmall)
                     .foregroundColor(.secondary)

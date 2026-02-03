@@ -41,8 +41,8 @@ struct OrderHistory: Codable, Identifiable {
     let note: String?
     let created_at: String
     let updated_at: String
-    let address: Address
-    let product: [ProductWithPivot]
+    let address: Address?
+    let product: [ProductWithPivot]?
     let transaction: Transaction?
 }
 
@@ -105,8 +105,8 @@ extension OrderHistory {
         note = try? container.decode(String.self, forKey: .note)
         created_at = try container.decode(String.self, forKey: .created_at)
         updated_at = try container.decode(String.self, forKey: .updated_at)
-        address = try container.decode(Address.self, forKey: .address)
-        product = try container.decode([ProductWithPivot].self, forKey: .product)
+        address = try? container.decode(Address.self, forKey: .address)
+        product = try? container.decode([ProductWithPivot].self, forKey: .product)
         transaction = try? container.decode(Transaction.self, forKey: .transaction)
     }
 }

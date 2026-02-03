@@ -11,9 +11,13 @@ class AuthInterceptor: RequestInterceptor {
     
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var request = urlRequest
-        if let token = SessionManager.shared.token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        if let url = request.url, url.absoluteString.contains(AppConfig.webSocketHost) {
+            if let token = SessionManager.shared.token {
+                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            }
         }
+        
         completion(.success(request))
     }
     

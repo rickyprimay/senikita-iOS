@@ -89,7 +89,7 @@ enum AIEndpoint: Endpoint {
         case .textToSpeech(let text, _):
             return TTSRequest(
                 text: text,
-                model_id: "eleven_monolingual_v1",
+                model_id: "eleven_multilingual_v2",
                 voice_settings: TTSRequest.VoiceSettings(stability: 0.5, similarity_boost: 0.5)
             )
         }

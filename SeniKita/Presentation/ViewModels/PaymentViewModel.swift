@@ -136,11 +136,12 @@ class PaymentViewModel: ObservableObject {
         Task {
             do {
                 _ = try await addressRepository.createAddress(
+                    labelAddress: labelAddress,
                     name: name,
                     phone: phone,
                     provinceId: provinceId,
                     cityId: cityId,
-                    address: addressDetail,
+                    addressDetail: addressDetail,
                     postalCode: postalCode,
                     note: note,
                     isDefault: false

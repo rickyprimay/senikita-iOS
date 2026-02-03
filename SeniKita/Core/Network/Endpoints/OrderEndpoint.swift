@@ -85,7 +85,8 @@ enum OrderEndpoint: Endpoint {
                 "address_id": addressId,
                 "service": shippingService,
                 "product_ids": productIds,
-                "qtys": qtys
+                "qtys": qtys,
+                "courier": "jne"
             ]
         case .checkoutService(let name, let serviceId, let activityName, let phone, let activityDate, let activityTime, let provinceId, let cityId, let address, let attendee, let description):
             return [

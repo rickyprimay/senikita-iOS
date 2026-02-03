@@ -21,6 +21,8 @@ struct ArtMap: View {
     @State private var selectedArt: ArtMapResult? = nil
     @State private var showDetail = false
     
+    @Environment(\.tabBarManager) var tabBarManager
+    
     var body: some View {
         ZStack {
             Color(UIColor.systemGroupedBackground)
@@ -51,6 +53,18 @@ struct ArtMap: View {
         }
         .navigationBarHidden(true)
         .animation(.easeInOut(duration: 0.3), value: showDetail)
+        .onChange(of: showDetail) { isShown in
+            if isShown {
+                tabBarManager.hide()
+            } else {
+                tabBarManager.show()
+            }
+        }
+        .onDisappear {
+            if showDetail {
+                showDetail = false
+            }
+        }
     }
     
     private var headerSection: some View {

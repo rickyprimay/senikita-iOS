@@ -10,22 +10,24 @@ protocol AddressRepositoryProtocol {
     func getAddresses() async throws -> [Address]
     func getAddressDetail(id: Int) async throws -> Address
     func createAddress(
+        labelAddress: String,
         name: String,
         phone: String,
         provinceId: Int,
         cityId: Int,
-        address: String,
+        addressDetail: String,
         postalCode: String,
         note: String?,
         isDefault: Bool
     ) async throws -> Address
     func updateAddress(
         id: Int,
+        labelAddress: String,
         name: String,
         phone: String,
         provinceId: Int,
         cityId: Int,
-        address: String,
+        addressDetail: String,
         postalCode: String,
         note: String?,
         isDefault: Bool

@@ -66,9 +66,9 @@ enum ProfileEndpoint: Endpoint {
             return params
         case .changePassword(let currentPassword, let newPassword, let confirmPassword):
             return [
-                "current_password": currentPassword,
-                "new_password": newPassword,
-                "new_password_confirmation": confirmPassword
+                "old_password": currentPassword,
+                "password": newPassword,
+                "password_confirmation": confirmPassword
             ]
         default:
             return nil

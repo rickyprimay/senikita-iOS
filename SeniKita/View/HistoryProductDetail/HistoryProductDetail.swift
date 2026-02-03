@@ -149,7 +149,7 @@ struct HistoryProductDetail: View {
                 .font(AppFont.Nunito.bodyLarge)
                 .foregroundColor(.primary)
             
-            if let product = historyDetail.product.first {
+            if let product = historyDetail.product?.first {
                 HStack(spacing: 16) {
                     if let imageUrl = URL(string: product.thumbnail ?? "") {
                         WebImage(url: imageUrl)
@@ -221,20 +221,20 @@ struct HistoryProductDetail: View {
                         .foregroundColor(.secondary)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(historyDetail.address.name)
+                        Text(historyDetail.address?.name ?? "")
                             .font(AppFont.Nunito.bodyMedium)
                             .foregroundColor(.primary)
                         
-                        Text(historyDetail.address.phone)
+                        Text(historyDetail.address?.phone ?? "")
                             .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.secondary)
                         
-                        Text(historyDetail.address.address_detail)
+                        Text(historyDetail.address?.address_detail ?? "")
                             .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.secondary)
                             .lineLimit(2)
                         
-                        Text("\(historyDetail.address.city?.name ?? ""), \(historyDetail.address.city?.province?.name ?? "")")
+                        Text("\(historyDetail.address?.city?.name ?? ""), \(historyDetail.address?.province?.name ?? "")")
                             .font(AppFont.Raleway.bodyMedium)
                             .foregroundColor(.secondary)
                     }
