@@ -41,6 +41,8 @@ enum OrderEndpoint: Endpoint {
     case serviceHistoryDetail(id: Int)
     case cancelOrder(id: Int)
     case confirmOrder(id: Int)
+    case markProductReceived(id: Int)
+    case markServiceReceived(id: Int)
     
     var path: String {
         switch self {
@@ -60,6 +62,10 @@ enum OrderEndpoint: Endpoint {
             return "user/order/\(id)/cancel"
         case .confirmOrder(let id):
             return "user/order/\(id)/confirm"
+        case .markProductReceived(let id):
+            return "user/order/payment-status/\(id)"
+        case .markServiceReceived(let id):
+            return "user/order-service/payment-status/\(id)"
         case .checkOngkir:
             return "check-ongkir"
         case .submitRating:
@@ -73,6 +79,8 @@ enum OrderEndpoint: Endpoint {
         switch self {
         case .checkout, .checkoutService, .checkOngkir, .cancelOrder, .confirmOrder, .submitRating, .submitServiceRating:
             return .post
+        case .markProductReceived, .markServiceReceived:
+            return .put
         default:
             return .get
         }

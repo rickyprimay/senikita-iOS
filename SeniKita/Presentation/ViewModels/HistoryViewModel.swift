@@ -138,4 +138,46 @@ class HistoryViewModel: ObservableObject {
             }
         }
     }
+    
+    func confirmProductReceived(orderId: Int, completion: @escaping (Bool, String) -> Void) {
+        guard DIContainer.shared.isAuthenticated else {
+            completion(false, "No authentication token found")
+            return
+        }
+        isLoading = true
+        
+        Task {
+            do {
+                try await orderRepository.markProductAsReceived(id: orderId)
+                self.isLoading = false
+                // Refresh detail to get updated status
+                getDetailHistoryProduct(idHistory: orderId)
+                completion(true, "Produk berhasil dikonfirmasi diterima")
+            } catch {
+                self.isLoading = false
+                completion(false, error.localizedDescription)
+            }
+        }
+    }
+    
+    func confirmServiceReceived(orderId: Int, completion: @escaping (Bool, String) -> Void) {
+        guard DIContainer.shared.isAuthenticated else {
+            completion(false, "No authentication token found")
+            return
+        }
+        isLoading = true
+        
+        Task {
+            do {
+                try await orderRepository.markServiceAsReceived(id: orderId)
+                self.isLoading = false
+                // Refresh detail to get updated status
+                getDetailHistoryService(idHistory: orderId)
+                completion(true, "Jasa berhasil dikonfirmasi selesai")
+            } catch {
+                self.isLoading = false
+                completion(false, error.localizedDescription)
+            }
+        }
+    }
 }

@@ -48,9 +48,18 @@ struct AddressDetail: View {
                     }
                 }
             }
-        }
-        .sheet(isPresented: $showSheetAddAddress) {
-            AddAddressSheet(addressViewModel: addressViewModel, isEditing: $isEditing, addressToEdit: $addressToEdit)
+            
+            // Hidden NavigationLink for programmatic navigation
+            NavigationLink(
+                destination: AddAddressView(
+                    addressViewModel: addressViewModel,
+                    isEditing: $isEditing,
+                    addressToEdit: $addressToEdit
+                ),
+                isActive: $showSheetAddAddress
+            ) {
+                EmptyView()
+            }
         }
         .onAppear {
             addressViewModel.getAddress()

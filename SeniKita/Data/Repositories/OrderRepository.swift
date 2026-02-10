@@ -202,6 +202,24 @@ final class OrderRepository: OrderRepositoryProtocol {
         return response.data.order
     }
     
+    func markProductAsReceived(id: Int) async throws {
+        let endpoint = OrderEndpoint.markProductReceived(id: id)
+        let response: OrderOperationResponse = try await client.request(endpoint: endpoint)
+        
+        guard response.status == "success" else {
+            throw NetworkError.serverError(response.message)
+        }
+    }
+    
+    func markServiceAsReceived(id: Int) async throws {
+        let endpoint = OrderEndpoint.markServiceReceived(id: id)
+        let response: OrderOperationResponse = try await client.request(endpoint: endpoint)
+        
+        guard response.status == "success" else {
+            throw NetworkError.serverError(response.message)
+        }
+    }
+    
     func checkShippingCost(
         origin: Int,
         destination: Int,

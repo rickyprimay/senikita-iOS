@@ -16,6 +16,10 @@ struct HistoryServiceDetail: View {
     
     var idHistory: Int
     
+    @State private var showCompletionAlert = false
+    @State private var alertMessage = ""
+    @State private var isSuccess = false
+    
     init(historyViewModel: HistoryViewModel, idHistory: Int) {
         self.historyViewModel = historyViewModel
         self.idHistory = idHistory
@@ -40,6 +44,10 @@ struct HistoryServiceDetail: View {
                             if historyDetail.computedStatus == "pending" {
                                 paymentButton(historyDetail: historyDetail)
                             }
+                            
+                            if historyDetail.status_order.lowercased() == "success" || historyDetail.status_order.lowercased() == "confirmed" {
+                                serviceCompletionButton(historyDetail: historyDetail)
+                            }
                         }
                     }
                     .padding(20)
@@ -54,6 +62,13 @@ struct HistoryServiceDetail: View {
         .navigationBarHidden(true)
         .onAppear {
             historyViewModel.getDetailHistoryService(idHistory: idHistory)
+        }
+        .alert(isPresented: $showCompletionAlert) {
+            Alert(
+                title: Text(isSuccess ? "Berhasil" : "Gagal"),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("OK"))
+            )
         }
         .hideTabBar()
     }
@@ -284,6 +299,25 @@ struct HistoryServiceDetail: View {
                 .background(Color("primary"))
                 .cornerRadius(12)
                 .shadow(color: Color("primary").opacity(0.3), radius: 8, y: 4)
+        }
+    }
+    
+    private func serviceCompletionButton(historyDetail: OrderServiceHistory) -> some View {
+        Button(action: {
+            historyViewModel.confirmServiceReceived(orderId: historyDetail.id) { success, message in
+                isSuccess = success
+                alertMessage = message
+                showCompletionAlert = true
+            }
+        }) {
+            Text("Jasa Selesai")
+                .font(AppFont.Nunito.bodyLarge)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color.green)
+                .cornerRadius(12)
+                .shadow(color: Color.green.opacity(0.3), radius: 8, y: 4)
         }
     }
     

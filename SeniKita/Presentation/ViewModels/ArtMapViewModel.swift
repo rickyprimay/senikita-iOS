@@ -71,14 +71,14 @@ class ArtMapViewModel: ObservableObject {
     func sendPromptToGemini(prompt: String, statue: String) {
         isSendingPrompt = true
         
-        let context = "Anda adalah sistem yang memberikan pengetahuan tentang budaya dan kesenian. Jawablah setiap pertanyaan dengan ramah menggunakan bahasa Indonesia. Hindari sapaan dan jawaban yang terlalu panjang. Fokuslah pada jawaban yang informatif dan mudah dipahami. Jangan jawab pertanyaan jika tidak berkaitan dan berhubungan dengan seni dan budaya di indonesia terutama di wilayah \(statue). Jawab dengan jawaban yang friendly dan ramah bagi anak anak. Hindari sapaan dan jawaban panjang. Jawab hanya jika pertanyaan berkaitan dengan seni dan budaya Indonesia. maksimal 20 word"
+        let context = "Anda adalah sistem yang memberikan pengetahuan tentang budaya dan kesenian. Jawablah setiap pertanyaan dengan ramah menggunakan bahasa Indonesia. Hindari sapaan dan jawaban yang terlalu panjang. Fokuslah pada jawaban yang informatif dan mudah dipahami. Jangan jawab pertanyaan jika tidak berkaitan dan berhubungan dengan seni dan budaya di indonesia terutama di wilayah \(statue). Jawab dengan jawaban yang friendly dan ramah bagi anak anak. Hindari sapaan dan jawaban panjang. Jawab hanya jika pertanyaan berkaitan dengan seni dan budaya Indonesia. Max 30 kata."
         
         Task {
             do {
                 let text = try await aiRepository.sendPrompt(prompt: prompt, context: context)
-                self.isSendingPrompt = false
                 
                 await self.speakText(textUsing: text)
+                self.isSendingPrompt = false
                 await self.startTextAnimation(textUsing: text)
             } catch {
                 self.isSendingPrompt = false

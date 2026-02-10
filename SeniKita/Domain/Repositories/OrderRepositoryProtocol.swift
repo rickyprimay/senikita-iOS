@@ -52,6 +52,9 @@ protocol OrderRepositoryProtocol {
     func getServiceOrderHistory() async throws -> [OrderServiceHistory]
     func getServiceOrderDetail(id: Int) async throws -> OrderServiceHistory
     
+    func markProductAsReceived(id: Int) async throws
+    func markServiceAsReceived(id: Int) async throws
+    
     func checkShippingCost(
         origin: Int,
         destination: Int,

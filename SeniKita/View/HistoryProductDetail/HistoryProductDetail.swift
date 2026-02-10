@@ -16,6 +16,10 @@ struct HistoryProductDetail: View {
     
     var idHistory: Int
     
+    @State private var showReceivedAlert = false
+    @State private var alertMessage = ""
+    @State private var isSuccess = false
+    
     init(historyViewModel: HistoryViewModel, idHistory: Int) {
         self.historyViewModel = historyViewModel
         self.idHistory = idHistory
@@ -42,6 +46,10 @@ struct HistoryProductDetail: View {
                                daysPassed <= 2 {
                                 paymentButton(historyDetail: historyDetail)
                             }
+                            
+                            if historyDetail.computedStatus == "dikirim" {
+                                receivedConfirmationButton(historyDetail: historyDetail)
+                            }
                         }
                     }
                     .padding(20)
@@ -56,6 +64,13 @@ struct HistoryProductDetail: View {
         .navigationBarHidden(true)
         .onAppear {
             historyViewModel.getDetailHistoryProduct(idHistory: idHistory)
+        }
+        .alert(isPresented: $showReceivedAlert) {
+            Alert(
+                title: Text(isSuccess ? "Berhasil" : "Gagal"),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("OK"))
+            )
         }
         .hideTabBar()
     }
@@ -293,6 +308,25 @@ struct HistoryProductDetail: View {
                 .background(Color("primary"))
                 .cornerRadius(12)
                 .shadow(color: Color("primary").opacity(0.3), radius: 8, y: 4)
+        }
+    }
+    
+    private func receivedConfirmationButton(historyDetail: OrderHistory) -> some View {
+        Button(action: {
+            historyViewModel.confirmProductReceived(orderId: historyDetail.id) { success, message in
+                isSuccess = success
+                alertMessage = message
+                showReceivedAlert = true
+            }
+        }) {
+            Text("Produk Diterima")
+                .font(AppFont.Nunito.bodyLarge)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(Color.green)
+                .cornerRadius(12)
+                .shadow(color: Color.green.opacity(0.3), radius: 8, y: 4)
         }
     }
     
